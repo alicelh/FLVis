@@ -1,17 +1,28 @@
 <template>
   <div id="main">
     <div id="leftPanel">
-      <div id="serverView">
+      <div id="mainView">
+        <MainView/>
+      </div>
+      <div id="modelView">
+        <ModelView/>
+      </div>
+      <!-- <div id="serverView">
         <ServerView />
       </div>
       <div id="mainView"></div>
       <div id="structureView">
         <MatrixView />
-      </div>
+      </div> -->
+      
     </div>
     <div id="rightPanel">
-      <div id="projectView"></div>
-      <div id="clientView"></div>
+      <div id="projectView">
+        <ProjectView/>
+      </div>
+      <div id="clientView">
+        <ClientView/>
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +30,10 @@
 <script>
 import ServerView from './ServerView';
 import MatrixView from './MatrixWave';
+import MainView from './MainView';
+import ModelView from './ModelView';
+import ProjectView from './ProjectView';
+import ClientView from './ClientView';
 
 export default {
   name: 'layout',
@@ -27,7 +42,11 @@ export default {
   },
   components: {
     ServerView,
-    MatrixView
+    MatrixView,
+    MainView,
+    ModelView,
+    ProjectView,
+    ClientView
   }
 };
 </script>
@@ -35,17 +54,29 @@ export default {
 <style scoped lang="scss">
 #main {
   display: grid;
-  grid-template-columns: 900px 1fr;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 10px;
   #leftPanel {
-    width: 100%;
+    display: grid;
+    grid-gap: 10px;
     #serverView {
       height: 200px;
     }
     #mainView {
-      height: 400px;
+      height: 550px;
     }
-    #structureView {
-      height: 250px;
+    #modelView {
+      height: 350px;
+    }
+  }
+  #rightPanel {
+    display: grid;
+    grid-gap: 10px;
+    #projectView {
+      height: 500px;
+    }
+    #clientView {
+      height: 400px;
     }
   }
 }
