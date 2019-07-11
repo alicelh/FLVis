@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'width':width+'px','height':height+'px'}">
+  <div :style="{'width':mainViewWidth+'px','height':height+'px'}">
     <svg width="100%" height="100%">
       <g>
         <Axis
@@ -11,16 +11,19 @@
           :scale="yscaleleft"
           :trans="'translate('+margin.left+','+margin.top+')'"
           orient="Left"
+          :ticks="yTicks"
         />
         <Axis
           :scale="yscaleright"
           :trans="'translate('+(margin.left+chartWidth)+','+margin.top+')'"
           orient="Right"
+          :ticks="yTicks"
         />
         <g :transform="translate">
           <path :d="lossline" fill="none" stroke="blue" stroke-width="2" />
           <path :d="accline" fill="none" stroke="red" stroke-width="2" />
         </g>
+        <g id="brush"></g>
       </g>
     </svg>
   </div>
@@ -29,22 +32,26 @@
 <script>
 import { mapState } from 'vuex';
 import * as d3 from 'd3';
-import Axis from './Axis';
+import Axis from '../common/Axis';
 
 export default {
-  name: 'ServerView',
+  name: 'ServerOverallView',
+  props: {
+    mainViewWidth: Number
+  },
   data: function () {
     return {
-      width: 900,
-      height: 200,
+      // width: 900,
+      height: 80,
       margin: {
         left: 50,
         right: 50,
-        top: 20,
+        top: 10,
         bottom: 20
       },
       lossline: '',
-      accline: ''
+      accline: '',
+      yTicks: 2
     };
   },
   components: {
@@ -52,7 +59,7 @@ export default {
   },
   computed: {
     chartWidth () {
-      return this.width - this.margin.left - this.margin.right;
+      return this.mainViewWidth - this.margin.left - this.margin.right;
     },
     chartHeight () {
       return this.height - this.margin.top - this.margin.bottom;
@@ -124,5 +131,5 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 </style>

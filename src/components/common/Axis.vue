@@ -12,12 +12,13 @@ export default {
   props: {
     scale: Function,
     trans: String,
-    orient: String
+    orient: String,
+    ticks: Number
   },
   methods: {
     createAxis () {
       let node = this.$refs.axis;
-      let axis = d3['axis' + this.orient](this.scale);
+      let axis = d3['axis' + this.orient](this.scale).ticks(this.ticks);
       d3.select(node).call(axis);
     }
   },

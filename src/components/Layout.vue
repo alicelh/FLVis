@@ -6,15 +6,7 @@
       </div>
       <div id="modelView">
         <ModelView/>
-      </div>
-      <!-- <div id="serverView">
-        <ServerView />
-      </div>
-      <div id="mainView"></div>
-      <div id="structureView">
-        <MatrixView />
-      </div> -->
-      
+      </div>   
     </div>
     <div id="rightPanel">
       <div id="projectView">
@@ -28,9 +20,8 @@
 </template>
 
 <script>
-import ServerView from './ServerView';
+import MainView from './mainview/MainView';
 import MatrixView from './MatrixWave';
-import MainView from './MainView';
 import ModelView from './ModelView';
 import ProjectView from './ProjectView';
 import ClientView from './ClientView';
@@ -41,7 +32,6 @@ export default {
     return {};
   },
   components: {
-    ServerView,
     MatrixView,
     MainView,
     ModelView,
