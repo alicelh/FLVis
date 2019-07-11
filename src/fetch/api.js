@@ -1,5 +1,4 @@
 import axios from 'axios'
-import qs from 'qs'
 
 axios.defaults.timeout = 10000;
 axios.defaults.baseURL = 'http://127.0.0.1:8000';
@@ -24,6 +23,9 @@ function fetchGet (url, param) {
       params: param
     })
       .then(response => {
+        if ((typeof response.data) === 'string') {
+          resolve(JSON.parse(response.data))
+        }
         resolve(response.data)
       }, err => {
         reject(err)
@@ -48,5 +50,9 @@ export default {
 
   ClientInfoByIter (iter) {
     return fetchGet(`/clientinfobyiter/${iter}`);
+  },
+
+  ClientParaByIterIndex (iter, index) {
+    return fetchGet(`/clientparabyiterindex/${iter}/${index}`);
   }
 }

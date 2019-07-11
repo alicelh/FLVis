@@ -1,1 +1,2 @@
 export const GET_SERVER_INFO = 'GET_SERVER_INFO'
+export const GET_CLIENT_PARA = 'GET_CLIENT_PARA'

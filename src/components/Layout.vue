@@ -2,18 +2,18 @@
   <div id="main">
     <div id="leftPanel">
       <div id="mainView">
-        <MainView/>
+        <MainView />
       </div>
       <div id="modelView">
-        <ModelView/>
-      </div>   
+        <ModelView />
+      </div>
     </div>
     <div id="rightPanel">
       <div id="projectView">
-        <ProjectView/>
+        <ProjectView />
       </div>
       <div id="clientView">
-        <ClientView/>
+        <ClientView />
       </div>
     </div>
   </div>
@@ -21,8 +21,7 @@
 
 <script>
 import MainView from './mainview/MainView';
-import MatrixView from './MatrixWave';
-import ModelView from './ModelView';
+import ModelView from './modelview/ModelView';
 import ProjectView from './ProjectView';
 import ClientView from './ClientView';
 
@@ -32,7 +31,6 @@ export default {
     return {};
   },
   components: {
-    MatrixView,
     MainView,
     ModelView,
     ProjectView,
