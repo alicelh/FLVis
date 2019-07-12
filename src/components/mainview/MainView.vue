@@ -1,8 +1,14 @@
 <template>
   <div id="mainView-container">
     <div class="moduleTitle">Main View</div>
-    <div id="clientInfoView-container"></div>
-    <div id="serverBrushView-container"></div>
+    <div id="clientInfoView-container">
+      <ClientInfoView />
+    </div>
+    <div id="clientBrushView-container">
+      <ClientBrushView 
+        :mainViewWidth = "mainViewWidth"
+      />
+    </div>
     <div id="serverOverallView-container" ref="serverOverallView">
       <ServerOverallView
         :mainViewWidth = "mainViewWidth"
@@ -13,6 +19,8 @@
 
 <script>
 import ServerOverallView from "./ServerOverallView";
+import ClientBrushView from "./ClientBrushView";
+import ClientInfoView from "./ClientInfoView";
 
 export default {
   name: "MainView",
@@ -22,11 +30,12 @@ export default {
     };
   },
   components: {
-    ServerOverallView
+    ServerOverallView,
+    ClientBrushView,
+    ClientInfoView
   },
   mounted () {
     this.mainViewWidth = this.$refs.serverOverallView.clientWidth;
-    console.log(this.$refs.serverOverallView.clientWidth);
   }
 }
 </script>
@@ -46,10 +55,13 @@ export default {
     }
     #clientInfoView-container {
       height: 320px;
+      // padding: 10px 20px 20px 20px;
       width: 100%;
+      // border: 1px solid #979797;
+      // background: #D8D8D8
     }
-    #serverBrushView-container {
-      height: 120px;
+    #clientBrushView-container {
+      height: 150px;
       width: 100%;
     }
     #serverOverallView-container {

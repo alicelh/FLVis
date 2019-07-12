@@ -48,5 +48,9 @@ export default {
 
   ClientInfoByIter (iter) {
     return fetchGet(`/clientinfobyiter/${iter}`);
+  },
+
+  ClientStasticsRange (miniter, maxiter) {
+    return fetchGet(`/clientstastics/${miniter}/${maxiter}`)
   }
 }

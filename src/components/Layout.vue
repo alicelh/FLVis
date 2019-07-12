@@ -53,7 +53,7 @@ export default {
       height: 200px;
     }
     #mainView {
-      height: 550px;
+      height: 580px;
     }
     #modelView {
       height: 350px;
@@ -63,10 +63,10 @@ export default {
     display: grid;
     grid-gap: 10px;
     #projectView {
-      height: 500px;
+      height: 520px;
     }
     #clientView {
-      height: 400px;
+      height: 410px;
     }
   }
 }
