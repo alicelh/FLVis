@@ -9,7 +9,7 @@ const state = {
   choosediter: 0,
   choosedpara: {},
   brushedSelection: [],
-  brushedClientStastics: {0: [1, 2, 3]}
+  brushedClientStastics: {}
 }
 
 const getters = {}
@@ -23,12 +23,7 @@ const actions = {
         commit(types.GET_SERVER_INFO, res)
       })
   },
-  // updateBrushedSelection ({commit}, context) {
-  //   console.log(context);
-  //   commit(types.UPDATE_BRUSHEDSELECTION, context)
-  // },
   getClientStasticsRange ({commit}, context) {
-    console.log(context);
     api.ClientStasticsRange(context[0], context[1])
       .then(res => {
         commit(types.GET_CLIENTSTASTICSRANGE, [context, res])
