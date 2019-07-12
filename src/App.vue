@@ -9,6 +9,7 @@ export default {
   name: 'App',
   created () {
     this.$store.dispatch('server/getServerInfo');
+    this.$store.dispatch('client/getClientPara');
   }
 };
 </script>
