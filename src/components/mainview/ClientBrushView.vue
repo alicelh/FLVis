@@ -129,7 +129,7 @@ export default {
         if (temp > this.yLossMax)
           this.yLossMax = temp;
       }
-      console.log(this.currentBrush, this.yLossMax);
+      // console.log(this.currentBrush, this.yLossMax);
     },
     getLossPathLine () {
       this.brushedLoss = this.lossMean.slice(this.currentBrush[0], this.currentBrush[1] + 1);

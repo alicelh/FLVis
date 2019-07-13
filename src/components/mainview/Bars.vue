@@ -2,11 +2,13 @@
   <g :transform="trans">
     <rect
       class="iterRect"
+      :id="'bar-'+bars[i]"
       :x="scale(bars[i])"
       y=0
       :width="scale.bandwidth()"
       :height="height"
       :fill="getColor(size)"
+      @click="getIterClientInfo"
       v-for="(size, i) in dataSize" :key="i">
     </rect>
   </g>
@@ -28,25 +30,19 @@ export default {
     createBars () {
       // console.log(this.bars);
       // let node = this.$refs.bars;
-      // d3.select(node)
-      //   .selectAll('rect').remove();
-      // d3.select(node)
-      //   .selectAll('iterRect')
-      //   .data(this.bars)
-      //   .enter().append('rect')
-      //   .attr('class', 'iterRect')
-      //   .attr('x', (d) => this.scale(d))
-      //   .attr('y', 0)
-      //   .attr('width', this.scale.bandwidth())
-      //   .attr('height', this.height);
     },
     getColor (size) {
-      console.log(this.dataSize);
       let colorLinear = d3.scaleLinear()
 				.domain(d3.extent(this.dataSize))
         .range([0,1]);
       let compute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(249, 233, 205));
       return compute(colorLinear(size));
+    },
+    getIterClientInfo (e) {
+      let barId = e.target.getAttribute("id");
+      let iterId = barId.split('-')[1];
+      console.log(iterId);
+      this.$store.dispatch('client/getClientInfoByIter', iterId);
     }
   },
   watch: {

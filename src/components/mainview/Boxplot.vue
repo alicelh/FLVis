@@ -1,5 +1,17 @@
 <template>
-  <g :transform="trans" ref="boxplot" class="single-boxplot" :id="'boxplot-' + this.index">
+  <g
+    :transform="trans"
+    ref="boxplot"
+    class="single-boxplot"
+    :id="'boxplot-' + this.index"
+    @click="getIterClientInfo">
+    <line
+      class="center"
+      :x1="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
+      :y1="yscale(this.whiskerData[0])"
+      :x2="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
+      :y2="yscale(this.whiskerData[1])">
+    </line>
     <rect
       :class="'box-' + this.type"
       :x="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
@@ -26,13 +38,6 @@
       :x1="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
       :y1="yscale(this.whiskerData[1])"
       :x2="xscale(this.index) + this.boxplotWidth + this.boxplotWidth / 3.0 + this.xOffset"
-      :y2="yscale(this.whiskerData[1])">
-    </line>
-    <line
-      class="center"
-      :x1="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
-      :y1="yscale(this.whiskerData[0])"
-      :x2="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
       :y2="yscale(this.whiskerData[1])">
     </line>
     <circle
@@ -90,6 +95,10 @@ export default {
       this.boxplotWidth = parseFloat(bandWidth) * 0.3;
       // outlier
       this.outlierIndices = d3.range(0, whiskerIndices[0]).concat(d3.range(whiskerIndices[1] + 1, dataLength));
+    },
+    getIterClientInfo (e) {
+      console.log(this.index);
+      this.$store.dispatch('client/getClientInfoByIter', this.index);
     }
   },
   watch: {
