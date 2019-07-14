@@ -1,5 +1,53 @@
 <template>
-  <g :transform="trans" ref="boxplot">
+  <g
+    :transform="trans"
+    ref="boxplot"
+    class="single-boxplot"
+    :id="'boxplot-' + this.index"
+    @click="getIterClientInfo">
+    <line
+      class="center"
+      :x1="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
+      :y1="yscale(this.whiskerData[0])"
+      :x2="xscale(this.index) + this.boxplotWidth * 0.5 + this.boxplotWidth / 3.0 + this.xOffset"
+      :y2="yscale(this.whiskerData[1])">
+    </line>
+    <rect
+      :class="'box-' + this.type"
+      :x="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
+      :y="yscale(this.quantileData[2])"
+      :width="this.boxplotWidth"
+      :height="yscale(this.quantileData[0]) - yscale(this.quantileData[2])">
+    </rect>
+    <line
+      class="median"
+      :x1="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
+      :y1="yscale(this.quantileData[1])"
+      :x2="xscale(this.index) + this.boxplotWidth + this.boxplotWidth / 3.0 + this.xOffset"
+      :y2="yscale(this.quantileData[1])">
+    </line>
+    <line
+      class="whisker"
+      :x1="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
+      :y1="yscale(this.whiskerData[0])"
+      :x2="xscale(this.index) + this.boxplotWidth + this.boxplotWidth / 3.0 + this.xOffset"
+      :y2="yscale(this.whiskerData[0])">
+    </line>
+    <line
+      class="whisker"
+      :x1="xscale(this.index) + this.boxplotWidth / 3.0 + this.xOffset"
+      :y1="yscale(this.whiskerData[1])"
+      :x2="xscale(this.index) + this.boxplotWidth + this.boxplotWidth / 3.0 + this.xOffset"
+      :y2="yscale(this.whiskerData[1])">
+    </line>
+    <circle
+      class="outlier"
+      r=3
+      :cx="xscale(index) + boxplotWidth * 0.5 + boxplotWidth / 3.0 + xOffset"
+      :cy="yscale(data[outlierId])"
+      v-for="(outlierId, i) in this.outlierIndices" :key="i">
+      >
+    </circle>
   </g>
 </template>
 
@@ -12,56 +60,84 @@ export default {
     // scale: Function,
     trans: String,
     index: Number,
-    loss: Array,
+    data: Array, //当前盒须图的数据数组
     yscale: Function,
-    xscale: Function
+    xscale: Function,
+    type: String
   },
   data () {
     return {
-
+      quantileData: [],// 中位数、上下四分位
+      whiskerData: [], // q1 - iqr;q3 + iqr
+      outlierIndices: [], //outliers的下标
+      boxplotWidth: 0,
+      xOffset: 0
     };
   },
   computed: {
-    quantileData () {
-      let q1 = d3.quantile(this.loss, 0.25);
-      let q2 = d3.quantile(this.loss, 0.5);
-      let q3 = d3.quantile(this.loss, 0.75);
-      return [q1.toFixed(2), q2.toFixed(2), q3.toFixed(2)];
-    },
-    // ...mapState({
-    //   loss: state => state.server.brushedClientStastics[this.index].loss,
-    //   acc: state => state.server.brushedClientStastics[this.index].acc
-    // })
   },
   methods: {
-    geneBoxplot () {
-      console.log(this.loss);
-      console.log(this.quantileData);
-      let node = this.$refs.boxplot;
-      d3.selectAll(node)
-        .data([this.quantileData])
-        .enter()
-        .append("rect")
-        .attr("class", "box")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", 50);  
+    updateBoxplotData () {
+      let dataSort = this.data.sort(d3.ascending)
+      let dataLength = dataSort.length;
+      let q1 = d3.quantile(dataSort, 0.25);
+      let q2 = d3.quantile(dataSort, 0.5);
+      let q3 = d3.quantile(dataSort, 0.75);
+      this.quantileData = [q1, q2, q3];
+      let iqr = (q3 - q1 ) * 1.5;
+      let i = -1, j = dataLength;
+      while(dataSort[++i] < q1 - iqr);
+      while(dataSort[--j] > q3 + iqr);
+      let whiskerIndices = [i, j];
+      this.whiskerData = [dataSort[whiskerIndices[0]], dataSort[whiskerIndices[1]]];
+      let bandWidth = this.xscale.bandwidth();
+      this.xOffset = this.type === "acc" ? bandWidth * 0.5 : 0;
+      this.boxplotWidth = parseFloat(bandWidth) * 0.3;
+      // outlier
+      this.outlierIndices = d3.range(0, whiskerIndices[0]).concat(d3.range(whiskerIndices[1] + 1, dataLength));
+    },
+    getIterClientInfo (e) {
+      console.log(this.index);
+      this.$store.dispatch('client/getClientInfoByIter', this.index);
     }
   },
-  // watch: {
-  //   xscale: function (oldvalue, newvalue) {
-  //     this.geneBoxplot();
-  //   }
-  // },
-  mounted () {
-    // this.geneBoxplot();
+  watch: {
+    index: function (oldvalue, newvalue) {
+      this.updateBoxplotData();
+    },
+    xscale: function (oldvalue, newvalue) {
+      this.updateBoxplotData();
+    }
+  },
+  created () {
+    this.updateBoxplotData();
   }
 }
 </script>
 <style lang="scss">
-.box {
-  fill: rgb(68, 147, 212);
-  }
+.box-loss {
+  fill: #8cb1cf;
+  stroke: #000;
+  stroke-width: 1px;
+}
+.box-acc {
+  fill: #f3c0ba;
+  stroke: #000;
+  stroke-width: 1px;
+}
+.median, .whisker {
+  stroke: #000;
+  stroke-width: 1px;
+}
+.center {
+  stroke-dasharray: 3,3;
+  stroke: #000;
+  stroke-width: 1px;
+}
+.outlier {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
 </style>
 

@@ -39,19 +39,15 @@ export default {
     },
     // brushstart () {
     //   const selection = d3.event.selection;
-    //   this.brushstart = Math.floor(this.xscale.invert(selection[0]));
-    //   // console.log(Math.floor(this.xscale.invert(selection[0])), Math.ceil(this.xscale.invert(selection[0])));
-    //   // x.domain(selection.map(x2.invert, x2));
-    //   // focus.selectAll('.dot')
-    //   //   .attr('cx', d => x(d.date))
-    //   //   .attr('cy', d => y(d.price));
-    //   // focus.select('.axis--x').call(xAxis);
+    //   // this.brushstart = Math.floor(this.xscale.invert(selection[0]));
+    //   console.log("start:" +selection);
     // },
     brushend () {
       const selection = d3.event.selection;
-      // console.log(Math.floor(this.xscale.invert(selection[0])), Math.ceil(this.xscale.invert(selection[1])));
-      let invertSelection = [Math.floor(this.xscale.invert(selection[0])), Math.ceil(this.xscale.invert(selection[1]))];
-      this.$store.dispatch('server/getClientStasticsRange', invertSelection);
+      if (selection !== null) {
+        let invertSelection = [Math.floor(this.xscale.invert(selection[0])), Math.ceil(this.xscale.invert(selection[1]))];
+        this.$store.dispatch('server/getClientStasticsRange', invertSelection);
+      }
     }
   },
   watch: {
