@@ -1,67 +1,13 @@
 <template>
-  <div id="matrixPanel">
-    <div id="legendPanel">
-      <div id="labelPanel">
-        <table
-          width="97%"
-          style="margin-top:10px; margin-left:5px; margin-right:15px"
-          align="center"
-        >
-          <tr>
-            <td></td>
-            <td colspan="3">
-              <strong>Node encodings</strong>
-            </td>
-            <td></td>
-          </tr>
-          <tr>
-            <td align="center">1</td>
-            <td colspan="3">
-              <div id="nodeLabel"></div>
-            </td>
-            <td id="nodeMaxText" align="center"></td>
-          </tr>
-          <tr>
-            <td align="center">-100%</td>
-            <td colspan="3">
-              <div id="nodeColorLabel"></div>
-            </td>
-            <td align="center">100%</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td colspan="3">
-              <strong>Link encodings</strong>
-            </td>
-            <td></td>
-          </tr>
-          <tr>
-            <td align="center">-100%</td>
-            <td colspan="3">
-              <div id="linkColorLabel"></div>
-            </td>
-            <td align="center">100%</td>
-          </tr>
-          <tr>
-            <td align="center">1</td>
-            <td colspan="3">
-              <div id="linkLabel"></div>
-            </td>
-            <td id="linkMaxText" align="center"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <div id="matrixWave"></div>
-  </div>
+  <div id="matrixWave" ref="matrixwave"></div>
 </template>
 
 <script>
-import Matrix from '@/utils/matrix';
+import * as d3 from 'd3';
 import { mapState } from 'vuex';
 
 export default {
-  name: 'matrixwave',
+  name: 'MatrixWave',
   data: function () {
     let matrix = this.$store.state.matrix.matrixData;
     let length = matrix.length;
@@ -76,26 +22,23 @@ export default {
       matrixData: matrix
     };
   },
-  computed: mapState({
-    loss: state => state.server.loss
-  }),
-  created () {
-    this.$store.dispatch('server/getServerInfo');
-  },
+  computed: {},
+  methods: {},
   mounted () {
-    var matrixWave = new Matrix('matrixWave', this.matrixData);
+    let node = this.$refs.matrixwave;
+    let height = node.clientHeight;
+    let svg = d3
+      .select(node)
+      .append('svg')
+      .attr('id', 'matrixwaveSvg')
+      .attr('width', self.dragBoxWidth)
+      .attr('height', height);
   }
 };
 </script>
 
 <style scoped lang="scss">
-#matrixPanel {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  #legendPanel {
-  }
-  #matrixWave {
-    height: 250px;
-  }
+#matrixWave {
+  height: 250px;
 }
 </style>
