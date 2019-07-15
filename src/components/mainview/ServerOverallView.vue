@@ -20,10 +20,14 @@
           :ticks="yTicks"
         />
         <g :transform="translate">
-          <path :d="lossline" fill="none" stroke="blue" stroke-width="2" />
-          <path :d="accline" fill="none" stroke="red" stroke-width="2" />
+          <path :d="lossline" fill="none" stroke="#466BB7" stroke-width="2" />
+          <path :d="accline" fill="none" stroke="#D68966" stroke-width="2" />
         </g>
-        <g id="brush"></g>
+        <Brush
+          :transform="translate"
+          :brushArea="brushArea"
+          :xscale="xscale"
+        />
       </g>
     </svg>
   </div>
@@ -33,6 +37,7 @@
 import { mapState } from 'vuex';
 import * as d3 from 'd3';
 import Axis from '../common/Axis';
+import Brush from './Brush';
 
 export default {
   name: 'ServerOverallView',
@@ -51,11 +56,12 @@ export default {
       },
       lossline: '',
       accline: '',
-      yTicks: 2
+      yTicks: 2,
     };
   },
   components: {
-    Axis
+    Axis,
+    Brush
   },
   computed: {
     chartWidth () {
@@ -90,6 +96,9 @@ export default {
         .scaleLinear()
         .domain([0, 1])
         .range([this.chartHeight, 0]);
+    },
+    brushArea () {
+      return [[0, 0], [this.chartWidth, this.chartHeight]];
     }
   },
   methods: {

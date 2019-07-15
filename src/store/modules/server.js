@@ -7,7 +7,9 @@ const state = {
   acc: [],
   iternum: 0,
   choosediter: 0,
-  choosedpara: {}
+  choosedpara: {},
+  brushedSelection: [],
+  brushedClientStastics: {}
 }
 
 const getters = {}
@@ -20,6 +22,12 @@ const actions = {
       .then(res => {
         commit(types.GET_SERVER_INFO, res)
       })
+  },
+  getClientStasticsRange ({commit}, context) {
+    api.ClientStasticsRange(context[0], context[1])
+      .then(res => {
+        commit(types.GET_CLIENT_STASTICS_RANGE, [context, res])
+      })
   }
 }
 
@@ -29,6 +37,10 @@ const mutations = {
     state.num = data.num;
     state.acc = data.acc;
     state.iternum = data.iternum
+  },
+  [types.GET_CLIENT_STASTICS_RANGE] (state, data) {
+    state.brushedSelection = data[0];
+    state.brushedClientStastics = data[1];
   }
 }
 

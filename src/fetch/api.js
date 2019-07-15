@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 axios.defaults.timeout = 10000;
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
+axios.defaults.baseURL = 'http://10.76.0.159:8000';
 
 // axios请求拦截器，统一处理request
 axios.interceptors.request.use((config) => {
@@ -17,11 +17,11 @@ axios.interceptors.response.use((res) => {
   return Promise.reject(error);
 });
 
-function fetchGet (url, param) {
+function fetchGet(url, param) {
   return new Promise((resolve, reject) => {
     axios.get(url, {
-      params: param
-    })
+        params: param
+      })
       .then(response => {
         if ((typeof response.data) === 'string') {
           resolve(JSON.parse(response.data))
@@ -37,22 +37,25 @@ function fetchGet (url, param) {
 }
 
 export default {
-  ServerInfo () {
+  ServerInfo() {
     return fetchGet('/serverinfo');
   },
-  ServerPara (iter) {
+  ServerPara(iter) {
     return fetchGet(`/serverparabyiter/${iter}`);
   },
 
-  ClientInfoByIndex (index) {
+  ClientInfoByIndex(index) {
     return fetchGet(`/clientinfobyindex/${index}`);
   },
 
-  ClientInfoByIter (iter) {
+  ClientInfoByIter(iter) {
     return fetchGet(`/clientinfobyiter/${iter}`);
   },
 
-  ClientParaByIterIndex (iter, index) {
+  ClientStasticsRange(miniter, maxiter) {
+    return fetchGet(`/clientstastics/${miniter}/${maxiter}`);
+  },
+  ClientParaByIterIndex(iter, index) {
     return fetchGet(`/clientparabyiterindex/${iter}/${index}`);
   }
 }
