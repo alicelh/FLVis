@@ -17,11 +17,11 @@ axios.interceptors.response.use((res) => {
   return Promise.reject(error);
 });
 
-function fetchGet (url, param) {
+function fetchGet(url, param) {
   return new Promise((resolve, reject) => {
     axios.get(url, {
-      params: param
-    })
+        params: param
+      })
       .then(response => {
         if ((typeof response.data) === 'string') {
           resolve(JSON.parse(response.data))
@@ -37,25 +37,28 @@ function fetchGet (url, param) {
 }
 
 export default {
-  ServerInfo () {
+  ServerInfo() {
     return fetchGet('/serverinfo');
   },
-  ServerPara (iter) {
+  ServerPara(iter) {
     return fetchGet(`/serverparabyiter/${iter}`);
   },
 
-  ClientInfoByIndex (index) {
+  ClientInfoByIndex(index) {
     return fetchGet(`/clientinfobyindex/${index}`);
   },
 
-  ClientInfoByIter (iter) {
+  ClientInfoByIter(iter) {
     return fetchGet(`/clientinfobyiter/${iter}`);
   },
 
-  ClientStasticsRange (miniter, maxiter) {
+  ClientStasticsRange(miniter, maxiter) {
     return fetchGet(`/clientstastics/${miniter}/${maxiter}`);
   },
-  ClientParaByIterIndex (iter, index) {
+  ClientParaByIterIndex(iter, index) {
     return fetchGet(`/clientparabyiterindex/${iter}/${index}`);
+  },
+  ClientParaByIter(iter) {
+    return fetchGet(`/clientparabyiter/${iter}`);
   }
 }
