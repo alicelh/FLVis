@@ -57,5 +57,8 @@ export default {
   },
   ClientParaByIterIndex(iter, index) {
     return fetchGet(`/clientparabyiterindex/${iter}/${index}`);
+  },
+  ClientParaByIter(iter) {
+    return fetchGet(`/clientparabyiter/${iter}`);
   }
 }
