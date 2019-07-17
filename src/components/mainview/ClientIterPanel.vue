@@ -72,7 +72,7 @@ export default {
   },
   data() {
     return {
-      rectSize: 20,
+      rectSize: 15,
       rectNumLine: 4, // 一行显示多少个
       minIterCount: 0,
       maxIterCount: 0,
@@ -106,11 +106,10 @@ export default {
       this.$store.dispatch("client/deleteClientInfoByIter", this.iterId);
     },
     updateIterForProj() {
-      // this.$store.dispatch(
-      //   "client/updataIterChoosedForProjection",
-      //   this.iterId
-      // );
-      this.$store.dispatch("client/getClientProject", this.iterId);
+      this.$store.dispatch(
+        "client/updataIterChoosedForProjection",
+        this.iterId
+      );
     },
     getMinMaxIterCount() {
       // 把读入的data按count属性进行排序
@@ -135,7 +134,6 @@ export default {
         e.target.getAttribute("x"),
         e.target.getAttribute("y")
       ];
-      // console.log(this.tooltipData);
       this.isTooltipShow = true;
     },
     hideTooltip() {
@@ -267,9 +265,33 @@ export default {
     }
     // 滑动条
     .clientnum-slider {
-      .slider-bar {
+      width: 100%;
+      height: 30px;
+      position: relative;
+      img {
+        width: 10px;
+        position: absolute;
+        bottom: 0;
+        top: 8px;
+        margin: auto 0;
+        cursor: pointer;
       }
-      .slider-triangle {
+      span {
+        position: absolute;
+        font-size: 10px;
+      }
+      #slider-bar {
+        width: 80%;
+        height: 2px;
+        border-radius: 10px;
+        background: #474747;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        cursor: pointer;
       }
     }
   }
