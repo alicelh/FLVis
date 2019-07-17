@@ -26,6 +26,7 @@ const actions = {
   getClientProject ({
     commit
   }, context) {
+    commit(types.RESET_PROJECT_POS, [])
     api.ClientParaByIter(context)
       .then(res => {
         commit(types.GET_CLIENT_PROJECT, res)
@@ -34,7 +35,6 @@ const actions = {
   getClientInfoByIter ({
     commit
   }, context) {
-    commit(types.RESET_PROJECT_POS, [])
     api.ClientInfoByIter(context)
       .then(res => {
         commit(types.GET_CLIENT_INFO_BY_ITER, [context, res])
