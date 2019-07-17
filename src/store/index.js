@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import matrix from './modules/matrix'
+import model from './modules/model'
 import server from './modules/server'
 import client from './modules/client'
 
@@ -9,7 +9,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    matrix,
+    model,
     server,
     client
   }

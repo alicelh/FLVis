@@ -10,7 +10,7 @@ export default {
   created () {
     this.$store.dispatch('server/getServerInfo');
     this.$store.dispatch('server/getClientStasticsRange', [5, 15]);
-    this.$store.dispatch('client/getClientPara');
+    this.$store.dispatch('client/getClientPara', [2, 0]);
   }
 };
 </script>

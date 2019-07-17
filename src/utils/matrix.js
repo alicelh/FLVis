@@ -4,15 +4,14 @@ import d3Tip from 'd3-tip';
 
 d3.tip = d3Tip;
 
-var rectInMatrixWave = 15; // 每个小矩形的边长
+var rectInMatrixWave = 10; // 每个小矩形的边长
 var dataInStep = [];
 
-var Matrix = function (divId, data) {
-  this.divId = divId;
+var Matrix = function (data) {
+  this.divId = 'matrixWave';
   console.log(data);
   dataInStep = data;
   this.nodeGroupDiv = 'nodeGroupSvgDiv';
-  // $('.loading').show();
   this.selectedElements = {};
   this.selectedElements['elements'] = [];
   this.selectedElements['eventInSetA'] = [];
@@ -55,7 +54,7 @@ Matrix.prototype.config = function () {
   };
   self.rect = rectInMatrixWave;
   self.labelRect = 10; // 中间小方框最大宽度
-  self.textRectWidth = self.rect * 2.5; // 神经元图形宽度
+  self.textRectWidth = self.rect * 2; // 神经元图形宽度
   self.textRectHeight = self.rect;
   self.stepCircleSize = self.rect * 1.0;
 };
@@ -82,15 +81,15 @@ Matrix.prototype.init = function () {
   self.svg = d3.select('#' + self.divId)
     .append('svg')
     .attr('id', 'matrixwaveSvg')
-    .attr('width', self.dragBoxWidth)
-    .attr('height', self.dragBoxHeight);
+    .attr('width', self.width)
+    .attr('height', self.height);
 
-  self.dragBox = self.svg.append('rect')
-    .attr('id', 'dragBox')
-    .attr('width', self.dragBoxWidth)
-    .attr('height', self.dragBoxHeight)
-    // .attr("cursor", "move")
-    .attr('fill-opacity', 0);
+  // self.dragBox = self.svg.append('rect')
+  //   .attr('id', 'dragBox')
+  //   .attr('width', self.dragBoxWidth)
+  //   .attr('height', self.dragBoxHeight)
+  //   // .attr("cursor", "move")
+  //   .attr('fill-opacity', 0);
 
   self.gMatrixWave = self.svg.append('g')
     .attr('class', 'gMatrixWave')
@@ -108,7 +107,7 @@ Matrix.prototype.drawLabel = function () {
   self.drawNodeLabel();
   self.drawNodeColorLabel();
   self.drawLinkColorLabel();
-  self.drawLinkLabel();
+  // self.drawLinkLabel();
   self.drawNodeLabel();
 };
 
@@ -236,67 +235,36 @@ Matrix.prototype.getStepPlace = function () {
 Matrix.prototype.getNodeScale = function () {
   let self = this;
   self.getNodeVolumeMax();
+  let max = d3.max([Math.abs(self.nodeVolumeMin), self.nodeVolumeMax]);
   self.nodeScale = d3.scaleLinear()
-    .domain([0, self.nodeVolumeMax])
-    .range([0, self.labelRect * 2.5]);
+    .domain([-max, 0, max])
+    .range([self.labelRect * 2.5, 0, self.labelRect * 2.5]);
 };
 
 Matrix.prototype.getLinkScale = function () {
   let self = this;
   self.getlinkVolumeMax();
-  self.linkScale = d3.scaleLinear()
-    .domain([0, self.linkVolumeMax])
-    .range([0, self.labelRect]);
+  let min = self.linkVolumeMin;
+  let max = self.linkVolumeMax;
+  self.linkColorScale = d3.scaleThreshold()
+    .domain([min, 3 * min / 4, min / 2, min / 4, 0, max / 4, max / 2, max * 3 / 4, max])
+    .range(['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee090', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695'])
 };
-
-// Matrix.prototype.getNodeVolumeMax = function () {
-//   let self = this;
-//   let nodeSetKey = Object.keys(nodeSet);
-//   let nodeSetKeyLen = nodeSetKey.length;
-//   self.nodeVolumeMax = 0;
-//   let max = 0;
-//   for (let i = 0; i < nodeSetKeyLen; i++) {
-//     max = d3.max(nodeSet[nodeSetKey[i]]['volume']['setA']);
-//     if (self.nodeVolumeMax < max) {
-//       self.nodeVolumeMax = max;
-//     }
-//     max = d3.max(nodeSet[nodeSetKey[i]]['volume']['setB']);
-//     if (self.nodeVolumeMax < max) {
-//       self.nodeVolumeMax = max;
-//     }
-//   }
-// };
 
 Matrix.prototype.getNodeVolumeMax = function () {
   let self = this;
-  let nodeSet = Array.prototype.concat(...dataInStep.map(ns => ns.nodes.map(n => n.bias['server'])));
-  let max = d3.max(nodeSet);
-  self.nodeVolumeMax = max;
+  let nodeSet = Array.prototype.concat(...dataInStep.map(ns => {
+    return Array.prototype.concat(...ns.nodes.map(n => Object.values(n.bias)));
+  }));
+  self.nodeVolumeMax = d3.max(nodeSet);
+  self.nodeVolumeMin = d3.min(nodeSet);
 }
-
-// Matrix.prototype.getlinkVolumeMax = function () {
-//   let self = this;
-//   let edgeSetKey = Object.keys(edgeSet);
-//   let edgeSetKeyLen = edgeSetKey.length;
-//   self.linkVolumeMax = 0;
-//   let max = 0;
-//   for (let i = 0; i < edgeSetKeyLen; i++) {
-//     max = d3.max(edgeSet[edgeSetKey[i]]['volume']['setA']);
-//     if (self.linkVolumeMax < max) {
-//       self.linkVolumeMax = max;
-//     }
-//     max = d3.max(edgeSet[edgeSetKey[i]]['volume']['setB']);
-//     if (self.linkVolumeMax < max) {
-//       self.linkVolumeMax = max;
-//     }
-//   }
-// };
 
 Matrix.prototype.getlinkVolumeMax = function () {
   let self = this;
-  let edgeSet = Array.prototype.concat(...dataInStep.map(es => es.edges.map(e => e.weight['server'])));
-  let max = d3.max(edgeSet);
-  self.linkVolumeMax = max;
+  let edgeSet = Array.prototype.concat(...dataInStep.map(es => Array.prototype.concat(...es.edges.map(e => Object.values(e.weight)))));
+  self.linkVolumeMax = d3.max(edgeSet);
+  self.linkVolumeMin = d3.min(edgeSet);
 }
 
 Matrix.prototype.drawNodeLabel = function () {
@@ -415,6 +383,7 @@ Matrix.prototype.drawNodeColorLabel = function () {
   }
 };
 
+// legend
 Matrix.prototype.drawLinkColorLabel = function () {
   let self = this;
   if (self.linkColorLabel !== undefined) {
@@ -529,7 +498,7 @@ Matrix.prototype.drawMatrixWave = function () {
   let len = dataInStep.length - 1;
   for (let i = 0; i < len; i++) {
     self.matrixWave.push(self.drawMatrix(i, i + 1));
-    /* self.drawMatrixRect(i); */ // 这个操作在drawMatrix中已进行
+    self.drawMatrixRect(i); // 这个操作在drawMatrix中已进行,重复画是为了颜色加重
     self.drawLink(i);
   }
   self.drawNodeRect();
@@ -540,8 +509,6 @@ Matrix.prototype.drawMatrixWave = function () {
   // self.isShowMatrixWaveLabel();
 
   self.drawStepCircleLabel();
-
-  $('.loading').hide();
 };
 
 Matrix.prototype.getStepMatrixSize = function (step1, step2) {
@@ -585,7 +552,7 @@ Matrix.prototype.getStepMatrixSize = function (step1, step2) {
 Matrix.prototype.drawMatrix = function (step1, step2) {
   let self = this;
   let name;
-  let node;
+  let node1, node2;
   step1 = (+step1);
   step2 = (+step2);
   self.getStepMatrixSize(step1, step2); // 计算每个矩阵大小
@@ -613,57 +580,55 @@ Matrix.prototype.drawMatrix = function (step1, step2) {
     .attr('stroke', 'black')
     .attr('stroke-dasharray', '8 8');
 
+  // 画每个小矩形
   if (step1 % 2 === 0) {
     for (let i = 0; i < lenStep1; i++) {
-      node = dataInStep[step1]['nodes'][i]['id'];
-      // if (nodeSet[node] != undefined) {
+      node1 = dataInStep[step1]['nodes'][i];
       for (let j = 0; j < lenStep2; j++) {
-        node = dataInStep[step2]['nodes'][j]['id'];
-        // if (nodeSet[node] != undefined) {
+        node2 = dataInStep[step2]['nodes'][j];
         gMatrix.append('g')
           .call(self.linkTip)
-          .attr('class', step + 's' + dataInStep[step1]['nodes'][i]['id'] + 't' + dataInStep[step2]['nodes'][j]['id'] + ' linkCell')
-          .classed('s' + dataInStep[step1]['nodes'][i]['id'], true)
-          .classed('t' + dataInStep[step2]['nodes'][j]['id'], true)
+          .attr('class', step + 's' + node1['id'] + 't' + node2['id'] + ' linkCell')
+          .classed('s' + node1['id'], true)
+          .classed('t' + node2['id'], true)
           .attr('step', step1)
           .attr('transform', function () {
-            dataInStep[step1]['nodes'][i]['orderIndex'] = (+dataInStep[step1]['nodes'][i]['orderIndex']);
-            let y = dataInStep[step1]['nodes'][i]['orderIndex'] * self.rect;
-            dataInStep[step2]['nodes'][j]['orderIndex'] = (+dataInStep[step2]['nodes'][j]['orderIndex']);
-            let x = dataInStep[step2]['nodes'][j]['orderIndex'] * self.rect;
+            // dataInStep[step1]['nodes'][i]['orderIndex'] = (+dataInStep[step1]['nodes'][i]['orderIndex']);
+            let y = node1['orderIndex'] * self.rect;
+            // dataInStep[step2]['nodes'][j]['orderIndex'] = (+dataInStep[step2]['nodes'][j]['orderIndex']);
+            let x = node2['orderIndex'] * self.rect;
             return 'translate(' + x + ',' + y + ')';
           })
           .append('rect')
-          .attr('class', step + 's' + dataInStep[step1]['nodes'][i]['id'] + 't' + dataInStep[step2]['nodes'][j]['id'] + ' linkCell')
+          .attr('class', step + 's' + node1['id'] + 't' + node2['id'] + ' linkCell')
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', self.rect)
           .attr('height', self.rect)
-          .attr('fill', 'rgb(255, 255, 255)')
-          .attr('stroke', 'white');
+          .attr('fill', 'blue')
+          .attr('stroke', 'blue');
         // }
       }
       // }
     }
   } else {
     for (let i = 0; i < lenStep2; i++) {
-      node = dataInStep[step2]['nodes'][i]['id'];
-      // if (nodeSet[node] != undefined) {
+      node1 = dataInStep[step2]['nodes'][i];
       for (let j = 0; j < lenStep1; j++) {
-        node = dataInStep[step1]['nodes'][j]['id'];
+        node2 = dataInStep[step1]['nodes'][j];
         // if (nodeSet[node] != undefined) {
-        name = step + 's' + dataInStep[step1]['nodes'][j]['id'] + 't' + dataInStep[step2]['nodes'][i]['id'] + ' linkCell';
+        name = step + 's' + node2['id'] + 't' + node1['id'] + ' linkCell';
         gMatrix.append('g')
           .call(self.linkTip)
           .attr('class', name)
-          .classed('s' + dataInStep[step1]['nodes'][j]['id'], true)
-          .classed('t' + dataInStep[step2]['nodes'][i]['id'], true)
+          .classed('s' + node2['id'], true)
+          .classed('t' + node1['id'], true)
           .attr('step', step1)
           .attr('transform', function () {
-            dataInStep[step2]['nodes'][i]['orderIndex'] = (+dataInStep[step2]['nodes'][i]['orderIndex']);
-            let y = dataInStep[step2]['nodes'][i]['orderIndex'] * self.rect;
-            dataInStep[step1]['nodes'][j]['orderIndex'] = (+dataInStep[step1]['nodes'][j]['orderIndex']);
-            let x = dataInStep[step1]['nodes'][j]['orderIndex'] * self.rect;
+            // dataInStep[step2]['nodes'][i]['orderIndex'] = (+dataInStep[step2]['nodes'][i]['orderIndex']);
+            let y = node2['orderIndex'] * self.rect;
+            // dataInStep[step1]['nodes'][j]['orderIndex'] = (+dataInStep[step1]['nodes'][j]['orderIndex']);
+            let x = node1['orderIndex'] * self.rect;
             return 'translate(' + x + ',' + y + ')';
           })
           .append('rect')
@@ -703,7 +668,7 @@ Matrix.prototype.getLinkSizeAndColor = function (step1) {
     // difference = difference.toFixed(1);
     // dataInStep[step1]['edges'][i]['color'] = colorSelected['selection'][difference];
     // dataInStep[step1]['edges'][i]['colorSize'] = difference;
-    dataInStep[step1]['edges'][i]['size'] = self.linkScale(dataInStep[step1]['edges'][i]['weight']['server']);
+    // dataInStep[step1]['edges'][i]['size'] = self.linkScale(dataInStep[step1]['edges'][i]['weight']['server']);
     dataInStep[step1]['edges'][i]['color'] = 'red';
     dataInStep[step1]['edges'][i]['colorSize'] = 1;
   }
@@ -719,37 +684,40 @@ Matrix.prototype.drawLink = function (step1) {
   let targetNode;
   let edge;
   for (let i = 0; i < lenLink; i++) {
-    sourceNode = dataInStep[step1]['edges'][i]['source'];
-    targetNode = dataInStep[step1]['edges'][i]['target'];
-    edge = dataInStep[step1]['edges'][i]['id'];
+    let tmpdata = dataInStep[step1]['edges'][i];
+    sourceNode = tmpdata['source'];
+    targetNode = tmpdata['target'];
+    edge = tmpdata['id'];
     // if (nodeSet[sourceNode] != undefined && nodeSet[targetNode] != undefined && edgeSet[edge] != undefined) {
-    name = 'step' + step1 + 's' + dataInStep[step1]['edges'][i]['source'] + 't' + dataInStep[step1]['edges'][i]['target'];
+    name = 'step' + step1 + 's' + tmpdata['source'] + 't' + tmpdata['target'];
     self.matrixWave[step1].select('g.' + name)
       .append('rect')
-      .datum(dataInStep[step1]['edges'][i])
+      .datum(tmpdata)
       .attr('class', 'rectInRect' + name)
       .attr('x', function (d, i) {
-        return self.rect / 2 - d['size'] / 2;
+        return 0.5;
       })
       .attr('y', function (d, i) {
-        return self.rect / 2 - d['size'] / 2;
+        return 0.5;
       })
       .attr('width', function (d, i) {
-        return d['size'];
+        return self.rect / 2 - 0.5;
       })
       .attr('height', function (d, i) {
-        return d['size'];
+        return self.rect - 1;
       })
       .attr('fill', function (d, i) {
-        return self.rectFill;
-      });
+        console.log(d.weight['client']);
+        return self.linkColorScale(d.weight['client']);
+      })
+    // .attr('stroke', 'white');
 
     self.matrixWave[step1].select('rect.' + name)
       .datum(dataInStep[step1]['edges'][i])
       .attr('fill', function (d, i) {
-        return d['color'];
+        return self.linkColorScale(d.weight['server']);
       })
-      .attr('stroke', 'rgb(234, 233, 233)');
+      .attr('stroke', 'white');
 
     // 交互就先不加了
     // self.matrixWave[step1].select('g.' + name)
@@ -805,6 +773,7 @@ Matrix.prototype.drawNodeRect = function () {
         return 'translate(' + dataInStep[i]['place']['x'] + ',' + dataInStep[i]['place']['y'] + ')';
       });
   }
+  // 画最后一层
   if (lenDataInStep % 2 === 1) {
     self.matrixWaveNodeRect[lenDataInStep] = self.gMatrixWave.append('g')
       .attr('class', 'nodeStep' + lenDataInStep)
@@ -829,12 +798,11 @@ Matrix.prototype.drawNodeRect = function () {
   for (let i = 0; i < lenDataInStep; i++) {
     len = dataInStep[i]['nodes'].length;
     for (let j = 0; j < len; j++) {
-      node = dataInStep[i]['nodes'][j]['id'];
-      // if (nodeSet[node] != undefined) {
+      node = dataInStep[i]['nodes'][j];
       self.matrixWaveNodeRect[i]
         .append('g')
-        .datum(dataInStep[i]['nodes'][j])
-        .attr('class', 'nodeRect' + i + ' ' + dataInStep[i]['nodes'][j]['id'])
+        .datum(node)
+        .attr('class', 'nodeRect' + i + ' ' + node['id'])
         .attr('transform', function (d) {
           let x, y;
           if (i % 2 === 0) {
@@ -849,9 +817,9 @@ Matrix.prototype.drawNodeRect = function () {
           return 'translate(' + x + ',' + y + ')';
         });
 
-      self.matrixWaveNodeRect[i].select('g.' + dataInStep[i]['nodes'][j]['id'])
+      self.matrixWaveNodeRect[i].select('g.' + node['id'])
         .append('rect')
-        .datum(dataInStep[i]['nodes'][j])
+        .datum(node)
         .attr('class', d => 'rect' + i + ' ' + d['id'])
         .attr('x', function (d) {
           if (i % 2 === 0) {
@@ -2291,7 +2259,7 @@ Matrix.prototype.orderUpdateMatrixRect = function () {
 
   for (let i = 0; i < lenStep; i++) {
     sourceSet = dataInStep[i]['nodes'];
-    lenSourceSet = sourceSet.length; ;
+    lenSourceSet = sourceSet.length;;
     targetSet = dataInStep[i + 1]['nodes'];
     lenTargetSet = targetSet.length;
     if (i % 2 == 0) {
@@ -2330,7 +2298,7 @@ Matrix.prototype.orderUpdateMatrixRect = function () {
 
   for (let i = 0; i < lenStep; i++) {
     sourceSet = dataInStep[i]['nodes'];
-    lenSourceSet = sourceSet.length; ;
+    lenSourceSet = sourceSet.length;;
     targetSet = dataInStep[i + 1]['nodes'];
     lenTargetSet = targetSet.length;
     if (i % 2 == 1) {
