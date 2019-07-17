@@ -5,7 +5,8 @@ const state = {
   w1: [],
   b1: [],
   choosedclient: 0,
-  choosediter: 2,
+  choosediter: 2, // 选择盒须图上的某一次迭代
+  choosedIterForProjection: 0, // 选择迭代面板中的某一次
   clientInfo: {},
   deleteiter: -1
 }
@@ -29,6 +30,12 @@ const actions = {
   },
   deleteClientInfoByIter ({commit}, context) {
     commit(types.DELETE_CLIENT_INFO_BY_ITER, context);
+  },
+  updataClientChoosed ({commit}, context) {
+    commit(types.UPDATE_CLIENT_CHOOSED, context);
+  },
+  updataIterChoosedForProjection ({commit}, context) {
+    commit(types.UPDATE_ITER_CHOOSED_FOR_PROJ, context);
   }
 }
 
@@ -46,6 +53,12 @@ const mutations = {
     state.choosediter = -1;
     state.deleteiter = index;
     delete state.clientInfo[index];
+  },
+  [types.UPDATE_CLIENT_CHOOSED] (state, clientIndex) {
+    state.choosedclient = clientIndex;
+  },
+  [types.UPDATE_ITER_CHOOSED_FOR_PROJ] (state, iterIndex) {
+    state.choosedIterForProjection = iterIndex;
   }
 }
 

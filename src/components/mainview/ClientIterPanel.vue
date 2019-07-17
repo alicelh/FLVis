@@ -1,7 +1,7 @@
 <template>
   <div class="client-panel">
     <div class="title">
-      <div class="title-iter">iter {{iterId}}</div>
+      <div class="title-iter" @click="updateIterForProj">iter {{iterId}}</div>
       <div>{{clientNum}}</div>
       <div>
         <img src="../../assets/delete.png" @click="deletePanel">
@@ -97,6 +97,9 @@ export default {
     deletePanel () {
       this.$store.dispatch('client/deleteClientInfoByIter', this.iterId);
     },
+    updateIterForProj () {
+      this.$store.dispatch('client/updataIterChoosedForProjection', this.iterId);
+    },
     getMinMaxIterCount () {
       // 把读入的data按count属性进行排序
       this.clientNum = this.data.length;
@@ -150,6 +153,7 @@ export default {
     .title-iter {
       border-right: 1px solid #979797;
       height: inherit;
+      cursor: pointer;      
     }
   }
   .client-content {
