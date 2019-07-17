@@ -9,8 +9,18 @@
     </div>
     <div class="client-content">
       <div class="clientnum-slider">
-        <div class="slider-bar"></div>
-        <div class="slider-triangle"></div>
+        <span style="left:0px; top:9px">{{minIterCount}}</span>
+        <div id="slider-bar" @click="addTriangle"></div>
+        <div v-for="(triangle, i) in sliderTrianglesPos" :key="i">
+          <span :style="'left:' + (triangle.pos) +'px'">{{triangle.countValue}}</span>
+          <img
+            src="../../assets/triangle.png"
+            class="triangle-img"
+            :id="'slider-triangle-' + i"
+            :style="'left:' + triangle.pos +'px'"
+            @mousedown="handleSlide"/>
+        </div>
+        <span style="right:0px; top:9px">{{maxIterCount}}</span>
       </div>
       <svg height="100%" width="100%">
         <!-- to modify -->
@@ -44,9 +54,9 @@
           </rect>
         </g>
         <Tooltip
-            :clientData="tooltipData"
-            :isMouseHover="isTooltipShow"
-            :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+tooltipPos[1]+')'"/>
+          :clientData="tooltipData"
+          :isMouseHover="isTooltipShow"
+          :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+tooltipPos[1]+')'"/>
       </svg>
     </div>
   </div>
@@ -61,11 +71,12 @@ export default {
   name: "ClientIterPanel",
   props: {
     iterId: Number,
-    data: Array
+    data: Array,
+    panelId: Number
   },
   data () {
     return {
-      rectSize: 20,
+      rectSize: 15,
       rectNumLine: 4,// 一行显示多少个
       minIterCount: 0,
       maxIterCount: 0,
@@ -74,7 +85,8 @@ export default {
       clientNumSegment: [], // 初始的分段为[min, maxcount],
       tooltipData: {},
       tooltipPos: [0, 0],
-      isTooltipShow: false
+      isTooltipShow: false,
+      sliderTrianglesPos: [] // 滑动条上的三角形位置
     };
   },
   components:{
@@ -109,8 +121,6 @@ export default {
         this.maxIterCount = this.dataSort[this.clientNum - 1].count;
         this.clientNumSegment = [this.minIterCount, this.maxIterCount];
       }
-      console.log(this.minIterCount, this.maxIterCount);
-      console.log(this.dataSort);
     },
     showTooltip (e) {
       this.tooltipData.index = e.target.getAttribute('data-index');
@@ -118,12 +128,79 @@ export default {
       this.tooltipData.acc = parseFloat(e.target.getAttribute('data-acc')).toFixed(2);
       this.tooltipData.loss = parseFloat(e.target.getAttribute('data-loss')).toFixed(2);
       this.tooltipPos = [e.target.getAttribute('x'), e.target.getAttribute('y')];
-      // console.log(this.tooltipData);
       this.isTooltipShow = true;
     },
     hideTooltip () {
       // console.log("out");
       this.isTooltipShow = false;
+    },
+    // 移动三角形
+    handleSlide (ev) {
+      let e = ev || window.event;
+      let triangleDom = e.toElement;// 当前移动的小三角形
+      let barDom = document.getElementById("slider-bar");
+      let triangleX = triangleDom.offsetLeft;
+      let mouseX = e.clientX;
+      let rest = barDom.offsetWidth - triangleDom.offsetWidth + barDom.offsetLeft;
+      let deleteFlag = true;
+      let currentTriangleId = parseInt(triangleDom.getAttribute('id').split('-')[2]);
+      let me = this;
+      // console.log(triangleDom);
+      window.onmousemove = function (ev) {
+        let e = ev || window.event
+        // 浏览器当前位置减去鼠标按下的位置
+        let moveLength = e.clientX - mouseX; //鼠标移动的距离
+        // 有移动
+        if(moveLength >= 0.1 || moveLength <= -0.1) {
+          deleteFlag = false;// 如果有移动 就不删除小三角形
+        }
+        let newPos = triangleX + moveLength; //left
+        // 判断最大值和最小值
+        if (newPos < barDom.offsetLeft) {
+            newPos = barDom.offsetLeft;
+        }
+        if (newPos >= rest) {
+            newPos = rest;
+        }
+        // 更新pos
+        me.sliderTrianglesPos[currentTriangleId].pos = newPos;
+        let ratio = (newPos - barDom.offsetLeft) / (rest - barDom.offsetLeft);
+        let countValue = (me.minIterCount + ratio * (me.maxIterCount - me.minIterCount)).toFixed(1);
+        me.sliderTrianglesPos[currentTriangleId].countValue = countValue;
+        console.log(ratio, countValue)
+        return false; // 取消默认事件
+      }
+      window.onmouseup = function () {
+        if(deleteFlag) {
+          me.sliderTrianglesPos.splice(currentTriangleId, 1);
+          console.log(me.sliderTrianglesPos);
+        }
+        deleteFlag = false;
+        window.onmousemove = false; // 解绑移动事件
+        return false;
+      }
+      return false;
+    },
+    // 添加分段的小三角形
+    addTriangle (e) {
+      let sliderDom = document.getElementsByClassName("clientnum-slider")[0];
+      let sliderWidth = sliderDom.offsetWidth;
+      // console.log(sliderDom);
+      let barDom = document.getElementById("slider-bar");
+      let mouseX = e.clientX;
+      let rest = barDom.offsetWidth - 10 + barDom.offsetLeft;// 10是三角形的clientwidth
+      let left = mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12);// 10是panel间的gap间距
+      if (left < barDom.offsetLeft) {
+        left = barDom.offsetLeft;
+      }
+      if (left >= rest) {
+        left = rest;
+      }
+      // 计算count值
+      let ratio = (left - barDom.offsetLeft) / (rest - barDom.offsetLeft);
+      let countValue = (this.minIterCount + ratio * (this.maxIterCount - this.minIterCount)).toFixed(1);
+      this.sliderTrianglesPos.push({'countValue': countValue, 'pos': left});
+      // console.log(this.sliderTrianglesPos);
     }
   },
   mounted() {
@@ -172,11 +249,33 @@ export default {
     }
     // 滑动条
     .clientnum-slider {
-      .slider-bar {
-
+      width: 100%;
+      height: 30px;
+      position: relative;
+      img {
+        width: 10px;
+        position: absolute;
+        bottom: 0;
+        top: 8px;
+        margin: auto 0;
+        cursor: pointer;
       }
-      .slider-triangle {
-
+      span {
+        position: absolute;
+        font-size: 10px;
+      }
+      #slider-bar {
+        width: 80%;
+        height: 2px;
+        border-radius: 10px;
+        background: #474747;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        cursor: pointer;
       }
     }
   }

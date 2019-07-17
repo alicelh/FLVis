@@ -3,7 +3,8 @@
     <div v-for="(item, i) in choosedIters" :key="'panel-'+i" class="singleIterPanel">
       <ClientIterPanel
         :iterId="item"
-        :data="clientInfoData[item]"/>
+        :data="clientInfoData[item]"
+        :panelId="i"/>
     </div>
     <div v-for="(item, i) in genePanelArray" :key="'void-'+i" class="singleIterPanel">
     </div>
