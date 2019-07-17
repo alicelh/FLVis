@@ -113,10 +113,7 @@ export default {
       this.$store.dispatch("client/deleteClientInfoByIter", this.iterId);
     },
     updateIterForProj() {
-      this.$store.dispatch(
-        "client/updataIterChoosedForProjection",
-        this.iterId
-      );
+      this.$store.dispatch("client/getClientProject", this.iterId);
     },
     getMinMaxIterCount() {
       // 把读入的data按count属性进行排序

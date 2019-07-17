@@ -31,7 +31,6 @@ export default {
   },
   methods: {
     plot() {
-      console.log("plot project");
       let xScale = d3
         .scaleLinear()
         .domain([0, 1])
@@ -41,7 +40,9 @@ export default {
         .scaleLinear()
         .domain([0, 1])
         .range([this.height * 0.9, this.height * 0.1]);
-      d3.select(this.svg).selectAll("g").remove();
+      d3.select(this.svg)
+        .selectAll("g")
+        .remove();
       d3.select(this.svg)
         .append("g")
         .selectAll(".point")
