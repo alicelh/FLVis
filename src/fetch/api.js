@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 40000;
 axios.defaults.baseURL = 'http://10.76.0.159:8000';
 
 // axios请求拦截器，统一处理request
@@ -57,5 +57,8 @@ export default {
   },
   ClientParaByIterIndex(iter, index) {
     return fetchGet(`/clientparabyiterindex/${iter}/${index}`);
+  },
+  ClientParaByIter(iter) {
+    return fetchGet(`/clientparabyiter/${iter}`);
   }
 }

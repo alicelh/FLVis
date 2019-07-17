@@ -6,11 +6,11 @@
 
 <script>
 export default {
-  name: 'App',
-  created () {
-    this.$store.dispatch('server/getServerInfo');
-    this.$store.dispatch('server/getClientStasticsRange', [5, 15]);
-    this.$store.dispatch('client/getClientPara');
+  name: "App",
+  created() {
+    this.$store.dispatch("server/getServerInfo");
+    this.$store.dispatch("server/getClientStasticsRange", [5, 15]);
+    this.$store.dispatch("client/getClientPara");
   }
 };
 </script>
