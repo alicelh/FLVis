@@ -7,7 +7,7 @@ const state = {
   pos: [],
   choosedclient: 0,
   choosediter: 2, // 选择盒须图上的某一次迭代
-  choosedIterForProjection: 0, // 选择迭代面板中的某一次
+  choosedIterForProjection: 1, // 选择迭代面板中的某一次
   clientInfo: {},
   deleteiter: -1
 }
@@ -25,15 +25,16 @@ const actions = {
   },
   getClientProject({
     commit
-  }) {
-    api.ClientParaByIter(state.choosediter)
+  }, context) {
+    api.ClientParaByIter(context)
       .then(res => {
-        commit(types.GET_CLIENT_PROJECT, res[0])
+        commit(types.GET_CLIENT_PROJECT, res)
       })
   },
   getClientInfoByIter({
     commit
   }, context) {
+    commit(types.RESET_PROJECT_POS, [])
     api.ClientInfoByIter(context)
       .then(res => {
         commit(types.GET_CLIENT_INFO_BY_ITER, [context, res])
@@ -44,10 +45,14 @@ const actions = {
   }, context) {
     commit(types.DELETE_CLIENT_INFO_BY_ITER, context);
   },
-  updataClientChoosed ({commit}, context) {
+  updataClientChoosed({
+    commit
+  }, context) {
     commit(types.UPDATE_CLIENT_CHOOSED, context);
   },
-  updataIterChoosedForProjection ({commit}, context) {
+  updataIterChoosedForProjection({
+    commit
+  }, context) {
     commit(types.UPDATE_ITER_CHOOSED_FOR_PROJ, context);
   }
 }
@@ -70,11 +75,14 @@ const mutations = {
     state.deleteiter = index;
     delete state.clientInfo[index];
   },
-  [types.UPDATE_CLIENT_CHOOSED] (state, clientIndex) {
+  [types.UPDATE_CLIENT_CHOOSED](state, clientIndex) {
     state.choosedclient = clientIndex;
   },
-  [types.UPDATE_ITER_CHOOSED_FOR_PROJ] (state, iterIndex) {
+  [types.UPDATE_ITER_CHOOSED_FOR_PROJ](state, iterIndex) {
     state.choosedIterForProjection = iterIndex;
+  },
+  [types.RESET_PROJECT_POS](state, initValue) {
+    state.pos = initValue;
   }
 }
 
