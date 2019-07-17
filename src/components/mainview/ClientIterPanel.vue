@@ -23,25 +23,26 @@
         </div>
         <span style="right:0px; top:9px">{{maxIterCount}}</span>
       </div>
-      <svg height="100%" width="100%">
+      <!-- svg高度要确定好 才能做scroll -->
+      <svg :height="svgHeight" width="100%">
         <!-- to modify -->
         <g class="client-count">
-          <rect class="num-rect" x="0" y="25" width="30" height="10" />
-          <!-- to mpdify -->
-          <text fill="#fff" x="0" y="35">{{clientNumSegment[0]}}-{{clientNumSegment[1]}}</text>
-          <text x="35" y="35">{{clientNum}}</text>
+          <rect class="num-rect" x="0" y="0" width="30" height="10" />
+          <text fill="#fff" x="0" y="8">{{clientNumSegment[0]}}-{{clientNumSegment[1]}}</text>
+          <text x="35" y="8">{{clientNum}}</text>
         </g>
         <g class="rect-group">
           <rect
             class="client-rect"
-            :x="i % rectNumLine * rectSize + rectNumLine * (i % rectNumLine)"
-            :y="Math.floor(i / rectNumLine) * rectSize + 40 + rectNumLine * Math.floor(i / rectNumLine)"
+            :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
+            :y="Math.floor(i / rectNumLine) * rectSize + 10 + rectGap * Math.floor(i / rectNumLine)"
             :width="rectSize"
             :height="rectSize"
             :data-index="val.index"
             :data-count="val.count"
             :data-acc="val.acc"
             :data-loss="val.loss"
+            :data-iter="val.iter"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
             v-for="(val, i) in dataSort"
@@ -68,12 +69,13 @@ export default {
   props: {
     iterId: Number,
     data: Array,
-    panelId: Number
+    panelId: Number,// 为了计算小三角形的偏移
   },
   data() {
     return {
       rectSize: 15,
-      rectNumLine: 4, // 一行显示多少个
+      rectNumLine: 0, // 一行显示多少个
+      rectGap: 0,// rect间距
       minIterCount: 0,
       maxIterCount: 0,
       dataSort: [], // 按count排序
@@ -82,7 +84,8 @@ export default {
       tooltipData: {},
       tooltipPos: [0, 0],
       isTooltipShow: false,
-      sliderTrianglesPos: [] // 滑动条上的三角形位置
+      sliderTrianglesPos: [], // 滑动条上的三角形位置
+      svgHeight: 0
     };
   },
   components: {
@@ -92,7 +95,11 @@ export default {
     ...mapState({
       clientInfo: state => state.client.clientInfo[this.iterId]
     })
-    // min
+  },
+  watch: {
+    iterId: function () {
+      this.getMinMaxIterCount();
+    }
   },
   methods: {
     compare(property) {
@@ -121,9 +128,19 @@ export default {
         this.clientNumSegment = [this.minIterCount, this.maxIterCount];
       }
     },
+    initialSvgHeight () {
+      // 计算每行的rect个数
+      let sliderDom = document.getElementsByClassName("clientnum-slider")[0];
+      let sliderWidth = sliderDom.offsetWidth;
+      this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
+      this.rectGap = (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
+      // 更新svg高度
+      this.svgHeight = Math.floor(this.clientNum / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNum / this.rectNumLine);
+    },
     showTooltip(e) {
       this.tooltipData.index = e.target.getAttribute("data-index");
       this.tooltipData.count = e.target.getAttribute("data-count");
+      this.tooltipData.iter = e.target.getAttribute("data-iter");
       this.tooltipData.acc = parseFloat(
         e.target.getAttribute("data-acc")
       ).toFixed(2);
@@ -137,7 +154,6 @@ export default {
       this.isTooltipShow = true;
     },
     hideTooltip() {
-      // console.log("out");
       this.isTooltipShow = false;
     },
     // 移动三角形
@@ -215,11 +231,11 @@ export default {
         ratio * (this.maxIterCount - this.minIterCount)
       ).toFixed(1);
       this.sliderTrianglesPos.push({ countValue: countValue, pos: left });
-      // console.log(this.sliderTrianglesPos);
     }
   },
   mounted() {
     this.getMinMaxIterCount();
+    this.initialSvgHeight();
   }
 };
 </script>
@@ -253,6 +269,7 @@ export default {
     height: 280px;
     // border: 1px solid #979797;
     border-radius: 0px 0px 5px 5px;
+    overflow-y: auto;
     .client-count {
       font-size: 10px;
     }

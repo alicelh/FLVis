@@ -55,6 +55,7 @@ export default {
         this.choosedIters.push(v);
         this.choosedIters.sort(d3.ascending);
       }
+      console.log(this.choosedIters);      
     },
     deleteIter: function (newvalue, oldvalue) {
       // 从choosedIters删除
@@ -62,6 +63,7 @@ export default {
       if(deleteId > -1) {
         this.choosedIters.splice(deleteId, 1);
       }
+      console.log(this.choosedIters);
     }
   }
 }
