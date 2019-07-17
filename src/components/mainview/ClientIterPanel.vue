@@ -185,7 +185,6 @@ export default {
     addTriangle (e) {
       let sliderDom = document.getElementsByClassName("clientnum-slider")[0];
       let sliderWidth = sliderDom.offsetWidth;
-      // console.log(sliderDom);
       let barDom = document.getElementById("slider-bar");
       let mouseX = e.clientX;
       let rest = barDom.offsetWidth - 10 + barDom.offsetLeft;// 10是三角形的clientwidth
