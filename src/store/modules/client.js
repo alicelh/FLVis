@@ -1,8 +1,10 @@
 import * as types from '../types'
 import api from '@/fetch/api'
+import model from './model'
 
 const state = {
   paradata: {},
+  clientparalist: [],
   w1: [],
   b1: [],
   pos: [],
@@ -13,7 +15,27 @@ const state = {
   deleteiter: -1
 }
 
-const getters = {}
+const getters = {
+  clientparaarray: state => {
+    let paralist = [];
+    let para = [];
+    let paratmp, len;
+    let layerCount = model.state.layernum;
+    let listcount = state.clientparalist.length;
+    for (let k = 0; k < listcount; k++) {
+      for (let i = 0; i < layerCount; i++) {
+        para = [].concat(...state.clientparalist[k]["w" + (i + 1)]);
+        paratmp = state.clientparalist[k]["b" + (i + 1)];
+        len = paratmp.length;
+        for (let j = 0; j < len; j++) {
+          para.push(...paratmp[j]);
+        }
+      }
+      paralist.push(para);
+    }
+    return paralist;
+  }
+}
 
 const actions = {
   getClientPara({
@@ -22,6 +44,17 @@ const actions = {
     api.ClientParaByIterIndex(context[0], context[1])
       .then(res => {
         commit(types.GET_CLIENT_PARA, res)
+      })
+  },
+  getClientParaList({
+    commit
+  }, {
+    iter,
+    indexarr
+  }) {
+    api.ClientParaByIterIndexarr(iter, indexarr)
+      .then(res => {
+        commit(types.GET_CLIENT_PARA_ARR, res)
       })
   },
   getClientProject({
@@ -61,6 +94,9 @@ const actions = {
 const mutations = {
   [types.GET_CLIENT_PARA](state, data) {
     state.paradata = data;
+  },
+  [types.GET_CLIENT_PARA_ARR](state, data) {
+    state.clientparalist = data;
   },
   [types.GET_CLIENT_PROJECT](state, data) {
     state.pos = data;

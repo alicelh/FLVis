@@ -1,5 +1,5 @@
 <template>
-  <div id="weightView" :style="{'width':chartWidth+'px'}">
+  <div id="weightView" :style="{'width':width+'px'}">
     <svg width="100%" height="100%">
       <g :transform="'translate('+margin.left+','+margin.top+')'">
         <WeightBar
@@ -8,25 +8,56 @@
           :xscale="xscale"
           :rectHeight="rectHeight"
           :rectWidth="rectWidth"
-          :para="paraArrayServer"
+          :para="paraServer"
+          :axisVisable="true"
         />
-        <WeightBar
-          :trans="'translate(0,'+(rectHeight+chartInterval)+')'"
+        <g
+          v-for="(para,i) in paraClient"
+          :transform="'translate(0,'+(rectHeight+20)+')'"
+          :key="'wchart'+i"
+        >
+          <WeightBar
+            :v-for="para in paraClient"
+            :trans="'translate(0,'+(rectHeight*i+chartInterval*i)+')'"
+            :colorScale="colorScale"
+            :xscale="xscale"
+            :rectHeight="rectHeight"
+            :rectWidth="rectWidth"
+            :para="para"
+            :axisVisable="false"
+          />
+        </g>
+        <!-- <WeightCanvas
+          trans="translate(0,0)"
           :colorScale="colorScale"
           :xscale="xscale"
-          :rectHeight="rectHeight"
+          :width="chartWidth"
+          :rectHeight="serverHeight"
           :rectWidth="rectWidth"
-          :para="paraArrayClient"
+          :para="paraServer"
         />
+        <template v-for="(para,i) in paraClient">
+          <WeightCanvas
+            :trans="'translate(0,'+(serverHeight + rectHeight*i+chartInterval*i)+')'"
+            :colorScale="colorScale"
+            :xscale="xscale"
+            :width="chartWidth"
+            :rectHeight="rectHeight"
+            :rectWidth="rectWidth"
+            :para="para"
+            :key="'weightcanvas'+i"
+          />
+        </template>-->
       </g>
     </svg>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import * as d3 from "d3";
 import WeightBar from "./WeightBar";
+import WeightCanvas from "./WeightCanvas";
 
 export default {
   name: "WeightView",
@@ -34,27 +65,27 @@ export default {
     return {
       margin: {
         left: 50,
-        right: 50,
+        right: 12,
         top: 10,
-        bottom: 20
+        bottom: 10
       },
       height: 300,
-      chartInterval: 20,
-      paraArrayServer: [],
-      paraArrayClient: [],
+      serverHeight: 25,
+      // width: 800,
+      chartInterval: 8,
       colorScale: d3
         .scaleThreshold()
         .range([
-          "#a50026",
-          "#d73027",
-          "#f46d43",
-          "#fdae61",
-          "#fee090",
-          "#e0f3f8",
-          "#abd9e9",
-          "#74add1",
-          "#4575b4",
-          "#313695"
+          "#67001f",
+          "#b2182b",
+          "#d6604d",
+          "#f4a582",
+          "#fddbc7",
+          "#d1e5f0",
+          "#92c5de",
+          "#4393c3",
+          "#2166ac",
+          "#053061"
         ])
     };
   },
@@ -62,7 +93,8 @@ export default {
     width: Number
   },
   components: {
-    WeightBar
+    WeightBar,
+    WeightCanvas
   },
   computed: {
     chartWidth() {
@@ -72,16 +104,18 @@ export default {
       return (
         (this.height -
           this.margin.top -
-          this.margin.left -
-          this.chartInterval) /
-        2
+          this.margin.bottom -
+          this.chartInterval * this.paraClient.length) /
+        (this.paraClient.length + 1)
       );
     },
     ...mapState({
-      paraServer: state => state.client.paradata.server,
-      paraClient: state => state.client.paradata.client,
       paraCount: state => state.model.paranum,
       layerCount: state => state.model.layernum
+    }),
+    ...mapGetters({
+      paraServer: "server/serverparaarray",
+      paraClient: "client/clientparaarray"
     }),
     xscale() {
       return d3
@@ -94,44 +128,14 @@ export default {
     }
   },
   watch: {
-    paraServer: function(oldvalue, newvalue) {
-      this.getParaServer();
-      this.setColorScale();
-    },
-    paraClient: function(oldvalue, newvalue) {
-      this.getParaClient();
+    paraServer: function(newvalue, oldvalue) {
+      this.setColorScale(newvalue);
     }
   },
   methods: {
-    getParaServer() {
-      let para = [];
-      let paratmp, len;
-      for (let i = 0; i < this.layerCount; i++) {
-        para = [].concat(...this.paraServer["w" + (i + 1)]);
-        paratmp = this.paraServer["b" + (i + 1)];
-        len = paratmp.length;
-        for (let j = 0; j < len; j++) {
-          para.push(...paratmp[j]);
-        }
-      }
-      this.paraArrayServer = para;
-    },
-    getParaClient() {
-      let para = [];
-      let paratmp, len;
-      for (let i = 0; i < this.layerCount; i++) {
-        para = [].concat(...this.paraClient["w" + (i + 1)]);
-        paratmp = this.paraClient["b" + (i + 1)];
-        len = paratmp.length;
-        for (let j = 0; j < len; j++) {
-          para.push(...paratmp[j]);
-        }
-      }
-      this.paraArrayClient = para;
-    },
-    setColorScale() {
-      let [min, max] = d3.extent(this.paraArrayServer);
-      this.colorScale = this.colorScale.domain([
+    setColorScale(newvalue) {
+      let [min, max] = d3.extent(this.paraServer);
+      this.colorScale.domain([
         min,
         (3 * min) / 4,
         min / 2,
