@@ -2,7 +2,7 @@
   <div class="client-panel">
     <div class="title">
       <div class="title-iter" @click="updateIterForProj">iter {{iterId}}</div>
-      <div>{{clientNum}}</div>
+      <div>{{clientNumAll}}</div>
       <div>
         <img src="../../assets/delete.png" @click="deletePanel" />
       </div>
@@ -26,28 +26,38 @@
       <!-- svg高度要确定好 才能做scroll -->
       <svg :height="svgHeight" width="100%">
         <!-- to modify -->
-        <g class="client-count">
-          <rect class="num-rect" x="0" y="0" width="30" height="10" />
-          <text fill="#fff" x="0" y="8">{{clientNumSegment[0]}}-{{clientNumSegment[1]}}</text>
-          <text x="35" y="8">{{clientNum}}</text>
-        </g>
-        <g class="rect-group">
-          <rect
-            class="client-rect"
-            :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
-            :y="Math.floor(i / rectNumLine) * rectSize + 10 + rectGap * Math.floor(i / rectNumLine)"
-            :width="rectSize"
-            :height="rectSize"
-            :data-index="val.index"
-            :data-count="val.count"
-            :data-acc="val.acc"
-            :data-loss="val.loss"
-            :data-iter="val.iter"
-            @mouseover="showTooltip"
-            @mouseout="hideTooltip"
-            v-for="(val, i) in dataSort"
-            :key="'rect-'+i"
-          />
+        <g class="client-segment" v-for="(segment, segmentIndex) in clientNumSegments" :key="'segement-'+segmentIndex">
+          <g class="client-count">
+            <rect
+              class="num-rect"
+              x="0"
+              :y="((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
+              width="30"
+              height="10" />
+            <text fill="#fff" x="0"
+              :y="8 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{segment[0]}} -{{ segment[1]}}</text>
+            <text x="35"
+              :y="8 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{countNum[segment[1] - minIterCount].endIndex - countNum[segment[0] - minIterCount].startIndex + 1}}</text>
+          </g>
+          <g class="rect-group">
+            <rect
+              class="client-rect"
+              :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
+              :y="Math.floor(i / rectNumLine) * rectSize + 10 + rectGap * Math.floor(i / rectNumLine) + 
+              ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
+              :width="rectSize"
+              :height="rectSize"
+              :data-index="val.index"
+              :data-count="val.count"
+              :data-acc="val.acc"
+              :data-loss="val.loss"
+              :data-iter="val.iter"
+              @mouseover="showTooltip"
+              @mouseout="hideTooltip"
+              v-for="(val, i) in dataSort.slice(countNum[segment[0] - minIterCount].startIndex, countNum[segment[1] - minIterCount].endIndex + 1)"
+              :key="'rect-'+i"
+            />
+          </g>
         </g>
         <Tooltip
           :clientData="tooltipData"
@@ -79,13 +89,16 @@ export default {
       minIterCount: 0,
       maxIterCount: 0,
       dataSort: [], // 按count排序
-      clientNum: 0,
-      clientNumSegment: [], // 初始的分段为[min, maxcount],
+      clientNumAll: 0,
+      clientNumSlider: [], // slider上的分段，初始的分段为[min, maxcount],
+      clientNumSegments: [],
+      countNum: [],//每个count对应的数量,起始下标
       tooltipData: {},
       tooltipPos: [0, 0],
       isTooltipShow: false,
       sliderTrianglesPos: [], // 滑动条上的三角形位置
-      svgHeight: 0
+      svgHeight: 0,
+      rectGroupHeight: [],// 存储每个group的y坐标
     };
   },
   components: {
@@ -99,6 +112,8 @@ export default {
   watch: {
     iterId: function () {
       this.getMinMaxIterCount();
+      this.getClientSegments();
+      this.updateSvgHeight();
     }
   },
   methods: {
@@ -113,17 +128,39 @@ export default {
       this.$store.dispatch("client/deleteClientInfoByIter", this.iterId);
     },
     updateIterForProj() {
-      this.$store.dispatch("client/getClientProject", this.iterId);
+      this.$store.dispatch("client/updataIterChoosedForProjection", this.iterId);
     },
     getMinMaxIterCount() {
       // 把读入的data按count属性进行排序
-      this.clientNum = this.data.length;
+      this.clientNumAll = this.data.length;
       this.dataSort = this.data.sort(this.compare("count"));
-      if (this.clientNum !== 0) {
+      if (this.clientNumAll !== 0) {
         this.minIterCount = this.dataSort[0].count;
-        this.maxIterCount = this.dataSort[this.clientNum - 1].count;
-        this.clientNumSegment = [this.minIterCount, this.maxIterCount];
+        this.maxIterCount = this.dataSort[this.clientNumAll - 1].count;
+        this.clientNumSlider = [this.minIterCount, this.maxIterCount];
+        this.clientNumSegments = [[this.minIterCount, this.maxIterCount]];
       }
+      // 找到每个count的分布
+      this.countNum = [];
+      // 初始化
+      for (let i = this.minIterCount; i <= this.maxIterCount; i++) {
+        this.countNum.push({'count': i, 'num': 0, 'startIndex': -1, 'endIndex': -1});
+      }
+      // 遍历datasort 存储各个count的分布信息
+      for (let i = 0; i < this.clientNumAll; i++) {
+        let countNumIndex = this.dataSort[i].count - this.minIterCount;
+        this.countNum[countNumIndex].num += 1;
+      }
+      for(let i = 0; i < this.countNum.length; i++) {
+        if (i === 0) {
+          this.countNum[i].startIndex = 0;
+          this.countNum[i].endIndex = this.countNum[i].num - 1;
+        } else {
+          this.countNum[i].startIndex = this.countNum[i-1].endIndex + 1;
+          this.countNum[i].endIndex = this.countNum[i].startIndex + this.countNum[i].num - 1;
+        }
+      }
+      // console.log(this.countNum);
     },
     initialSvgHeight () {
       // 计算每行的rect个数
@@ -131,8 +168,8 @@ export default {
       let sliderWidth = sliderDom.offsetWidth;
       this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
       this.rectGap = (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
-      // 更新svg高度
-      this.svgHeight = Math.floor(this.clientNum / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNum / this.rectNumLine);
+      // 更新svg高度(未分段的情况)
+      this.svgHeight = Math.ceil(this.clientNumAll / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNumAll / this.rectNumLine);
     },
     showTooltip(e) {
       this.tooltipData.index = e.target.getAttribute("data-index");
@@ -167,7 +204,8 @@ export default {
         triangleDom.getAttribute("id").split("-")[2]
       );
       let me = this;
-      // console.log(triangleDom);
+      // 保存之前的移动之前的countValue
+      let prevCountValue = parseFloat(me.sliderTrianglesPos[currentTriangleId].countValue);
       window.onmousemove = function(ev) {
         let e = ev || window.event;
         // 浏览器当前位置减去鼠标按下的位置
@@ -192,13 +230,31 @@ export default {
           ratio * (me.maxIterCount - me.minIterCount)
         ).toFixed(1);
         me.sliderTrianglesPos[currentTriangleId].countValue = countValue;
-        console.log(ratio, countValue);
         return false; // 取消默认事件
       };
       window.onmouseup = function() {
         if (deleteFlag) {
+          // 删除更新分段
+          let deleteCountValue = parseFloat(me.sliderTrianglesPos[currentTriangleId].countValue);
+          let deleteClienNumIndex = me.clientNumSlider.indexOf(deleteCountValue);
+          if(deleteClienNumIndex > -1) {
+            me.clientNumSlider.splice(deleteClienNumIndex, 1);
+          }
+          me.getClientSegments();
+          me.updateSvgHeight();
+          // 删除小三角形
           me.sliderTrianglesPos.splice(currentTriangleId, 1);
-          console.log(me.sliderTrianglesPos);
+        } else {
+          // 更新分段
+          if(me.sliderTrianglesPos[currentTriangleId]) {
+            let newCountValue = parseFloat(me.sliderTrianglesPos[currentTriangleId].countValue);
+            let clienNumIndex = me.clientNumSlider.indexOf(prevCountValue);
+            if(clienNumIndex > -1) {
+              me.clientNumSlider[clienNumIndex] = newCountValue;
+            }
+            me.getClientSegments();
+            me.updateSvgHeight();
+          }
         }
         deleteFlag = false;
         window.onmousemove = false; // 解绑移动事件
@@ -214,7 +270,7 @@ export default {
       let mouseX = e.clientX;
       let rest = barDom.offsetWidth - 10 + barDom.offsetLeft; // 10是三角形的clientwidth
       let left =
-        mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12); // 10是panel间的gap间距
+        mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12); // 10是panel间的gap间距  ！！！还要考虑滚动条的宽度
       if (left < barDom.offsetLeft) {
         left = barDom.offsetLeft;
       }
@@ -227,10 +283,57 @@ export default {
         this.minIterCount +
         ratio * (this.maxIterCount - this.minIterCount)
       ).toFixed(1);
-      this.sliderTrianglesPos.push({ countValue: countValue, pos: left });
+      this.sliderTrianglesPos.push({ countValue: countValue, pos: left });// 三角形位置信息
+      let insertId = 0;
+      while (this.clientNumSlider[insertId] < countValue) {
+        insertId++;
+      }
+      this.clientNumSlider.splice(insertId, 0, parseFloat(countValue)); //更新分段
+      // 处理一下clientNumSlider
+      this.getClientSegments();
+      this.updateSvgHeight();
+    },
+    getClientSegments () {
+      this.clientNumSegments = [];
+      for(let i = 0; i < this.clientNumSlider.length - 1; i++) {
+        let count1 = Math.ceil(this.clientNumSlider[i]);
+        let count2 = Math.floor(this.clientNumSlider[i+1]);
+        // console.log(count1, count2);
+        if (count1 <= count2) {
+          if(count1 === this.maxIterCount) {
+            this.clientNumSegments.push([count1, count1]);
+            break;
+          }
+          // this.clientNumSegments.push([count1, count2]);
+          if(count2 === this.maxIterCount && i < this.clientNumSlider.length - 2) {
+            this.clientNumSegments.push([count1, count2 - 1]);
+          } else {
+            this.clientNumSegments.push([count1, count2]);
+          }
+        }
+      }
+      console.log(this.clientNumSegments);
+    },
+    // 计算rectgroup的高度
+    getRectGroupHeight (rectNum) {
+      return Math.ceil(rectNum / this.rectNumLine) * this.rectSize + 15 + this.rectGap * Math.floor(rectNum / this.rectNumLine);
+    },
+    updateSvgHeight () {
+      this.rectGroupHeight = [];
+      let newSvgHeight = 0;
+      for (let i = 0; i < this.clientNumSegments.length; i++) {
+        let segement = this.clientNumSegments[i];
+        let rectNum = this.countNum[segement[1] - this.minIterCount].endIndex
+          - this.countNum[segement[0] - this.minIterCount].startIndex + 1;
+        let height = this.getRectGroupHeight(rectNum);
+        this.rectGroupHeight.push(newSvgHeight + height);
+        newSvgHeight += height;
+      }
+      // 更新svg的新高度
+      this.svgHeight = newSvgHeight;
     }
   },
-  mounted() {
+  mounted() { 
     this.getMinMaxIterCount();
     this.initialSvgHeight();
   }
