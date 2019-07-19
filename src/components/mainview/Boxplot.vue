@@ -42,9 +42,12 @@
     </line>
     <circle
       class="outlier"
+      :style="isOutlierSelected(outlierClientIndex[i])"
+      :data-index="outlierId"
+      :data-clientIndex="outlierClientIndex[i]"
       r=3
       :cx="xscale(index) + boxplotWidth * 0.5 + boxplotWidth / 3.0 + xOffset"
-      :cy="yscale(data[outlierId])"
+      :cy="yscale(dataSort[outlierId])"
       v-for="(outlierId, i) in this.outlierIndices" :key="i">
       >
     </circle>
@@ -57,13 +60,13 @@ import * as d3 from 'd3';
 export default {
   name: "Boxplot",
   props: {
-    // scale: Function,
     trans: String,
-    index: Number,
+    index: Number,// iter index
     data: Array, //当前盒须图的数据数组
+    clientIndex: Array, //对应的client index
     yscale: Function,
     xscale: Function,
-    type: String
+    type: String // loss or acc
   },
   data () {
     return {
@@ -71,14 +74,35 @@ export default {
       whiskerData: [], // q1 - iqr;q3 + iqr
       outlierIndices: [], //outliers的下标
       boxplotWidth: 0,
-      xOffset: 0
+      xOffset: 0,
+      dataSort: [],// 只存了value 升序
+      dataSortObject: [],// 存了client index和value, 按value升序
+      outlierClientIndex: [],
+      choosedClient: -1
     };
   },
   computed: {
+    ...mapState({
+      choosedclient: state => state.client.choosedclient
+    })
   },
   methods: {
+    compare(property) {
+      return function(obj1, obj2) {
+        let value1 = obj1[property];
+        let value2 = obj2[property];
+        return value1 - value2; // 升序
+      };
+    },
     updateBoxplotData () {
-      let dataSort = this.data.sort(d3.ascending)
+      // 把client index和对应的值组成一个对象数组
+      let clientIndexArray = this.clientIndex;
+      let dataObject = this.data.map(function(value, index) {
+        return {"clientIndex": clientIndexArray[index], 'value': value}
+      });
+      // console.log(dataObject)
+      let dataSortObject = dataObject.sort(this.compare('value'));
+      let dataSort = dataSortObject.map(d=>d.value);
       let dataLength = dataSort.length;
       let q1 = d3.quantile(dataSort, 0.25);
       let q2 = d3.quantile(dataSort, 0.5);
@@ -95,18 +119,36 @@ export default {
       this.boxplotWidth = parseFloat(bandWidth) * 0.3;
       // outlier
       this.outlierIndices = d3.range(0, whiskerIndices[0]).concat(d3.range(whiskerIndices[1] + 1, dataLength));
+      this.dataSort = dataSort;
+      this.dataSortObject = dataSortObject;
+      // 更新outlier的client index
+      this.outlierClientIndex = [];
+      for (let i = 0; i < this.outlierIndices.length; i++) {
+        this.outlierClientIndex.push(dataSortObject[i].clientIndex);
+      }
+      // 先看看Loss的异常
+      this.$store.dispatch('server/updateClientOutlier', [this.index, this.outlierClientIndex, this.type])        
     },
     getIterClientInfo (e) {
-      console.log(this.index);
+      // console.log(this.index);
       this.$store.dispatch('client/getClientInfoByIter', this.index);
+    },
+    // 判断是否高亮outlier
+    isOutlierSelected (clientIndex) {
+      // console.log(clientIndex, this.choosedclient, this.choosedclient === parseInt(clientIndex));
+      return (this.choosedclient === parseInt(clientIndex)) ? {'stroke': 'red', 'stroke-width': '2px'} : {'stroke': '#000', 'stroke-width': '1px'};
+      
     }
   },
   watch: {
-    index: function (oldvalue, newvalue) {
+    index: function (newvalue, oldvalue) {
       this.updateBoxplotData();
     },
-    xscale: function (oldvalue, newvalue) {
+    xscale: function (newvalue, oldvalue) {
       this.updateBoxplotData();
+    },
+    choosedclient: function (newvalue, oldvalue) {
+      this.choosedClient = newvalue;
     }
   },
   created () {

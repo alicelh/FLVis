@@ -7,7 +7,7 @@
         <img src="../../assets/delete.png" @click="deletePanel" />
       </div>
     </div>
-    <div class="client-content">
+    <div class="client-content scroll-box">
       <div class="clientnum-slider">
         <span style="left:0px; top:9px">{{minIterCount}}</span>
         <div id="slider-bar" @click="addTriangle"></div>
@@ -52,8 +52,10 @@
               :data-acc="val.acc"
               :data-loss="val.loss"
               :data-iter="val.iter"
+              :style="{'stroke': isOutlier(val.index), 'stroke-width': rectGap}"
               @mouseover="showTooltip"
               @mouseout="hideTooltip"
+              @click="handleRectClick"
               v-for="(val, i) in dataSort.slice(countNum[segment[0] - minIterCount].startIndex, countNum[segment[1] - minIterCount].endIndex + 1)"
               :key="'rect-'+i"
             />
@@ -106,7 +108,8 @@ export default {
   },
   computed: {
     ...mapState({
-      clientInfo: state => state.client.clientInfo[this.iterId]
+      // clientInfo: state => state.client.clientInfo[this.iterId],
+      brushedClientStastics: (state) => state.server.brushedClientStastics
     })
   },
   watch: {
@@ -117,6 +120,17 @@ export default {
     }
   },
   methods: {
+    isOutlier (index) {
+      let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+      let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+      if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1)
+        return "red";
+      else if (outlierClientLoss.indexOf(index) > -1)
+        return '#3983c0';
+      else if (outlierClientAcc.indexOf(index) > -1)
+        return '#dd5041';
+      return 'none';
+    },
     compare(property) {
       return function(obj1, obj2) {
         let value1 = obj1[property];
@@ -160,7 +174,7 @@ export default {
           this.countNum[i].endIndex = this.countNum[i].startIndex + this.countNum[i].num - 1;
         }
       }
-      // console.log(this.countNum);
+      this.sliderTrianglesPos = [];
     },
     initialSvgHeight () {
       // 计算每行的rect个数
@@ -252,6 +266,8 @@ export default {
             if(clienNumIndex > -1) {
               me.clientNumSlider[clienNumIndex] = newCountValue;
             }
+            // 重新排序 因为可能有些三角形会交叉
+            me.clientNumSlider.sort(d3.ascending);
             me.getClientSegments();
             me.updateSvgHeight();
           }
@@ -270,7 +286,7 @@ export default {
       let mouseX = e.clientX;
       let rest = barDom.offsetWidth - 10 + barDom.offsetLeft; // 10是三角形的clientwidth
       let left =
-        mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12); // 10是panel间的gap间距  ！！！还要考虑滚动条的宽度
+        mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12 + 5); // 10是panel间的gap间距 2是panel的border  5是滚动条的宽度
       if (left < barDom.offsetLeft) {
         left = barDom.offsetLeft;
       }
@@ -298,13 +314,11 @@ export default {
       for(let i = 0; i < this.clientNumSlider.length - 1; i++) {
         let count1 = Math.ceil(this.clientNumSlider[i]);
         let count2 = Math.floor(this.clientNumSlider[i+1]);
-        // console.log(count1, count2);
         if (count1 <= count2) {
           if(count1 === this.maxIterCount) {
             this.clientNumSegments.push([count1, count1]);
             break;
           }
-          // this.clientNumSegments.push([count1, count2]);
           if(count2 === this.maxIterCount && i < this.clientNumSlider.length - 2) {
             this.clientNumSegments.push([count1, count2 - 1]);
           } else {
@@ -312,7 +326,7 @@ export default {
           }
         }
       }
-      console.log(this.clientNumSegments);
+      // console.log(this.clientNumSegments);
     },
     // 计算rectgroup的高度
     getRectGroupHeight (rectNum) {
@@ -331,6 +345,10 @@ export default {
       }
       // 更新svg的新高度
       this.svgHeight = newSvgHeight;
+    },
+    handleRectClick (e) {
+      let clickedClientIndex = e.target.getAttribute('data-index');
+      this.$store.dispatch('client/updataClientChoosed', parseInt(clickedClientIndex));
     }
   },
   mounted() { 
@@ -411,5 +429,24 @@ export default {
       }
     }
   }
+  .scroll-box::-webkit-scrollbar {  
+    width: 5px;  
+    height:10px;
+    background-color:#333;
+  }  
+  .scroll-box::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color:#b5b1b1;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+  }
+  .scroll-box::-webkit-scrollbar-thumb {  
+    border-radius: 10px;  
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+    background-color:#333;
+  } 
 }
 </style>

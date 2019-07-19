@@ -32,6 +32,11 @@ const actions = {
         commit(types.GET_CLIENT_STASTICS_RANGE, [context, res])
       })
   },
+  updateClientOutlier({
+    commit
+  }, context) {
+    commit(types.UPDATE_CLIENT_OUTLIER, context)
+  },
   getServerPara({
     commit
   }, context) {
@@ -54,6 +59,11 @@ const mutations = {
   },
   [types.GET_SERVER_PARA](state, data) {
     state.serverpara = data;
+  },
+  [types.UPDATE_CLIENT_OUTLIER](state, data) {
+    let type = data[2];
+    let propertyName = 'outlierClient-' + type;
+    state.brushedClientStastics[data[0]][propertyName] = data[1];
   }
 }
 
