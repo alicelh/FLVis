@@ -1,6 +1,7 @@
 import * as types from '../types'
 import api from '@/fetch/api'
 import model from './model'
+import server from './server'
 
 const state = {
   paradata: {},
@@ -15,27 +16,7 @@ const state = {
   deleteiter: -1
 }
 
-const getters = {
-  clientparaarray: state => {
-    let paralist = [];
-    let para = [];
-    let paratmp, len;
-    let layerCount = model.state.layernum;
-    let listcount = state.clientparalist.length;
-    for (let k = 0; k < listcount; k++) {
-      for (let i = 0; i < layerCount; i++) {
-        para = [].concat(...state.clientparalist[k]["w" + (i + 1)]);
-        paratmp = state.clientparalist[k]["b" + (i + 1)];
-        len = paratmp.length;
-        for (let j = 0; j < len; j++) {
-          para.push(...paratmp[j]);
-        }
-      }
-      paralist.push(para);
-    }
-    return paralist;
-  }
-}
+const getters = {}
 
 const actions = {
   getClientPara({
@@ -96,6 +77,14 @@ const mutations = {
     state.paradata = data;
   },
   [types.GET_CLIENT_PARA_ARR](state, data) {
+    let tmp = server.state.serverpara;
+    let len = tmp.length;
+    let count = data.length;
+    for (let k = 0; k < count; k++) {
+      for (let i = 0; i < len; i++) {
+        data[k][i] = data[k][i] - tmp[i];
+      }
+    }
     state.clientparalist = data;
   },
   [types.GET_CLIENT_PROJECT](state, data) {

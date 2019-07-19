@@ -19,7 +19,7 @@
           <WeightBar
             :v-for="para in paraClient"
             :trans="'translate(0,'+(rectHeight*i+chartInterval*i)+')'"
-            :colorScale="colorScale"
+            :colorScale="colorDiffScale"
             :xscale="xscale"
             :rectHeight="rectHeight"
             :rectWidth="rectWidth"
@@ -72,8 +72,22 @@ export default {
       height: 300,
       serverHeight: 25,
       // width: 800,
-      chartInterval: 8,
+      chartInterval: 5,
       colorScale: d3
+        .scaleThreshold()
+        .range([
+          "#67001f",
+          "#b2182b",
+          "#d6604d",
+          "#f4a582",
+          "#fddbc7",
+          "#d1e5f0",
+          "#92c5de",
+          "#4393c3",
+          "#2166ac",
+          "#053061"
+        ]),
+      colorDiffScale: d3
         .scaleThreshold()
         .range([
           "#67001f",
@@ -113,9 +127,9 @@ export default {
       paraCount: state => state.model.paranum,
       layerCount: state => state.model.layernum
     }),
-    ...mapGetters({
-      paraServer: "server/serverparaarray",
-      paraClient: "client/clientparaarray"
+    ...mapState({
+      paraServer: state => state.server.serverpara,
+      paraClient: state => state.client.clientparalist
     }),
     xscale() {
       return d3
@@ -130,12 +144,29 @@ export default {
   watch: {
     paraServer: function(newvalue, oldvalue) {
       this.setColorScale(newvalue);
+    },
+    paraClient: function(newvalue, oldvalue) {
+      this.setColorDiffScale([].concat.apply([], newvalue));
     }
   },
   methods: {
     setColorScale(newvalue) {
       let [min, max] = d3.extent(this.paraServer);
       this.colorScale.domain([
+        min,
+        (3 * min) / 4,
+        min / 2,
+        min / 4,
+        0,
+        max / 4,
+        max / 2,
+        (max * 3) / 4,
+        max
+      ]);
+    },
+    setColorDiffScale(newvalue) {
+      let [min, max] = d3.extent(newvalue);
+      this.colorDiffScale.domain([
         min,
         (3 * min) / 4,
         min / 2,

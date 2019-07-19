@@ -8,30 +8,12 @@ const state = {
   acc: [],
   iternum: 0,
   choosediter: 0,
-  serverpara: {},
+  serverpara: [],
   brushedSelection: [],
   brushedClientStastics: {}
 }
 
-const getters = {
-  serverparaarray: state => {
-    let para = [];
-    let serverparatmp = state.serverpara;
-    if (typeof (serverparatmp) === 'object' && Object.keys(serverparatmp).length !== 0) {
-      let layerCount = model.state.layernum
-      let paratmp, len;
-      for (let i = 0; i < layerCount; i++) {
-        para = [].concat(...serverparatmp["w" + (i + 1)]);
-        paratmp = serverparatmp["b" + (i + 1)];
-        len = paratmp.length;
-        for (let j = 0; j < len; j++) {
-          para.push(...paratmp[j]);
-        }
-      }
-    }
-    return para;
-  }
-}
+const getters = {}
 
 const actions = {
   getServerInfo({
@@ -71,7 +53,7 @@ const mutations = {
     state.brushedClientStastics = data[1];
   },
   [types.GET_SERVER_PARA](state, data) {
-    state.serverpara = data[0];
+    state.serverpara = data;
   }
 }
 

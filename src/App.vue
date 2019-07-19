@@ -13,7 +13,7 @@ export default {
     // this.$store.dispatch("client/getClientPara", [2, 0]);
     this.$store.dispatch("client/getClientParaList", {
       iter: 80,
-      indexarr: [...Array(120).keys()]
+      indexarr: [...Array(1700).keys()].slice(1500, 1700)
     });
     this.$store.dispatch("server/getServerPara", 80);
   }
