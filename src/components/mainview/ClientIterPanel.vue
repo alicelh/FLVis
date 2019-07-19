@@ -52,8 +52,10 @@
               :data-acc="val.acc"
               :data-loss="val.loss"
               :data-iter="val.iter"
+              :style="{'stroke': isOutlier(val.index), 'stroke-width': rectGap}"
               @mouseover="showTooltip"
               @mouseout="hideTooltip"
+              @click="handleRectClick"
               v-for="(val, i) in dataSort.slice(countNum[segment[0] - minIterCount].startIndex, countNum[segment[1] - minIterCount].endIndex + 1)"
               :key="'rect-'+i"
             />
@@ -106,18 +108,29 @@ export default {
   },
   computed: {
     ...mapState({
-      clientInfo: state => state.client.clientInfo[this.iterId]
+      // clientInfo: state => state.client.clientInfo[this.iterId],
+      brushedClientStastics: (state) => state.server.brushedClientStastics
     })
   },
   watch: {
     iterId: function () {
-      console.log(iterId);
       this.getMinMaxIterCount();
       this.getClientSegments();
       this.updateSvgHeight();
     }
   },
   methods: {
+    isOutlier (index) {
+      let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+      let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+      if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1)
+        return "red";
+      else if (outlierClientLoss.indexOf(index) > -1)
+        return '#3983c0';
+      else if (outlierClientAcc.indexOf(index) > -1)
+        return '#dd5041';
+      return 'none';
+    },
     compare(property) {
       return function(obj1, obj2) {
         let value1 = obj1[property];
@@ -161,6 +174,7 @@ export default {
           this.countNum[i].endIndex = this.countNum[i].startIndex + this.countNum[i].num - 1;
         }
       }
+      this.sliderTrianglesPos = [];
     },
     initialSvgHeight () {
       // 计算每行的rect个数
@@ -331,6 +345,10 @@ export default {
       }
       // 更新svg的新高度
       this.svgHeight = newSvgHeight;
+    },
+    handleRectClick (e) {
+      let clickedClientIndex = e.target.getAttribute('data-index');
+      this.$store.dispatch('client/updataClientChoosed', parseInt(clickedClientIndex));
     }
   },
   mounted() { 
