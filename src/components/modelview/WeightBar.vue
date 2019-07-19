@@ -1,6 +1,11 @@
 <template>
   <g :transform="trans">
-    <Axis :scale="xscale" :trans="'translate(0,'+(rectHeight)+')'" orient="Bottom" />
+    <Axis
+      v-if="axisVisable"
+      :scale="xscale"
+      :trans="'translate(0,'+(rectHeight)+')'"
+      orient="Bottom"
+    />
     <g>
       <rect
         :x="xscale(i)"
@@ -29,7 +34,11 @@ export default {
     rectHeight: Number,
     rectWidth: Number,
     xscale: Function,
-    para: Array
+    para: Array,
+    axisVisable: Boolean
+  },
+  updated() {
+    console.log(this.colorScale(this.para[0]));
   }
 };
 </script>

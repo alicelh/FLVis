@@ -1,5 +1,6 @@
 import * as types from '../types'
 import api from '@/fetch/api'
+import model from './model'
 
 const state = {
   loss: [],
@@ -7,15 +8,33 @@ const state = {
   acc: [],
   iternum: 0,
   choosediter: 0,
-  choosedpara: {},
+  serverpara: {},
   brushedSelection: [],
   brushedClientStastics: {}
 }
 
-const getters = {}
+const getters = {
+  serverparaarray: state => {
+    let para = [];
+    let serverparatmp = state.serverpara;
+    if (typeof (serverparatmp) === 'object' && Object.keys(serverparatmp).length !== 0) {
+      let layerCount = model.state.layernum
+      let paratmp, len;
+      for (let i = 0; i < layerCount; i++) {
+        para = [].concat(...serverparatmp["w" + (i + 1)]);
+        paratmp = serverparatmp["b" + (i + 1)];
+        len = paratmp.length;
+        for (let j = 0; j < len; j++) {
+          para.push(...paratmp[j]);
+        }
+      }
+    }
+    return para;
+  }
+}
 
 const actions = {
-  getServerInfo ({
+  getServerInfo({
     commit
   }) {
     api.ServerInfo()
@@ -23,24 +42,36 @@ const actions = {
         commit(types.GET_SERVER_INFO, res)
       })
   },
-  getClientStasticsRange ({commit}, context) {
+  getClientStasticsRange({
+    commit
+  }, context) {
     api.ClientStasticsRange(context[0], context[1])
       .then(res => {
         commit(types.GET_CLIENT_STASTICS_RANGE, [context, res])
       })
+  },
+  getServerPara({
+    commit
+  }, context) {
+    api.ServerPara(context).then(res => {
+      commit(types.GET_SERVER_PARA, res)
+    })
   }
 }
 
 const mutations = {
-  [types.GET_SERVER_INFO] (state, data) {
+  [types.GET_SERVER_INFO](state, data) {
     state.loss = data.loss;
     state.num = data.num;
     state.acc = data.acc;
     state.iternum = data.iternum
   },
-  [types.GET_CLIENT_STASTICS_RANGE] (state, data) {
+  [types.GET_CLIENT_STASTICS_RANGE](state, data) {
     state.brushedSelection = data[0];
     state.brushedClientStastics = data[1];
+  },
+  [types.GET_SERVER_PARA](state, data) {
+    state.serverpara = data[0];
   }
 }
 

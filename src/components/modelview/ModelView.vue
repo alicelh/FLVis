@@ -2,6 +2,7 @@
   <div id="modelView-container">
     <div class="moduleTitle">Model View</div>
     <div class="modelContent" ref="weightView">
+      <div class="varifyView"></div>
       <WeightView :width="weightWidth" />
     </div>
   </div>
@@ -15,7 +16,7 @@ export default {
   name: "ModelView",
   data: function() {
     return {
-      weightWidth: 0
+      weightWidth: 600
     };
   },
   components: {
@@ -23,9 +24,7 @@ export default {
   },
   computed: {},
   methods: {},
-  mounted() {
-    this.weightWidth = this.$refs.weightView.clientWidth;
-  }
+  mounted() {}
 };
 </script>
 
@@ -43,6 +42,8 @@ export default {
     padding-left: 10px;
   }
   .modelContent {
+    display: grid;
+    grid-template-columns: 1fr 600px;
     width: 100%;
     height: 322px;
   }

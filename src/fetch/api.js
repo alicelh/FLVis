@@ -60,5 +60,8 @@ export default {
   },
   ClientParaByIter(iter) {
     return fetchGet(`/clientparabyiter/${iter}`);
+  },
+  ClientParaByIterIndexarr(iter, indexarr) {
+    return fetchGet(`/clientparabyiterindexarr/${iter}/${indexarr}`);
   }
 }
