@@ -41,7 +41,6 @@ export default {
     getIterClientInfo (e) {
       let barId = e.target.getAttribute("id");
       let iterId = barId.split('-')[1];
-      console.log(iterId);
       this.$store.dispatch('client/getClientInfoByIter', iterId);
     }
   },

@@ -10,6 +10,7 @@ const state = {
   b1: [],
   pos: [],
   choosedclient: 0,
+  choosedclientiter: 0, // 在哪一次迭代选择的client
   choosediter: 2, // 选择盒须图上的某一次迭代
   choosedIterForProjection: 1, // 选择迭代面板中的某一次
   clientInfo: {},
@@ -100,8 +101,11 @@ const mutations = {
     state.deleteiter = index;
     delete state.clientInfo[index];
   },
-  [types.UPDATE_CLIENT_CHOOSED](state, clientIndex) {
+  [types.UPDATE_CLIENT_CHOOSED](state, data) {
+    let clientIndex = data[0];
+    let iter = data[1];
     state.choosedclient = clientIndex;
+    state.choosedclientiter = iter;
   },
   [types.UPDATE_ITER_CHOOSED_FOR_PROJ](state, iterIndex) {
     state.choosedIterForProjection = iterIndex;

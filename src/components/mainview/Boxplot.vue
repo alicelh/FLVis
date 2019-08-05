@@ -83,7 +83,8 @@ export default {
   },
   computed: {
     ...mapState({
-      choosedclient: state => state.client.choosedclient
+      choosedclient: state => state.client.choosedclient,
+      choosediter: state => state.client.choosedclientiter
     })
   },
   methods: {
@@ -135,9 +136,10 @@ export default {
     },
     // 判断是否高亮outlier
     isOutlierSelected (clientIndex) {
-      // console.log(clientIndex, this.choosedclient, this.choosedclient === parseInt(clientIndex));
-      return (this.choosedclient === parseInt(clientIndex)) ? {'stroke': 'red', 'stroke-width': '2px'} : {'stroke': '#000', 'stroke-width': '1px'};
-      
+      if (this.choosediter === this.index) 
+        return (this.choosedclient === parseInt(clientIndex)) ? {'stroke': 'red', 'stroke-width': '2px'} : {'stroke': '#000', 'stroke-width': '1px'};
+      else
+        return {'stroke': '#000', 'stroke-width': '1px'};
     }
   },
   watch: {

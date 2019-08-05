@@ -188,7 +188,7 @@ export default {
     showTooltip(e) {
       this.tooltipData.index = e.target.getAttribute("data-index");
       this.tooltipData.count = e.target.getAttribute("data-count");
-      this.tooltipData.iter = e.target.getAttribute("data-iter");
+      // this.tooltipData.iter = e.target.getAttribute("data-iter");
       this.tooltipData.acc = parseFloat(
         e.target.getAttribute("data-acc")
       ).toFixed(2);
@@ -346,9 +346,11 @@ export default {
       // 更新svg的新高度
       this.svgHeight = newSvgHeight;
     },
+    // 点击面板中的小矩形 高亮该次迭代中的异常值circle
     handleRectClick (e) {
       let clickedClientIndex = e.target.getAttribute('data-index');
-      this.$store.dispatch('client/updataClientChoosed', parseInt(clickedClientIndex));
+      let clickedIter = this.iterId;
+      this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
     }
   },
   mounted() { 
