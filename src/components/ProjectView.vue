@@ -21,7 +21,8 @@ export default {
       return parseInt(d3.select("#projectView-container").style("height"));
     },
     ...mapState({
-      projectDots: state => state.client.pos,
+      projectDots: state => state.client.projectdata.pos,
+      projectIds: state => state.client.projectdata.idList,
       choosedIterForProjection: state => state.client.choosedIterForProjection
     })
   },
