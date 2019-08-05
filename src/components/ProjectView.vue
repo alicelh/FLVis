@@ -21,10 +21,15 @@ export default {
       return parseInt(d3.select("#projectView-container").style("height"));
     },
     ...mapState({
-      projectDots: state => state.client.pos
+      projectDots: state => state.client.pos,
+      choosedIterForProjection: state => state.client.choosedIterForProjection
     })
   },
   watch: {
+    choosedIterForProjection: function(newValue, oldValue) {
+      this.$store.dispatch("client/getClientProject", newValue);
+    },
+
     projectDots: function(newValue, oldValue) {
       this.plot();
     }
