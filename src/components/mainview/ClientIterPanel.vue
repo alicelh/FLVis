@@ -61,13 +61,13 @@
             />
           </g>
         </g>
-        <Tooltip
-          :clientData="tooltipData"
-          :isMouseHover="isTooltipShow"
-          :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+tooltipPos[1]+')'"
-        />
       </svg>
     </div>
+    <Tooltip
+      :clientData="tooltipData"
+      :isMouseHover="isTooltipShow"
+      :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize / 2)+','+(tooltipPos[1] - 250)+')'"
+    />
   </div>
 </template>
 
@@ -121,15 +121,20 @@ export default {
   },
   methods: {
     isOutlier (index) {
-      let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
-      let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
-      if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1)
-        return "red";
-      else if (outlierClientLoss.indexOf(index) > -1)
-        return '#3983c0';
-      else if (outlierClientAcc.indexOf(index) > -1)
-        return '#dd5041';
-      return 'none';
+      // 当iter面板有内容时 重新刷选 显示的iter已不在显示的盒须图中 所以不用高亮outlier
+      if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
+        let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+        let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+        if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1)
+          return "red";
+        else if (outlierClientLoss.indexOf(index) > -1)
+          return '#3983c0';
+        else if (outlierClientAcc.indexOf(index) > -1)
+          return '#dd5041';
+        return 'none';
+      } else {
+        return 'none';
+      }
     },
     compare(property) {
       return function(obj1, obj2) {
@@ -350,7 +355,10 @@ export default {
     handleRectClick (e) {
       let clickedClientIndex = e.target.getAttribute('data-index');
       let clickedIter = this.iterId;
+      // 高亮盒须图里的异常值
       this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
+      // 更新client view
+      this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
     }
   },
   mounted() { 

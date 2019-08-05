@@ -13,14 +13,15 @@ const state = {
   choosedclientiter: 0, // 在哪一次迭代选择的client
   choosediter: 2, // 选择盒须图上的某一次迭代
   choosedIterForProjection: 1, // 选择迭代面板中的某一次
-  clientInfo: {},
-  deleteiter: -1
+  clientInfo: {}, // main view中的
+  deleteiter: -1,
+  selectedClientInfo: []
 }
 
 const getters = {}
 
 const actions = {
-  getClientPara({
+  getClientPara ({
     commit
   }, context) {
     api.ClientParaByIterIndex(context[0], context[1])
@@ -28,7 +29,7 @@ const actions = {
         commit(types.GET_CLIENT_PARA, res)
       })
   },
-  getClientParaList({
+  getClientParaList ({
     commit
   }, {
     iter,
@@ -39,7 +40,7 @@ const actions = {
         commit(types.GET_CLIENT_PARA_ARR, res)
       })
   },
-  getClientProject({
+  getClientProject ({
     commit
   }, context) {
     commit(types.RESET_PROJECT_POS, [])
@@ -48,7 +49,7 @@ const actions = {
         commit(types.GET_CLIENT_PROJECT, res)
       })
   },
-  getClientInfoByIter({
+  getClientInfoByIter ({
     commit
   }, context) {
     api.ClientInfoByIter(context)
@@ -56,28 +57,36 @@ const actions = {
         commit(types.GET_CLIENT_INFO_BY_ITER, [context, res])
       })
   },
-  deleteClientInfoByIter({
+  deleteClientInfoByIter ({
     commit
   }, context) {
     commit(types.DELETE_CLIENT_INFO_BY_ITER, context);
   },
-  updataClientChoosed({
+  updataClientChoosed ({
     commit
   }, context) {
     commit(types.UPDATE_CLIENT_CHOOSED, context);
   },
-  updataIterChoosedForProjection({
+  updataIterChoosedForProjection ({
     commit
   }, context) {
     commit(types.UPDATE_ITER_CHOOSED_FOR_PROJ, context);
+  },
+  getClientInfoByIndex ({
+    commit
+  }, context) {
+    api.ClientInfoByIndex(context)
+      .then(res => {
+        commit(types.GET_CLIENT_INFO_BY_INDEX, res);
+      })
   }
 }
 
 const mutations = {
-  [types.GET_CLIENT_PARA](state, data) {
+  [types.GET_CLIENT_PARA] (state, data) {
     state.paradata = data;
   },
-  [types.GET_CLIENT_PARA_ARR](state, data) {
+  [types.GET_CLIENT_PARA_ARR] (state, data) {
     let tmp = server.state.serverpara;
     let len = tmp.length;
     let count = data.length;
@@ -88,30 +97,33 @@ const mutations = {
     }
     state.clientparalist = data;
   },
-  [types.GET_CLIENT_PROJECT](state, data) {
+  [types.GET_CLIENT_PROJECT] (state, data) {
     state.pos = data;
   },
-  [types.GET_CLIENT_INFO_BY_ITER](state, data) {
+  [types.GET_CLIENT_INFO_BY_ITER] (state, data) {
     state.choosediter = data[0];
     state.clientInfo[data[0]] = data[1];
     state.deleteiter = -1;
   },
-  [types.DELETE_CLIENT_INFO_BY_ITER](state, index) {
+  [types.DELETE_CLIENT_INFO_BY_ITER] (state, index) {
     state.choosediter = -1;
     state.deleteiter = index;
     delete state.clientInfo[index];
   },
-  [types.UPDATE_CLIENT_CHOOSED](state, data) {
+  [types.UPDATE_CLIENT_CHOOSED] (state, data) {
     let clientIndex = data[0];
     let iter = data[1];
     state.choosedclient = clientIndex;
     state.choosedclientiter = iter;
   },
-  [types.UPDATE_ITER_CHOOSED_FOR_PROJ](state, iterIndex) {
+  [types.UPDATE_ITER_CHOOSED_FOR_PROJ] (state, iterIndex) {
     state.choosedIterForProjection = iterIndex;
   },
-  [types.RESET_PROJECT_POS](state, initValue) {
+  [types.RESET_PROJECT_POS] (state, initValue) {
     state.pos = initValue;
+  },
+  [types.GET_CLIENT_INFO_BY_INDEX] (state, data) {
+    state.selectedClientInfo = data;
   }
 }
 

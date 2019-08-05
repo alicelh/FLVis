@@ -56,6 +56,10 @@ const mutations = {
   [types.GET_CLIENT_STASTICS_RANGE](state, data) {
     state.brushedSelection = data[0];
     state.brushedClientStastics = data[1];
+    for (let i in state.brushedClientStastics) {
+      state.brushedClientStastics[i]['outlierClient-loss'] = [];
+      state.brushedClientStastics[i]['outlierClient-acc'] = [];
+    }
   },
   [types.GET_SERVER_PARA](state, data) {
     state.serverpara = data;

@@ -1,11 +1,11 @@
 <template>
-  <g class="tooltip" v-show="isMouseHover" :transform="transform">
+  <svg width="80" height="80" class="tooltip" v-show="isMouseHover" :transform="transform">
     <rect width="80" height="80"></rect>
     <g v-for="(value, property, i) in clientData" :key="'tooltip-line-'+i">
       <circle fill="#f3c0ba" r="3" cx="10" :cy="6 + i * 20"></circle>
       <text x="20" :y="10 + i * 20">{{property}}: {{value}}</text>
     </g>
-  </g>
+  </svg>
 </template>
 
 <script>

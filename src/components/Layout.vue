@@ -23,7 +23,7 @@
 import MainView from './mainview/MainView';
 import ModelView from './modelview/ModelView';
 import ProjectView from './ProjectView';
-import ClientView from './ClientView';
+import ClientView from './clientview/ClientView';
 
 export default {
   name: 'layout',

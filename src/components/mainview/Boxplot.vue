@@ -127,7 +127,6 @@ export default {
       for (let i = 0; i < this.outlierIndices.length; i++) {
         this.outlierClientIndex.push(dataSortObject[i].clientIndex);
       }
-      // 先看看Loss的异常
       this.$store.dispatch('server/updateClientOutlier', [this.index, this.outlierClientIndex, this.type])        
     },
     getIterClientInfo (e) {
