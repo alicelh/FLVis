@@ -8,6 +8,13 @@
           :trans="'translate('+margin.left+','+(margin.top+chartHeight)+')'"
           orient="Bottom"
         />
+        <Axis
+          :scale="yscaleIterCount"
+          :trans="'translate('+margin.left+','+margin.top+')'"
+          orient="Left"
+          :ticks="5"
+        />
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#D68966" stroke-width="2" />
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -21,13 +28,16 @@
           orient="Left"
           :ticks="5"
         />
-        <circle
-          r=3
-          fill="#466BB7"
-          :cx="xscale(iterArray[i]) + margin.left"
-          :cy="yscaleLoss(item) + margin.top"
-          v-for="(item, i) in this.loss" :key="i"
-          ></circle>
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
+        <g :transform="'translate('+margin.left+','+(margin.top)+')'">
+          <circle
+            r=3
+            fill="#466BB7"
+            :cx="xscale(iterArray[i])"
+            :cy="yscaleLoss(item)"
+            v-for="(item, i) in this.loss" :key="i"
+            ></circle>
+        </g>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -41,13 +51,16 @@
           orient="Left"
           :ticks="2"
         />
-        <circle
-          r=3
-          fill="#D68966"
-          :cx="xscale(iterArray[i]) + margin.left"
-          :cy="yscaleAcc(item) + margin.top"
-          v-for="(item, i) in this.acc" :key="i"
-          ></circle>
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="accLine" fill="none" stroke="#D68966" stroke-width="2" />
+        <g :transform="'translate('+margin.left+','+(margin.top)+')'">
+          <circle
+            r=3
+            fill="#D68966"
+            :cx="xscale(iterArray[i])"
+            :cy="yscaleAcc(item)"
+            v-for="(item, i) in this.acc" :key="i"
+            ></circle>
+        </g>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -61,13 +74,15 @@
           orient="Left"
           :ticks="5"
         />
-        <circle
-          r=3
-          fill="#90c297"
-          :cx="xscale(iterArray[i]) + margin.left"
-          :cy="yscaleDataSize(item) + margin.top"
-          v-for="(item, i) in this.dataSize" :key="i"
-          ></circle>
+        <g :transform="'translate('+margin.left+','+(margin.top)+')'">
+          <circle
+            r=3
+            fill="#90c297"
+            :cx="xscale(iterArray[i])"
+            :cy="yscaleDataSize(item)"
+            v-for="(item, i) in this.dataSize" :key="i"
+            ></circle>
+        </g>
       </svg>
     </div>
   </div>
@@ -93,7 +108,11 @@ export default {
       acc: [],
       loss: [],
       dataSize: [],
-      iterArray: []
+      iterArray: [],
+      iterCount: [],
+      accLine: '',
+      lossLine: '',
+      iterCountLine: ''
     };
   },
   components: {
@@ -117,21 +136,24 @@ export default {
         .range([0, this.chartWidth]);
     },
     yscaleLoss () {
-      // this.loss = this.clientInfo.map(d=>d.loss);
       return d3
         .scaleLinear()
         .domain([0, d3.max(this.loss)])
         .range([this.chartHeight, 0]);
     },
     yscaleAcc () {
-      // this.acc = this.clientInfo.map(d=>d.acc);
       return d3
         .scaleLinear()
         .domain([0, 1])
         .range([this.chartHeight, 0]);
     },
+    yscaleIterCount () {
+      return d3
+        .scaleLinear()
+        .domain([0, d3.max(this.iterCount)])
+        .range([this.chartHeight, 0]);
+    },
     yscaleDataSize () {
-      // this.dataSize = this.clientInfo.map(d=>d.num);
       return d3
         .scaleLinear()
         .domain([0, d3.max(this.dataSize)])
@@ -139,12 +161,55 @@ export default {
     }
   },
   methods: {
-
+    getLossPathLine () {
+      let losspath = d3
+        .line()
+        .x((d, i) => {
+          return this.xscale(this.iterArray[i]);
+        })
+        .y(d => {
+          return this.yscaleLoss(d);
+        });
+      this.lossLine = losspath(this.loss);
+    },
+    getAccPathLine () {
+      let accpath = d3
+        .line()
+        .x((d, i) => {
+          return this.xscale(this.iterArray[i]);
+        })
+        .y(d => {
+          return this.yscaleAcc(d);
+        });
+      this.accLine = accpath(this.acc);
+    },
+    getIterCountLine () {
+      let itercountpath = d3
+        .line()
+        .x((d, i) => {
+          let x;
+          if (i === this.iterCount.length - 1) {
+            x = this.iternum;
+          } else if (i % 2 === 0) {
+            x = this.iterArray[i / 2]
+          } else {
+            x = this.iterArray[(i-1) / 2]
+          }
+          return this.xscale(x);
+        })
+        .y(d => {
+          return this.yscaleIterCount(d);
+        });
+      this.iterCountLine = itercountpath(this.iterCount);
+    }
   },
   mounted () {
     this.clientViewWidth = this.$refs.clientView.clientWidth;
     this.height = this.$refs.clientViewChart.clientHeight;
     this.iterArray = this.clientInfo.map(d=>d.iter);
+    this.getLossPathLine();
+    this.getAccPathLine();
+    this.getIterCountLine();
   },
   watch: {
     clientInfo: function (newvalue, oldvalue) {
@@ -152,6 +217,16 @@ export default {
       this.dataSize = this.clientInfo.map(d=>d.num);
       this.loss = this.clientInfo.map(d=>d.loss);
       this.acc = this.clientInfo.map(d=>d.acc);
+      // this.iterCount = this.clientInfo.map(d=>d.count);
+      this.iterCount = [0];
+      for (let i = 0; i < this.clientInfo.length; i++) {
+        this.iterCount.push(this.clientInfo[i].count);
+        this.iterCount.push(this.clientInfo[i].count);
+      }
+      this.iterCountObject = [];
+      this.getLossPathLine();
+      this.getAccPathLine();
+      this.getIterCountLine();
     }
   }
 }
