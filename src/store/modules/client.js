@@ -125,6 +125,9 @@ const mutations = {
   },
   [types.RESET_PROJECT_POS](state, initValue) {
     state.projectdata.pos = initValue;
+  },
+  [types.GET_CLIENT_INFO_BY_INDEX] (state, data) {
+    state.selectedClientInfo = data;
   }
 }
 
