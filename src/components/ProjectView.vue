@@ -2,6 +2,7 @@
   <div id="projectView-container">
     <div class="moduleTitle">Project View</div>
     <svg width="100%" height="100%" ref="svg" />
+    <div id="corner">{{this.choosedIterForProjection}}</div>
   </div>
 </template>
 
@@ -21,8 +22,7 @@ export default {
       return parseInt(d3.select("#projectView-container").style("height"));
     },
     ...mapState({
-      projectDots: state => state.client.projectdata.pos,
-      projectIds: state => state.client.projectdata.idList,
+      projectData: state => state.client.projectdata,
       choosedIterForProjection: state => state.client.choosedIterForProjection
     })
   },
@@ -31,12 +31,18 @@ export default {
       this.$store.dispatch("client/getClientProject", newValue);
     },
 
-    projectDots: function(newValue, oldValue) {
-      this.plot();
+    projectData: function(newValue, oldValue) {
+      this.plot(newValue);
     }
   },
   methods: {
-    plot() {
+    plot(projectData) {
+      let pos = projectData["pos"]
+      let idList = projectData["idList"]
+      //为了让server节点最后画，保证不被遮挡，所以需要逆序
+      pos.reverse()
+      idList.reverse()
+      const serverIndex = pos.length-1
       let xScale = d3
         .scaleLinear()
         .domain([0, 1])
@@ -52,7 +58,7 @@ export default {
       d3.select(this.svg)
         .append("g")
         .selectAll(".point")
-        .data(this.projectDots)
+        .data(pos)
         .enter()
         .append("circle")
         .attr("class", "point")
@@ -62,11 +68,23 @@ export default {
         .attr("cy", function(d) {
           return yScale(d[1]);
         })
-        .attr("r", 2);
+        .attr("r", function(d,i){
+          return i===serverIndex?6:3;
+        })
+        .attr("fill", function(d,i){
+          return i===serverIndex?'red':'blue';
+        })
+        .attr("stroke", 'red')
+        .attr("stroke-width", 2)
+        .attr("stroke-opacity", 0)
+        .append("title")
+        .text((d,i) => {
+          return idList[i];
+        });
     }
   },
   mounted() {
-    this.plot();
+    // this.plot();
   }
 };
 </script>
@@ -84,5 +102,10 @@ export default {
     color: #ffffff;
     padding-left: 10px;
   }
+}
+#corner {
+  position: absolute;
+  top: 40px;
+  right: 20px;
 }
 </style>
