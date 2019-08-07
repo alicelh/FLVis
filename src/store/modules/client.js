@@ -15,7 +15,7 @@ const state = {
   choosedclient: 0,
   choosedclientiter: 0, // 在哪一次迭代选择的client
   choosediter: 2, // 选择盒须图上的某一次迭代
-  choosedIterForProjection: 1, // 选择迭代面板中的某一次
+  choosedIterForProjection: 0, // 选择迭代面板中的某一次
   clientInfo: {}, // main view中的
   deleteiter: -1,
   selectedClientInfo: []
@@ -101,8 +101,7 @@ const mutations = {
     state.clientparalist = data;
   },
   [types.GET_CLIENT_PROJECT](state, data) {
-    state.projectdata.pos = data['pos'];
-    state.projectdata.idList = data['idList'];
+    state.projectdata = data;
   },
   [types.GET_CLIENT_INFO_BY_ITER](state, data) {
     state.choosediter = data[0];
@@ -124,7 +123,10 @@ const mutations = {
     state.choosedIterForProjection = iterIndex;
   },
   [types.RESET_PROJECT_POS](state, initValue) {
-    state.projectdata.pos = initValue;
+    state.projectdata = {
+      "pos": [],
+      "idList": []
+    };
   },
   [types.GET_CLIENT_INFO_BY_INDEX] (state, data) {
     state.selectedClientInfo = data;
