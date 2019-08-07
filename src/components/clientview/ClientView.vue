@@ -14,7 +14,7 @@
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#D68966" stroke-width="2" />
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
       </svg>
       <svg width="100%" height="100%">
         <Axis
