@@ -63,11 +63,13 @@
         </g>
       </svg>
     </div>
-    <Tooltip
-      :clientData="tooltipData"
-      :isMouseHover="isTooltipShow"
-      :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize / 2)+','+(tooltipPos[1] - 250)+')'"
-    />
+    <div class="tooltip-container">
+      <Tooltip
+        :clientData="tooltipData"
+        :isMouseHover="isTooltipShow"
+        :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+(tooltipPos[1] - 350)+')'"
+      />
+    </div>
   </div>
 </template>
 
@@ -202,7 +204,8 @@ export default {
       ).toFixed(2);
       this.tooltipPos = [
         e.target.getAttribute("x"),
-        e.target.getAttribute("y")
+        e.clientY
+        // e.target.getAttribute("y")
       ];
       this.isTooltipShow = true;
     },
@@ -372,6 +375,10 @@ export default {
 .client-panel {
   height: 100%;
   position: relative;
+  .tooltip-container {
+    position: absolute;
+    z-index: 999;
+  }
   img {
     width: 20px;
     cursor: pointer;
