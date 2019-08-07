@@ -21,6 +21,7 @@ export default {
 
 <style lang="scss">
 .tooltip {
+  z-index: 999;
   rect {
     fill: #fff;
     // opacity:0.7;
