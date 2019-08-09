@@ -1,6 +1,7 @@
 <template>
   <g :transform="trans">
     <g ref="axis"></g>
+    <!-- <text class="axis-text" :style="{'text-anchor': textAnchor}">123</text> -->
   </g>
 </template>
 
@@ -15,6 +16,11 @@ export default {
     orient: String,
     ticks: Number
   },
+  // data () {
+  //   return {
+  //     textAnchor: 'end'
+  //   };
+  // },
   methods: {
     createAxis () {
       let node = this.$refs.axis;

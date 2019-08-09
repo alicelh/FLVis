@@ -16,6 +16,8 @@
           :ticks="5"
         />
         <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Iter count</text>
+        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+','+(margin.top-5) + ')'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -39,6 +41,7 @@
             v-for="(item, i) in this.loss" :key="i"
             ></circle>
         </g>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Loss</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -62,6 +65,7 @@
             v-for="(item, i) in this.acc" :key="i"
             ></circle>
         </g>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Accuracy</text>
       </svg>
       <!-- 数据量暂时不用线图展示 -->
       <svg width="100%" height="100%">
@@ -85,6 +89,7 @@
             v-for="(item, i) in this.dataSize" :key="i"
             ></circle>
         </g>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Data size</text>
       </svg>
     </div>
   </div>
@@ -102,7 +107,7 @@ export default {
       margin: {
         left: 40,
         right: 30,
-        top: 10,
+        top: 25,
         bottom: 20
       },
       clientViewWidth: 0,
@@ -123,7 +128,8 @@ export default {
   computed:{
     ...mapState({
       clientInfo: state => state.client.selectedClientInfo,
-      iternum: state => state.server.iternum
+      iternum: state => state.server.iternum,
+      choosedClient: state => state.client.choosedclient
     }),
     chartWidth () {
       return this.clientViewWidth - this.margin.left - this.margin.right;
@@ -251,6 +257,15 @@ export default {
       height: 380px;
       display: grid;
       grid-template-rows: 1fr 1fr 1fr 1fr;
+      .axis-text {
+        text-anchor: middle;
+        font-size: 15px;
+      }
+      .client-index {
+        text-anchor: end;
+        font-size: 15px;
+        font-weight: bold;
+      }
     }
   }
 </style>

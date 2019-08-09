@@ -38,9 +38,11 @@
         </Boxplot>
       </g>
       <g :transform="'translate('+margin.left+','+margin.top+')'">
-          <path :transform="'translate('+xBandwidth * 0.25+',0)'" :d="brushedLossline" fill="none" stroke="#466BB7" stroke-width="2" />
-          <path :transform="'translate('+xBandwidth * 0.75+',0)'" :d="brushedAccline" fill="none" stroke="#D68966" stroke-width="2" />
-        </g>
+        <path :transform="'translate('+xBandwidth * 0.25+',0)'" :d="brushedLossline" fill="none" stroke="#466BB7" stroke-width="2" />
+        <path :transform="'translate('+xBandwidth * 0.75+',0)'" :d="brushedAccline" fill="none" stroke="#D68966" stroke-width="2" />
+      </g>
+      <text class="axis-text" :transform="'translate('+margin.left+',' + (margin.top + 5) + ')'">Loss</text>
+      <text class="axis-text" :transform="'translate('+(mainViewWidth -margin.right) +',' + (margin.top+5) + ')'">Accuracy</text>
     </svg>
   </div>
 </template>
@@ -179,3 +181,11 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.axis-text {
+  font-family: STHeitiSC-Medium;
+  font-size: 16px;
+  color: #000000;
+  text-anchor: middle
+}
+</style>

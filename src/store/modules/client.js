@@ -12,7 +12,7 @@ const state = {
     "pos": [],
     "idList": []
   },
-  choosedclient: 0,
+  choosedclient: -1,
   choosedclientiter: 0, // 在哪一次迭代选择的client
   choosediter: 2, // 选择盒须图上的某一次迭代
   choosedIterForProjection: 0, // 选择迭代面板中的某一次
