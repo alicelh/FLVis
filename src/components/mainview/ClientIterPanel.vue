@@ -187,6 +187,8 @@ export default {
       // 计算每行的rect个数
       let sliderDom = document.getElementsByClassName("clientnum-slider")[0];
       let sliderWidth = sliderDom.offsetWidth;
+      // this.rectGap = 2;
+      // this.rectNumLine = Math.floor((sliderWidth + this.rectGap)  / (this.rectSize+ this.rectGap));
       this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
       this.rectGap = (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
       // 更新svg高度(未分段的情况)
@@ -387,7 +389,7 @@ export default {
     line-height: 20px;
     height: 19px;
     display: grid;
-    grid-template-columns: 4fr 4fr 1fr;
+    grid-template-columns: 7fr 4fr 1fr;
     border-bottom: 1px solid #979797;
     font-size: 10px;
     color: #000;
@@ -432,7 +434,7 @@ export default {
         font-size: 10px;
       }
       #slider-bar {
-        width: 80%;
+        width: 73%;
         height: 2px;
         border-radius: 10px;
         background: #474747;

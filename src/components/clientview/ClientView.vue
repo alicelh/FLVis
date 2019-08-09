@@ -2,7 +2,7 @@
   <div id="clientView-container" ref="clientView">
     <div class="moduleTitle">Client View</div>
     <div id="clientView-content">
-      <div id="client-confusion-matrix"></div>
+      <!-- <div id="client-confusion-matrix"></div> -->
       <svg width="100%" height="100%" ref="clientViewChart">
         <Axis
           :scale="xscale"
@@ -64,7 +64,7 @@
         </g>
       </svg>
       <!-- 数据量暂时不用线图展示 -->
-      <!-- <svg width="100%" height="100%">
+      <svg width="100%" height="100%">
         <Axis
           :scale="xscale"
           :trans="'translate('+margin.left+','+(margin.top+chartHeight)+')'"
@@ -85,7 +85,7 @@
             v-for="(item, i) in this.dataSize" :key="i"
             ></circle>
         </g>
-      </svg> -->
+      </svg>
     </div>
   </div>
 </template>
