@@ -63,5 +63,8 @@ export default {
   },
   ClientParaByIterIndexarr(iter, indexarr) {
     return fetchGet(`/clientparabyiterindexarr/${iter}/${indexarr}`);
+  },
+  ConfusionMatrixByIterClientIndex(iter, clientIndex) {
+    return fetchGet(`/confusionmatrixbyiterclientindex/${iter}/${clientIndex}`);
   }
 }

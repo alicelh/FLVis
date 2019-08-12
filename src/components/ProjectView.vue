@@ -37,6 +37,7 @@ export default {
   },
   methods: {
     plot(projectData) {
+      let me = this;
       let pos = projectData["pos"]
       let idList = projectData["idList"]
       //为了让server节点最后画，保证不被遮挡，所以需要逆序
@@ -77,6 +78,11 @@ export default {
         .attr("stroke", 'red')
         .attr("stroke-width", 2)
         .attr("stroke-opacity", 0)
+        // 点击事件
+        d3.select(this.svg).selectAll('circle')
+        .on('click', function (d, i) {
+          me.$store.dispatch("client/getConfusionMatrix", idList[i]);
+        })
         .append("title")
         .text((d,i) => {
           return idList[i];
