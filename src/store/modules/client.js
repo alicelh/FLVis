@@ -15,6 +15,7 @@ const state = {
   choosedclient: -1,
   choosedclientiter: 0, // 在哪一次迭代选择的client
   choosedClientInProjection: -1, // 在投影视图中选择的client
+  clientConfusionMatrix: [],
   choosediter: 2, // 选择盒须图上的某一次迭代
   choosedIterForProjection: 0, // 选择迭代面板中的某一次
   clientInfo: {}, // main view中的
@@ -142,8 +143,8 @@ const mutations = {
   },
   [types.GET_CONFUSION_MATRIX_BY_ITER_CLIENT_INDEX] (state, data) {
     state.choosedClientInProjection = data[0];
-    console.log(data[0], data[1]);
-    // state.clientConfusionMatrix = data[1];
+    // console.log(data[0], data[1]);
+    state.clientConfusionMatrix = data[1];
   }
 }
 

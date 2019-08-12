@@ -20,7 +20,7 @@
             :y="yscale(rowvalue)"
             :width="xscale.bandwidth()"
             :height="xscale.bandwidth()"
-            fill="none"
+            :fill="clientConfusionMatrix.length === 0? 'none' : getColor(clientConfusionMatrix[rowi][recti])"
             stroke="black"
             v-for="(rectvalue, recti) in temp" :key="'rect-'+recti"
           ></rect>
@@ -33,6 +33,7 @@
 <script>
 import * as d3 from "d3";
 import Axis from "../common/Axis";
+import { mapState } from 'vuex';
 
 export default {
   name: "VarifyView",
@@ -45,13 +46,19 @@ export default {
         top: 20,
         bottom: 10
       },
-      height: 0
+      height: 0,
+      colorLinear: '',
+      greenColor: ['#fffff', '#2ca25f'],
+      // redColor: ['#fffff', '#e34a33']
     }
   },
   components: {
     Axis
   },
   computed: {
+    ...mapState({
+      clientConfusionMatrix: state => state.client.clientConfusionMatrix,
+    }),
     // chartwidth和height相等
     chartHeight () {
       return this.height - this.margin.top - this.margin.bottom;
@@ -71,9 +78,32 @@ export default {
         .paddingInner(0);;
     },
   },
+  methods: {
+    getColorLinear () {
+      let domain = [999999, -999999];
+      for (let i = 0; i < this.clientConfusionMatrix.length; i++) {
+        let temp = d3.extent(this.clientConfusionMatrix[i]);
+        if (temp[0] < domain[0]) domain[0] = temp[0];
+        if (temp[1] > domain[1]) domain[1] = temp[1];
+      }
+      this.colorLinear = d3.scaleLinear()
+				.domain(domain)
+        .range([0,1]);
+    },
+    getColor (num) {
+      let compute = d3.interpolate(d3.rgb(255, 255, 255), '#2ca25f');
+      return compute(this.colorLinear(num));
+    },
+  },
   mounted() {
     let svgnode = this.$refs.varifyView;
     this.height = svgnode.clientHeight;
+    this.getColorLinear();
+  },
+  watch: {
+    clientConfusionMatrix: function (newvalue, oldvalue) {
+      this.getColorLinear();
+    }
   }
 }
 </script>
