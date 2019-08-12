@@ -2,7 +2,7 @@
   <div id="modelView-container">
     <div class="moduleTitle">Model View</div>
     <div class="modelContent" ref="weightView">
-      <div class="varifyView"></div>
+      <VarifyView />
       <WeightView :width="weightWidth" />
     </div>
   </div>
@@ -11,6 +11,7 @@
 <script>
 import { mapState } from "vuex";
 import WeightView from "./WeightView";
+import VarifyView from "./VarifyView";
 
 export default {
   name: "ModelView",
@@ -20,7 +21,8 @@ export default {
     };
   },
   components: {
-    WeightView
+    WeightView,
+    VarifyView
   },
   computed: {},
   methods: {},

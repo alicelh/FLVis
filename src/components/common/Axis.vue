@@ -14,7 +14,8 @@ export default {
     scale: Function,
     trans: String,
     orient: String,
-    ticks: Number
+    ticks: Number,
+    deleteDomainPath: Boolean
   },
   // data () {
   //   return {
@@ -26,6 +27,9 @@ export default {
       let node = this.$refs.axis;
       let axis = d3['axis' + this.orient](this.scale).ticks(this.ticks);
       d3.select(node).call(axis);
+      if (this.deleteDomainPath) {
+        d3.select(node).selectAll('.domain').remove();
+      }
     }
   },
   watch: {
