@@ -78,10 +78,13 @@ export default {
         .attr("stroke", 'red')
         .attr("stroke-width", 2)
         .attr("stroke-opacity", 0)
-        // 点击事件
-        d3.select(this.svg).selectAll('circle')
-        .on('click', function (d, i) {
-          me.$store.dispatch("client/getConfusionMatrix", idList[i]);
+        .on("click", (d,i)=> {
+          let clickedClientIndex = idList[i];
+          let clickedIter = this.choosedIterForProjection;
+          // 高亮盒须图里的异常值
+          this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
+          // 更新client view
+          this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
         })
         .append("title")
         .text((d,i) => {
