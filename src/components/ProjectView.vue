@@ -80,9 +80,6 @@ export default {
         .attr("stroke-opacity", 0)
         .on("click", (d,i)=> {
           let clickedClientIndex = idList[i];
-          let clickedIter = this.choosedIterForProjection;
-          // 高亮盒须图里的异常值
-          this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
           // 更新client view
           this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
           // 更新混淆矩阵

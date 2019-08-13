@@ -364,8 +364,8 @@ export default {
       this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
       // 更新client view
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
-      // 更新混淆矩阵
-      this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+      // 暂时不用更新混淆矩阵
+      // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
     }
   },
   mounted() { 
