@@ -7,12 +7,14 @@
         orient="Top"
         :deleteDomainPath="true"
       />
+      <text class="axis-text" :transform="'translate('+(margin.left+chartHeight/2)+','+(margin.top-20)+')'">Actual</text>      
       <Axis
         :scale="yscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
         orient="Left"
         :deleteDomainPath="true"
       />
+      <text class="axis-text" :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'">Predicted</text>      
       <g :transform="'translate('+margin.left+','+(margin.top)+')'">
         <g v-for="(rowvalue, rowi) in temp" :key="'row-' + rowi">
           <rect
@@ -20,7 +22,7 @@
             :y="yscale(rowvalue)"
             :width="xscale.bandwidth()"
             :height="xscale.bandwidth()"
-            :fill="clientConfusionMatrix.length === 0? 'none' : getColor(clientConfusionMatrix[rowi][recti])"
+            :fill="clientConfusionMatrix.length === 0? 'none' : getColor(rowi, recti)"
             stroke="black"
             v-for="(rectvalue, recti) in temp" :key="'rect-'+recti"
           ></rect>
@@ -39,17 +41,15 @@ export default {
   name: "VarifyView",
   data () {
     return {
-      temp: ['type1', 'type2', 'type3', 'type4', 'type5', 'type6', 'type7', 'type8', 'type9', 'type10'],
+      temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       margin: {
         left: 100,
         right: 30,
-        top: 20,
-        bottom: 10
+        top: 40,
+        bottom: 20
       },
       height: 0,
       colorLinear: '',
-      greenColor: ['#fffff', '#2ca25f'],
-      // redColor: ['#fffff', '#e34a33']
     }
   },
   components: {
@@ -90,10 +90,15 @@ export default {
 				.domain(domain)
         .range([0,1]);
     },
-    getColor (num) {
-      let compute = d3.interpolate(d3.rgb(255, 255, 255), '#2ca25f');
-      return compute(this.colorLinear(num));
-    },
+    getColor (i, j) {
+      let compute = '';
+      if(i === j) {
+        compute = d3.interpolate(d3.rgb(255, 255, 255), '#2ca25f');
+      } else {
+        compute = d3.interpolate(d3.rgb(255, 255, 255), '#e34a33');
+      }
+      return compute(this.colorLinear(this.clientConfusionMatrix[i][j]));
+    }
   },
   mounted() {
     let svgnode = this.$refs.varifyView;
@@ -109,5 +114,8 @@ export default {
 </script>
 
 <style lang="scss">
-
+.axis-text {
+  text-anchor: middle;
+  font-size: 15px;
+}
 </style>
