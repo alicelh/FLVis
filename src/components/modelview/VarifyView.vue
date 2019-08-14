@@ -1,6 +1,22 @@
 <template>
   <div class="VarifyView">
     <svg width="100%" height="100%" ref="varifyView">
+      <defs>
+        <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#e34a33"/>
+        </linearGradient>
+        <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#2ca25f"/>
+        </linearGradient>
+      </defs>
+      <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight/2 - 40)+','+(15)+')'">
+        <text y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+        <rect width="80" height="5" fill="url(#green_linear)"></rect>
+        <rect y="10" width="80" height="5" fill="url(#red_linear)"></rect>
+        <text x="85" y="13" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+      </g>
       <Axis
         :scale="xscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
@@ -43,13 +59,14 @@ export default {
     return {
       temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       margin: {
-        left: 100,
+        left: 70,
         right: 30,
-        top: 40,
+        top: 80,
         bottom: 20
       },
       height: 0,
       colorLinear: '',
+      domain: [0, 0]
     }
   },
   components: {
@@ -80,14 +97,14 @@ export default {
   },
   methods: {
     getColorLinear () {
-      let domain = [999999, -999999];
+      this.domain = [999999, -999999];
       for (let i = 0; i < this.clientConfusionMatrix.length; i++) {
         let temp = d3.extent(this.clientConfusionMatrix[i]);
-        if (temp[0] < domain[0]) domain[0] = temp[0];
-        if (temp[1] > domain[1]) domain[1] = temp[1];
+        if (temp[0] < this.domain[0]) this.domain[0] = temp[0];
+        if (temp[1] > this.domain[1]) this.domain[1] = temp[1];
       }
       this.colorLinear = d3.scaleLinear()
-				.domain(domain)
+				.domain(this.domain)
         .range([0,1]);
     },
     getColor (i, j) {
@@ -114,8 +131,15 @@ export default {
 </script>
 
 <style lang="scss">
-.axis-text {
-  text-anchor: middle;
-  font-size: 15px;
+.VarifyView {
+  .axis-text {
+    text-anchor: middle;
+    font-size: 15px;
+  }
+  #matrix-legends {
+    text {
+      font-size: 15px;
+    }
+  }
 }
 </style>
