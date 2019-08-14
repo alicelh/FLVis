@@ -74,7 +74,7 @@ export default {
           return i===serverIndex?6:3;
         })
         .attr("fill", function(d,i){
-          return i===serverIndex?'blue':(isNormal[i]===1?'blue':'red');
+          return i===serverIndex?"#90c297":(isNormal[i]===1?"#90c297":"red");
         })
         .attr("stroke", 'red')
         .attr("stroke-width", 2)
