@@ -2,8 +2,8 @@
   <div id="modelView-container">
     <div class="moduleTitle">Model View</div>
     <div class="modelContent" ref="weightView">
-      <VarifyView />
       <WeightView :width="weightWidth" />
+      <VarifyView />
     </div>
   </div>
 </template>
@@ -45,9 +45,9 @@ export default {
   }
   .modelContent {
     display: grid;
-    grid-template-columns: 1fr 600px;
+    grid-template-rows: 1fr 1fr;
     width: 100%;
-    height: 322px;
+    height: 570px;
   }
 }
 </style>

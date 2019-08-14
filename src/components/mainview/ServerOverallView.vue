@@ -28,6 +28,9 @@
           :brushArea="brushArea"
           :xscale="xscale"
         />
+        <text class="axis-text" :transform="'translate('+margin.left+',' + (margin.top - 10) + ')'">Loss</text>
+        <text class="axis-text" :transform="'translate('+(mainViewWidth -margin.right) +',' + (margin.top-10) + ')'">Accuracy</text>
+        <text class="axis-text" :transform="'translate('+(mainViewWidth/2) +',' + (height-10) + ')'">Iter Count</text>
       </g>
     </svg>
   </div>
@@ -47,12 +50,12 @@ export default {
   data: function () {
     return {
       // width: 900,
-      height: 80,
+      height: 95,
       margin: {
         left: 50,
         right: 50,
-        top: 10,
-        bottom: 20
+        top: 20,
+        bottom: 40
       },
       lossline: '',
       accline: '',
@@ -141,4 +144,10 @@ export default {
 </script>
 
 <style>
+.axis-text {
+  font-family: STHeitiSC-Medium;
+  font-size: 14px;
+  color: #000000;
+  text-anchor: middle
+}
 </style>

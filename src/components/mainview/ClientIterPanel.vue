@@ -52,7 +52,7 @@
               :data-acc="val.acc"
               :data-loss="val.loss"
               :data-iter="val.iter"
-              :style="{'stroke': isOutlier(val.index), 'stroke-width': rectGap}"
+              :style="{'stroke': isOutlier(val.index), 'stroke-width': '3px'}"
               @mouseover="showTooltip"
               @mouseout="hideTooltip"
               @click="handleRectClick"
@@ -87,7 +87,7 @@ export default {
   },
   data() {
     return {
-      rectSize: 15,
+      rectSize: 14,
       rectNumLine: 0, // 一行显示多少个
       rectGap: 0,// rect间距
       minIterCount: 0,
@@ -190,6 +190,7 @@ export default {
       // this.rectGap = 2;
       // this.rectNumLine = Math.floor((sliderWidth + this.rectGap)  / (this.rectSize+ this.rectGap));
       this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
+      if (this.rectNumLine > 6) this.rectNumLine = 6;
       this.rectGap = (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
       // 更新svg高度(未分段的情况)
       this.svgHeight = Math.ceil(this.clientNumAll / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNumAll / this.rectNumLine);
@@ -405,7 +406,7 @@ export default {
   }
   .client-content {
     background: #fff;
-    height: 280px;
+    height: 310px;
     // border: 1px solid #979797;
     border-radius: 0px 0px 5px 5px;
     overflow-y: auto;

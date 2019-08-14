@@ -1,5 +1,5 @@
 <template>
-  <div :width="mainViewWidth">
+  <!-- <div :width="mainViewWidth"> -->
     <svg height="100%" width="100%">
       <Axis
         :scale="xscale"
@@ -41,10 +41,14 @@
         <path :transform="'translate('+xBandwidth * 0.25+',0)'" :d="brushedLossline" fill="none" stroke="#466BB7" stroke-width="2" />
         <path :transform="'translate('+xBandwidth * 0.75+',0)'" :d="brushedAccline" fill="none" stroke="#D68966" stroke-width="2" />
       </g>
-      <text class="axis-text" :transform="'translate('+margin.left+',' + (margin.top + 5) + ')'">Loss</text>
-      <text class="axis-text" :transform="'translate('+(mainViewWidth -margin.right) +',' + (margin.top+5) + ')'">Accuracy</text>
+      <g class="legends" :transform="'translate('+(mainViewWidth - 200)+',5)'">
+        <rect width="10" height="10" fill="#f3c0ba"></rect>
+        <text x="15" y="10">Accuracy</text>
+        <rect width="10" height="10" x="100" fill="#8cb1cf"></rect>
+        <text x="115" y="10">Loss</text>
+      </g>
     </svg>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -61,11 +65,11 @@ export default {
   },
   data () {
     return {
-      height: 150,
+      height: 210,
       margin: {
         left: 50,
         right: 50,
-        top: 10,
+        top: 20,
         bottom: 20
       },
       selection: [],// 当前刷选的迭代
@@ -182,10 +186,5 @@ export default {
 </script>
 
 <style lang="scss">
-.axis-text {
-  font-family: STHeitiSC-Medium;
-  font-size: 16px;
-  color: #000000;
-  text-anchor: middle
-}
+
 </style>

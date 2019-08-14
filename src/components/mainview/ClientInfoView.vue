@@ -75,7 +75,7 @@ export default {
   padding: 15px 50px 0px 50px;
   .singleIterPanel {
     border-radius: 5px;
-    height: 300px;
+    height: 330px;
     background: #D8D8D8;
     border: 1px solid #979797;
   }

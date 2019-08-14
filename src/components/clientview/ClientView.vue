@@ -2,7 +2,6 @@
   <div id="clientView-container" ref="clientView">
     <div class="moduleTitle">Client View</div>
     <div id="clientView-content">
-      <!-- <div id="client-confusion-matrix"></div> -->
       <svg width="100%" height="100%" ref="clientViewChart">
         <Axis
           :scale="xscale"
@@ -17,7 +16,7 @@
         />
         <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Iter count</text>
-        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+','+(margin.top-5) + ')'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -42,6 +41,8 @@
             ></circle>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Loss</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
+        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+','+(margin.top-5) + ')'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -66,6 +67,7 @@
             ></circle>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Accuracy</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
       </svg>
       <!-- 数据量暂时不用线图展示 -->
       <svg width="100%" height="100%">
@@ -90,6 +92,7 @@
             ></circle>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Data size</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
       </svg>
     </div>
   </div>
@@ -107,8 +110,8 @@ export default {
       margin: {
         left: 40,
         right: 30,
-        top: 25,
-        bottom: 20
+        top: 20,
+        bottom: 40
       },
       clientViewWidth: 0,
       height: 0,
@@ -212,7 +215,7 @@ export default {
     }
   },
   mounted () {
-    this.clientViewWidth = this.$refs.clientView.clientWidth;
+    this.clientViewWidth = this.$refs.clientViewChart.clientWidth;
     this.height = this.$refs.clientViewChart.clientHeight;
     this.iterArray = this.clientInfo.map(d=>d.iter);
     this.getLossPathLine();
@@ -254,12 +257,17 @@ export default {
       padding-left: 10px;
     }
     #clientView-content {
-      height: 380px;
+      height: 270px;
       display: grid;
-      grid-template-rows: 1fr 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       .axis-text {
         text-anchor: middle;
-        font-size: 15px;
+        font-size: 14px;
+      }
+      .axis-text-x {
+        text-anchor: end;
+        font-size: 14px;
       }
       .client-index {
         text-anchor: end;

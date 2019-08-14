@@ -11,7 +11,7 @@
               <stop offset="100%" stop-color="#2ca25f"/>
         </linearGradient>
       </defs>
-      <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight/2 - 40)+','+(15)+')'">
+      <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight+margin.right)+','+(margin.top)+')'">
         <text y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
         <rect width="80" height="5" fill="url(#green_linear)"></rect>
         <rect y="10" width="80" height="5" fill="url(#red_linear)"></rect>
@@ -59,9 +59,9 @@ export default {
     return {
       temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       margin: {
-        left: 70,
-        right: 30,
-        top: 80,
+        left: 50,
+        right: 60,
+        top: 40,
         bottom: 20
       },
       height: 0,

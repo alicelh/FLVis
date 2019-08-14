@@ -4,16 +4,17 @@
       <div id="mainView">
         <MainView />
       </div>
-      <div id="modelView">
-        <ModelView />
+      <div id="clientView">
+        <ClientView />
       </div>
     </div>
     <div id="rightPanel">
       <div id="projectView">
         <ProjectView />
       </div>
-      <div id="clientView">
-        <ClientView />
+      
+      <div id="modelView">
+        <ModelView />
       </div>
     </div>
   </div>
@@ -41,30 +42,28 @@ export default {
 
 <style scoped lang="scss">
 #main {
+  width: 1904px;
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2.5fr 1fr;
   grid-gap: 10px;
   #leftPanel {
     display: grid;
     grid-gap: 10px;
-    #serverView {
-      height: 200px;
-    }
     #mainView {
-      height: 580px;
+      height: 700px;
     }
-    #modelView {
-      height: 350px;
+    #clientView {
+      height: 300px;
     }
   }
   #rightPanel {
     display: grid;
     grid-gap: 10px;
     #projectView {
-      height: 520px;
+      height: 400px;
     }
-    #clientView {
-      height: 410px;
+    #modelView {
+      height: 600px;
     }
   }
 }

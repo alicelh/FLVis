@@ -54,18 +54,18 @@ export default {
       padding-left: 10px;
     }
     #clientInfoView-container {
-      height: 320px;
+      height: 360px;
       // padding: 10px 20px 20px 20px;
       width: 100%;
       // border: 1px solid #979797;
       // background: #D8D8D8
     }
     #clientBrushView-container {
-      height: 150px;
+      height: 210px;
       width: 100%;
     }
     #serverOverallView-container {
-      height: 50px;
+      height: 100px;
       width: 100%;
     }
   }
