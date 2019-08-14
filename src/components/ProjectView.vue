@@ -2,7 +2,7 @@
   <div id="projectView-container">
     <div class="moduleTitle">Project View</div>
     <svg width="100%" height="100%" ref="svg" />
-    <div id="corner">{{this.choosedIterForProjection}}</div>
+    <div id="corner">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</div>
   </div>
 </template>
 
@@ -40,6 +40,7 @@ export default {
       let me = this;
       let pos = projectData["pos"]
       let idList = projectData["idList"]
+      let isNormal = projectData["isNormal"]
       //为了让server节点最后画，保证不被遮挡，所以需要逆序
       pos.reverse()
       idList.reverse()
@@ -73,13 +74,16 @@ export default {
           return i===serverIndex?6:3;
         })
         .attr("fill", function(d,i){
-          return i===serverIndex?'red':'blue';
+          return i===serverIndex?'blue':(isNormal[i]===1?'blue':'red');
         })
         .attr("stroke", 'red')
         .attr("stroke-width", 2)
         .attr("stroke-opacity", 0)
         .on("click", (d,i)=> {
           let clickedClientIndex = idList[i];
+          let clickedIter = this.choosedIterForProjection;
+          // 高亮盒须图里的异常值
+          this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
           // 更新client view
           this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
           // 更新混淆矩阵
@@ -115,5 +119,7 @@ export default {
   position: absolute;
   top: 40px;
   right: 20px;
+  font-size: 15px;
+  font-weight: bold;
 }
 </style>

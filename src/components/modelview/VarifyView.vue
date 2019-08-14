@@ -23,14 +23,14 @@
         orient="Top"
         :deleteDomainPath="true"
       />
-      <text class="axis-text" :transform="'translate('+(margin.left+chartHeight/2)+','+(margin.top-20)+')'">Actual</text>      
+      <text class="axis-text" :transform="'translate('+(margin.left+chartHeight/2)+','+(margin.top-20)+')'">Predicted</text>      
       <Axis
         :scale="yscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
         orient="Left"
         :deleteDomainPath="true"
       />
-      <text class="axis-text" :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'">Predicted</text>      
+      <text class="axis-text" :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'">Actual</text>      
       <g :transform="'translate('+margin.left+','+(margin.top)+')'">
         <g v-for="(rowvalue, rowi) in temp" :key="'row-' + rowi">
           <rect
