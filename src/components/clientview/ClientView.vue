@@ -5,33 +5,33 @@
       <svg width="100%" height="100%" ref="clientViewChart">
         <Axis
           :scale="xscale"
-          :trans="'translate('+margin.left+','+(margin.top+chartHeight)+')'"
+          :trans="'translate('+margin.left+','+(margin.top+chartHeight+10)+')'"
           orient="Bottom"
         />
         <Axis
           :scale="yscaleIterCount"
-          :trans="'translate('+margin.left+','+margin.top+')'"
+          :trans="'translate('+margin.left+','+(margin.top+10)+')'"
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
-        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Iter count</text>
-        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
+        <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Iter count</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
           :scale="xscale"
-          :trans="'translate('+margin.left+','+(margin.top+chartHeight)+')'"
+          :trans="'translate('+margin.left+','+(margin.top+chartHeight+10)+')'"
           orient="Bottom"
         />
         <Axis
           :scale="yscaleLoss"
-          :trans="'translate('+margin.left+','+margin.top+')'"
+          :trans="'translate('+margin.left+','+(margin.top+10)+')'"
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
-        <g :transform="'translate('+margin.left+','+(margin.top)+')'">
+        <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
+        <g :transform="'translate('+margin.left+','+(margin.top+10)+')'">
           <circle
             r=3
             fill="#466BB7"
@@ -40,9 +40,9 @@
             v-for="(item, i) in this.loss" :key="i"
             ></circle>
         </g>
-        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Loss</text>
-        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
-        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+','+(margin.top-5) + ')'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Loss</text>
+        <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
+        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
