@@ -191,7 +191,7 @@ export default {
       // this.rectNumLine = Math.floor((sliderWidth + this.rectGap)  / (this.rectSize+ this.rectGap));
       this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
       if (this.rectNumLine > 6) this.rectNumLine = 6;
-      this.rectGap = (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
+      this.rectGap = 3.8; //(sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
       // 更新svg高度(未分段的情况)
       this.svgHeight = Math.ceil(this.clientNumAll / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNumAll / this.rectNumLine);
     },
