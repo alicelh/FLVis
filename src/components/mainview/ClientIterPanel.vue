@@ -67,7 +67,7 @@
       <Tooltip
         :clientData="tooltipData"
         :isMouseHover="isTooltipShow"
-        :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+(tooltipPos[1] - 350)+')'"
+        :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+(tooltipPos[1] - 380)+')'"
       />
     </div>
   </div>
@@ -297,7 +297,7 @@ export default {
       let mouseX = e.clientX;
       let rest = barDom.offsetWidth - 10 + barDom.offsetLeft; // 10是三角形的clientwidth
       let left =
-        mouseX - barDom.offsetLeft - 55 - this.panelId * (sliderWidth + 12 + 5); // 10是panel间的gap间距 2是panel的border  5是滚动条的宽度
+        mouseX - barDom.offsetLeft - 50 - this.panelId * (sliderWidth + 12 + 5); // 10是panel间的gap间距 2是panel的border  5是滚动条的宽度
       if (left < barDom.offsetLeft) {
         left = barDom.offsetLeft;
       }
