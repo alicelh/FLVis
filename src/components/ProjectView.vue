@@ -28,7 +28,7 @@ export default {
       return parseInt(d3.select("#projectView-container").style("width"));
     },
     height() {
-      return parseInt(d3.select("#projectView-container").style("height"));
+      return parseInt(d3.select("#projectView-container").style("height")) - parseInt(d3.select(".moduleTitle").style("height"));
     },
     ...mapState({
       projectData: state => state.client.projectdata,
@@ -50,6 +50,7 @@ export default {
       let pos = projectData["pos"]
       let idList = projectData["idList"]
       let isNormal = projectData["isNormal"]
+      let ofs = 0.99 * 0.5 * Math.min(this.width, this.height)
       //为了让server节点最后画，保证不被遮挡，所以需要逆序
       pos.reverse()
       idList.reverse()
@@ -57,12 +58,12 @@ export default {
       let xScale = d3
         .scaleLinear()
         .domain([0, 1])
-        .range([this.width * 0.1, this.width * 0.9]);
+        .range([this.width * 0.5 - ofs, this.width * 0.5 + ofs]);
 
       let yScale = d3
         .scaleLinear()
         .domain([0, 1])
-        .range([this.height * 0.9, this.height * 0.1]);
+        .range([this.height * 0.5 + ofs, this.height * 0.5 - ofs]);
       d3.select(this.svg)
         .select(".g-points")
         .remove();
