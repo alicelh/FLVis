@@ -1,7 +1,16 @@
 <template>
   <div id="projectView-container">
     <div class="moduleTitle">Project View</div>
-    <svg width="100%" height="100%" ref="svg" />
+    <svg width="100%" height="100%" ref="svg">
+      <g class="legends">
+        <circle r="6" fill="#90c297" cx="10" cy="15"></circle>
+        <text x="20" y="20">Server</text>
+        <circle r="3" fill="#90c297" cx="10" cy="35"></circle>
+        <text x="20" y="40">Normal client</text>
+        <circle r="3" fill="red" cx="10" cy="55"></circle>
+        <text x="20" y="60">Abnomal client</text>
+      </g>
+    </svg>
     <div id="corner">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</div>
   </div>
 </template>
@@ -55,10 +64,11 @@ export default {
         .domain([0, 1])
         .range([this.height * 0.9, this.height * 0.1]);
       d3.select(this.svg)
-        .selectAll("g")
+        .select(".g-points")
         .remove();
       d3.select(this.svg)
         .append("g")
+        .attr("class", "g-points")
         .selectAll(".point")
         .data(pos)
         .enter()
