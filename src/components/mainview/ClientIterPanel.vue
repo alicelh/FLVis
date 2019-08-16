@@ -22,6 +22,8 @@
           />
         </div>
         <span style="right:0px; top:9px">{{maxIterCount}}</span>
+        <div id="shortline-left"></div>
+        <div id="shortline-right"></div>
       </div>
       <!-- svg高度要确定好 才能做scroll -->
       <svg :height="svgHeight" width="100%">
@@ -32,27 +34,27 @@
               class="num-rect"
               x="0"
               :y="((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
-              width="30"
-              height="10" />
+              width="35"
+              height="14" />
             <text fill="#fff" x="0"
-              :y="8 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{segment[0]}} -{{ segment[1]}}</text>
-            <text x="35"
-              :y="8 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{countNum[segment[1] - minIterCount].endIndex - countNum[segment[0] - minIterCount].startIndex + 1}}</text>
+              :y="10 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{segment[0]}} -{{ segment[1]}}</text>
+            <text x="40"
+              :y="10 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{countNum[segment[1] - minIterCount].endIndex - countNum[segment[0] - minIterCount].startIndex + 1}}</text>
           </g>
           <g class="rect-group">
             <rect
               class="client-rect"
-              :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
-              :y="Math.floor(i / rectNumLine) * rectSize + 10 + rectGap * Math.floor(i / rectNumLine) + 
-              ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
-              :width="rectSize"
-              :height="rectSize"
+              :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
+              :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+              ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + (isOutlier(val.index) === 'none'?0:2)"
+              :width="rectSize - (isOutlier(val.index) === 'none'?0:4)"
+              :height="rectSize - (isOutlier(val.index) === 'none'?0:4)"
               :data-index="val.index"
               :data-count="val.count"
               :data-acc="val.acc"
               :data-loss="val.loss"
               :data-iter="val.iter"
-              :style="{'stroke': isOutlier(val.index), 'stroke-width': '3px'}"
+              :style="{'stroke': isOutlier(val.index), 'stroke-width': '4px'}"
               @mouseover="showTooltip"
               @mouseout="hideTooltip"
               @click="handleRectClick"
@@ -190,10 +192,10 @@ export default {
       // this.rectGap = 2;
       // this.rectNumLine = Math.floor((sliderWidth + this.rectGap)  / (this.rectSize+ this.rectGap));
       this.rectNumLine = Math.floor(sliderWidth / this.rectSize);
-      if (this.rectNumLine > 6) this.rectNumLine = 6;
-      this.rectGap = 3.8; //(sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1)
+      if (this.rectNumLine > 7) this.rectNumLine = 7;
+      this.rectGap = 0.83;// (sliderWidth - this.rectNumLine * this.rectSize) / (this.rectNumLine - 1);
       // 更新svg高度(未分段的情况)
-      this.svgHeight = Math.ceil(this.clientNumAll / this.rectNumLine) * this.rectSize + 10 + this.rectGap * Math.floor(this.clientNumAll / this.rectNumLine);
+      this.svgHeight = Math.ceil(this.clientNumAll / this.rectNumLine) * this.rectSize + 15 + this.rectGap * Math.floor(this.clientNumAll / this.rectNumLine);
     },
     showTooltip(e) {
       this.tooltipData.index = e.target.getAttribute("data-index");
@@ -341,7 +343,7 @@ export default {
     },
     // 计算rectgroup的高度
     getRectGroupHeight (rectNum) {
-      return Math.ceil(rectNum / this.rectNumLine) * this.rectSize + 15 + this.rectGap * Math.floor(rectNum / this.rectNumLine);
+      return Math.ceil(rectNum / this.rectNumLine) * this.rectSize + 20 + this.rectGap * Math.floor(rectNum / this.rectNumLine);
     },
     updateSvgHeight () {
       this.rectGroupHeight = [];
@@ -394,7 +396,7 @@ export default {
     display: grid;
     grid-template-columns: 7fr 4fr 1fr;
     border-bottom: 1px solid #979797;
-    font-size: 10px;
+    font-size: 12px;
     color: #000;
     // position: absolute;
     background: #d8d8d8;
@@ -411,7 +413,7 @@ export default {
     border-radius: 0px 0px 5px 5px;
     overflow-y: auto;
     .client-count {
-      font-size: 10px;
+      font-size: 12px;
     }
     .client-rect {
       fill: #90c297;
@@ -448,6 +450,22 @@ export default {
         right: 0;
         margin: auto;
         cursor: pointer;
+      }
+      #shortline-left {
+        position: absolute;
+        left: 14px;
+        top: 11px;
+        width: 2px;
+        height: 8px;
+        background: #474747;
+      }
+      #shortline-right {
+        position: absolute;
+        right: 14px;
+        top: 11px;
+        width: 2px;
+        height: 8px;
+        background: #474747;
       }
     }
   }
