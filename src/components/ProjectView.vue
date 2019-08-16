@@ -99,6 +99,8 @@ export default {
           this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
           // 更新混淆矩阵
           this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+          // 更新条带图
+          this.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
         })
         .append("title")
         .text((d,i) => {

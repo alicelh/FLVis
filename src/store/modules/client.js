@@ -4,7 +4,7 @@ import model from './model'
 import server from './server'
 
 const state = {
-  paradata: {},
+  clientpara: [], // 存选中的client 以及它和server的差值
   clientparalist: [],
   w1: [],
   b1: [],
@@ -40,6 +40,7 @@ const actions = {
     iter,
     indexarr
   }) {
+    console.log(iter, indexarr);
     api.ClientParaByIterIndexarr(iter, indexarr)
       .then(res => {
         commit(types.GET_CLIENT_PARA_ARR, res)
@@ -97,7 +98,12 @@ const actions = {
 
 const mutations = {
   [types.GET_CLIENT_PARA](state, data) {
-    state.paradata = data;
+    state.clientpara[0] = data; // 选中的client
+    let serverpara = server.state.serverpara;
+    state.clientpara[1] = [];
+    for (let i = 0; i < serverpara.length; i++) {
+      state.clientpara[1][i] = data[i] - serverpara[i]; // 与server的差值
+    }
   },
   [types.GET_CLIENT_PARA_ARR](state, data) {
     let tmp = server.state.serverpara;

@@ -1,7 +1,8 @@
 <template>
   <div id="weightView" :style="{'width':width+'px'}">
-    <svg width="100%" height="100%">
+    <svg width="100%" height="100%" ref="weightView">
       <g :transform="'translate('+margin.left+','+margin.top+')'">
+        <text :transform="'translate(-10,' + rectHeight / 2 +') rotate(-90)'" class="weightBar-title">Server</text>
         <WeightBar
           trans="translate(0,0)"
           :colorScale="colorScale"
@@ -11,43 +12,33 @@
           :para="paraServer"
           :axisVisable="true"
         />
-        <g
-          v-for="(para,i) in paraClient"
-          :transform="'translate(0,'+(rectHeight+20)+')'"
-          :key="'wchart'+i"
-        >
-          <WeightBar
-            :v-for="para in paraClient"
-            :trans="'translate(0,'+(rectHeight*i+chartInterval*i)+')'"
-            :colorScale="colorDiffScale"
-            :xscale="xscale"
-            :rectHeight="rectHeight"
-            :rectWidth="rectWidth"
-            :para="para"
-            :axisVisable="false"
-          />
+        <g>
+          <text :transform="'translate(-20,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'" class="weightBar-title">Client</text>
+          <text :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'" class="weightBar-title">Choosed</text>
+          <text :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'" class="weightBar-title">Client-Server</text>
+          <text :transform="'translate(-5,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'" class="weightBar-title">Difference</text>
         </g>
-        <!-- <WeightCanvas
-          trans="translate(0,0)"
+        <WeightBar
+          :trans="'translate(0,'+(rectHeight*(i+1)+chartInterval*i + 20)+')'"
           :colorScale="colorScale"
           :xscale="xscale"
-          :width="chartWidth"
-          :rectHeight="serverHeight"
+          :rectHeight="rectHeight"
           :rectWidth="rectWidth"
-          :para="paraServer"
+          :para="para"
+          :axisVisable="false"
+          v-for="(para,i) in paraClient"
+          :key="'wchart'+i"
         />
-        <template v-for="(para,i) in paraClient">
-          <WeightCanvas
-            :trans="'translate(0,'+(serverHeight + rectHeight*i+chartInterval*i)+')'"
-            :colorScale="colorScale"
-            :xscale="xscale"
-            :width="chartWidth"
-            :rectHeight="rectHeight"
-            :rectWidth="rectWidth"
-            :para="para"
-            :key="'weightcanvas'+i"
-          />
-        </template>-->
+        <!-- <g transform="translate(-10,0)" id="legends">
+          <rect
+            v-for="(color, i) in colors"
+            :key="'legend'+i"
+            :fill="color"
+            :y="i * 5"
+            width="5"
+            height="5"
+          ></rect>
+        </g> -->
       </g>
     </svg>
   </div>
@@ -64,15 +55,24 @@ export default {
   data: function() {
     return {
       margin: {
-        left: 50,
-        right: 12,
-        top: 10,
-        bottom: 10
+        left: 40,
+        right: 20,
+        top: 20,
+        bottom: 40
       },
-      height: 300,
-      serverHeight: 25,
-      // width: 800,
-      chartInterval: 5,
+      height: 100,// 总高度
+      rectHeight: 0, // 一个色带高度
+      chartInterval: 15,
+      colors: ["#67001f",
+          "#b2182b",
+          "#d6604d",
+          "#f4a582",
+          "#fddbc7",
+          "#d1e5f0",
+          "#92c5de",
+          "#4393c3",
+          "#2166ac",
+          "#053061"],
       colorScale: d3
         .scaleThreshold()
         .range([
@@ -87,20 +87,20 @@ export default {
           "#2166ac",
           "#053061"
         ]),
-      colorDiffScale: d3
-        .scaleThreshold()
-        .range([
-          "#67001f",
-          "#b2182b",
-          "#d6604d",
-          "#f4a582",
-          "#fddbc7",
-          "#d1e5f0",
-          "#92c5de",
-          "#4393c3",
-          "#2166ac",
-          "#053061"
-        ])
+      // colorDiffScale: d3
+      //   .scaleThreshold()
+      //   .range([
+      //     "#67001f",
+      //     "#b2182b",
+      //     "#d6604d",
+      //     "#f4a582",
+      //     "#fddbc7",
+      //     "#d1e5f0",
+      //     "#92c5de",
+      //     "#4393c3",
+      //     "#2166ac",
+      //     "#053061"
+      //   ])
     };
   },
   props: {
@@ -114,22 +114,11 @@ export default {
     chartWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
-    rectHeight() {
-      return (
-        (this.height -
-          this.margin.top -
-          this.margin.bottom -
-          this.chartInterval * this.paraClient.length) /
-        (this.paraClient.length + 1)
-      );
-    },
     ...mapState({
       paraCount: state => state.model.paranum,
-      layerCount: state => state.model.layernum
-    }),
-    ...mapState({
       paraServer: state => state.server.serverpara,
-      paraClient: state => state.client.clientparalist
+      paraClient: state => state.client.clientpara,
+      clientChoosed: state => state.client.choosedClientInProjection,
     }),
     xscale() {
       return d3
@@ -143,15 +132,25 @@ export default {
   },
   watch: {
     paraServer: function(newvalue, oldvalue) {
+      this.getRectHeight();
+      // 设置新的颜色映射
       this.setColorScale(newvalue);
     },
-    paraClient: function(newvalue, oldvalue) {
-      this.setColorDiffScale([].concat.apply([], newvalue));
+    // paraClient: function(newvalue, oldvalue) {
+    //   console.log(newvalue, oldvalue);
+    //   this.setColorDiffScale([].concat.apply([], newvalue));
+    // },
+    clientChoosed: function(newvalue, oldvalue) {
+      this.getRectHeight();
+      console.log(this.paraClient);
+      // 修改选中的client应该用跟server一样的colorscale
+      // this.setColorDiffScale([].concat.apply([], newvalue));
     }
   },
   methods: {
     setColorScale(newvalue) {
       let [min, max] = d3.extent(this.paraServer);
+      console.log(min, max);
       this.colorScale.domain([
         min,
         (3 * min) / 4,
@@ -177,13 +176,29 @@ export default {
         (max * 3) / 4,
         max
       ]);
+    },
+    getRectHeight () {
+      this.rectHeight = (this.height -
+          this.margin.top -
+          this.margin.bottom -
+          this.chartInterval * this.paraClient.length) /
+        (this.paraClient.length + 1);
     }
-  }
+  },
+  mounted() {
+    let svgnode = this.$refs.weightView;
+    this.height = svgnode.clientHeight;
+    this.getRectHeight();
+  },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 #weightView {
   height: 100%;
+  .weightBar-title {
+    text-anchor: middle;
+    font-size: 14px
+  }
 }
 </style>

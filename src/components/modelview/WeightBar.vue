@@ -38,7 +38,7 @@ export default {
     axisVisable: Boolean
   },
   updated() {
-    console.log(this.colorScale(this.para[0]));
+    // console.log(this.colorScale(this.para[0]));
   }
 };
 </script>

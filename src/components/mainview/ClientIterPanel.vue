@@ -152,6 +152,7 @@ export default {
     },
     updateIterForProj() {
       this.$store.dispatch("client/updataIterChoosedForProjection", this.iterId);
+      this.$store.dispatch("server/getServerPara", this.iterId); // 更新server色带图
     },
     getMinMaxIterCount() {
       // 把读入的data按count属性进行排序

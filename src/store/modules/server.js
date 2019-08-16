@@ -1,6 +1,7 @@
 import * as types from '../types'
 import api from '@/fetch/api'
 import model from './model'
+import client from './client'
 
 const state = {
   loss: [],
@@ -63,6 +64,7 @@ const mutations = {
   },
   [types.GET_SERVER_PARA](state, data) {
     state.serverpara = data;
+    client.state.clientpara = [];
   },
   [types.UPDATE_CLIENT_OUTLIER](state, data) {
     let type = data[2];
