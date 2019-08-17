@@ -48,6 +48,7 @@
 import { mapState, mapGetters } from "vuex";
 import * as d3 from "d3";
 import WeightBar from "./WeightBar";
+import bus from "./bus";
 import WeightCanvas from "./WeightCanvas";
 
 export default {
@@ -134,7 +135,7 @@ export default {
     paraServer: function(newvalue, oldvalue) {
       this.getRectHeight();
       // 设置新的颜色映射
-      this.setColorScale(newvalue);
+      this.setColorScale();
     },
     // paraClient: function(newvalue, oldvalue) {
     //   console.log(newvalue, oldvalue);
@@ -148,10 +149,10 @@ export default {
     }
   },
   methods: {
-    setColorScale(newvalue) {
+    setColorScale() {
       let [min, max] = d3.extent(this.paraServer);
-      console.log(min, max);
-      this.colorScale.domain([
+      console.log(min, max, "set color!");
+      let colorDomain = [
         min,
         (3 * min) / 4,
         min / 2,
@@ -161,7 +162,9 @@ export default {
         max / 2,
         (max * 3) / 4,
         max
-      ]);
+      ];
+      this.colorScale.domain(colorDomain);
+      bus.$emit('weightDomain',colorDomain);
     },
     setColorDiffScale(newvalue) {
       let [min, max] = d3.extent(newvalue);
@@ -189,6 +192,7 @@ export default {
     let svgnode = this.$refs.weightView;
     this.height = svgnode.clientHeight;
     this.getRectHeight();
+    // this.setColorScale();
   },
 };
 </script>

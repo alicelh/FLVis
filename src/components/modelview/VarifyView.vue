@@ -1,16 +1,6 @@
 <template>
-  <div class="VarifyView">
+  <div id="VarifyView">
     <svg width="100%" height="100%" ref="varifyView">
-      <defs>
-        <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#e34a33"/>
-        </linearGradient>
-        <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#2ca25f"/>
-        </linearGradient>
-      </defs>
       <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight+margin.right)+','+(margin.top)+')'">
         <text y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
         <rect width="80" height="5" fill="url(#green_linear)"></rect>
@@ -45,12 +35,61 @@
         </g> 
       </g>
     </svg>
+    <div>
+      <div id ="legends-container">
+        <svg width="100%" height="100%">
+          <defs>
+            <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#e34a33"/>
+            </linearGradient>
+            <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#2ca25f"/>
+            </linearGradient>
+            <linearGradient
+              :id="'linear_' + i" x1="0%" y1="0%" x2="100%" y2="0%"
+              v-for="(color, i) in weightBarColors"
+              :key="'color-'+i"
+            >
+              <stop offset="0%" :stop-color="color"/>
+              <stop offset="100%" :stop-color="weightBarColors[i+1]"/>
+            </linearGradient>
+          </defs>
+          <g id="weightBar-legends" :transform="'translate(80, 30)'">
+            <text x="50" y="-15" style="text-anchor: middle;">Weight Bars Encodings</text>
+            <g
+              v-for="(color, i) in weightBarColors"
+              :key="'rect-'+i"
+            >
+              <text class='label' v-if="weightLegendValue.length !== 0" :y="7 + i * 12" x="-5" style="text-anchor: end;">{{(i>0)?weightLegendValue[i-1].toFixed(2):'<'+weightLegendValue[i].toFixed(2)}}</text>
+              <rect
+                width="100"
+                height="7"
+                :y="i * 12"
+                :fill="'url(#linear_'+ i+')'"
+                >
+              </rect>
+              <text class='label' v-if="weightLegendValue.length !== 0" x="105" :y="7 + i * 12" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
+            </g>
+          </g>
+          <g id="matrix-legends" :transform="'translate(80, 200)'">
+            <text x="50" y="-10" style="text-anchor: middle;">Confusion Matrix Encodings</text>
+            <text class='label' y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+            <rect width="100" height="7" fill="url(#green_linear)"></rect>
+            <rect y="10" width="100" height="7" fill="url(#red_linear)"></rect>
+            <text class='label' x="105" y="13" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+          </g>
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
 import Axis from "../common/Axis";
+import bus from "./bus";
 import { mapState } from 'vuex';
 
 export default {
@@ -66,7 +105,18 @@ export default {
       },
       height: 0,
       colorLinear: '',
-      domain: [0, 0]
+      domain: [0, 0],
+      weightBarColors: ["#67001f",
+          "#b2182b",
+          "#d6604d",
+          "#f4a582",
+          "#fddbc7",
+          "#d1e5f0",
+          "#92c5de",
+          "#4393c3",
+          "#2166ac",
+          "#053061"],
+      weightLegendValue: []
     }
   },
   components: {
@@ -75,6 +125,7 @@ export default {
   computed: {
     ...mapState({
       clientConfusionMatrix: state => state.client.clientConfusionMatrix,
+      choosedIter: state => state.client.choosedIterForProjection,
     }),
     // chartwidth和height相等
     chartHeight () {
@@ -125,21 +176,39 @@ export default {
   watch: {
     clientConfusionMatrix: function (newvalue, oldvalue) {
       this.getColorLinear();
-    }
+    },
+    choosedIter: function (newvalue, oldvalue) {
+      bus.$on("weightDomain", data => {
+        console.log(data);
+        this.weightLegendValue = data;
+      });
+    },
   }
 }
 </script>
 
 <style lang="scss">
-.VarifyView {
+#VarifyView {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
   .axis-text {
     text-anchor: middle;
     font-size: 15px;
   }
-  #matrix-legends {
+  #matrix-legends, #weightBar-legends {
     text {
-      font-size: 15px;
+      font-size: 14px;
     }
+    .label {
+      font-size: 13px;
+    }
+  }
+  #legends-container {
+    // border: 1px solid #b1b1b1;
+    width: 260px;
+    height: 250px;
   }
 }
 </style>
