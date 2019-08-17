@@ -42,6 +42,8 @@
             v-for="(item, i) in this.loss" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
+            stroke-width="2px"
             ></circle>
             <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
             <Tooltip
@@ -77,6 +79,8 @@
             v-for="(item, i) in this.acc" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
+            stroke-width="2px"
             ></circle>
             <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
             <Tooltip
@@ -111,6 +115,8 @@
             v-for="(item, i) in this.dataSize" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
+            stroke-width="2px"
             ></circle>
             <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>  
             <Tooltip
@@ -154,7 +160,8 @@ export default {
       hoverLineX: 0,
       hoverSvg: '',
       isTooltipShow: false,
-      tooltipData: {}
+      tooltipData: {},
+      hoverIndex: 0
     };
   },
   components: {
@@ -251,6 +258,7 @@ export default {
       this.hoverSvg = e.target.getAttribute('data-content');
       this.isTooltipShow = true;
       let index = e.target.getAttribute('data-index');
+      this.hoverIndex=index;
       this.tooltipData.iter = this.iterArray[index];
       this.tooltipData.loss = this.loss[index].toFixed(2);
       this.tooltipData.acc = this.acc[index].toFixed(2);
