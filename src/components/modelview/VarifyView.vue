@@ -73,8 +73,8 @@
               <text class='label' v-if="weightLegendValue.length !== 0" x="110" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
           </g>
-          <g id="matrix-legends" :transform="'translate(90, 220)'">
-            <text x="50" y="-10" style="text-anchor: middle;">Confusion Matrix Encodings</text>
+          <g id="matrix-legends" :transform="'translate(90, 240)'">
+            <text x="50" y="-20" style="text-anchor: middle;">Confusion Matrix Encodings</text>
             <text class='label' y="15" x="-10" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
             <rect width="100" height="10" fill="url(#green_linear)"></rect>
             <rect y="13" width="100" height="10" fill="url(#red_linear)"></rect>
