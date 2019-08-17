@@ -47,6 +47,18 @@
         <rect width="10" height="10" x="100" fill="#8cb1cf"></rect>
         <text x="115" y="10">Loss</text>
       </g>
+      <Axis
+        :scale="yscaleleft"
+        :trans="'translate('+margin.left+','+margin.top+')'"
+        orient="Left"
+        :ticks="5"
+      />
+      <Axis
+        :scale="yscaleright"
+        :trans="'translate('+(margin.left+chartWidth)+','+margin.top+')'"
+        orient="Right"
+        :ticks="5"
+      />
     </svg>
   <!-- </div> -->
 </template>

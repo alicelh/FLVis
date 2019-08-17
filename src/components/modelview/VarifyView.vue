@@ -3,12 +3,12 @@
     <svg width="100%" height="100%" ref="varifyView">
       <defs>
         <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="100%" stop-color="#e34a33"/>
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#e34a33"/>
         </linearGradient>
         <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="100%" stop-color="#2ca25f"/>
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#2ca25f"/>
         </linearGradient>
       </defs>
       <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight+margin.right)+','+(margin.top)+')'">

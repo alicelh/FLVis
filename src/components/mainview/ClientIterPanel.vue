@@ -10,9 +10,9 @@
     <div class="client-content scroll-box">
       <div class="clientnum-slider">
         <span style="left:0px; top:9px">{{minIterCount}}</span>
-        <div id="slider-bar" @click="addTriangle"></div>
+        <div id="slider-bar" @contextmenu="preventDefault"></div>
         <div v-for="(triangle, i) in sliderTrianglesPos" :key="i">
-          <span :style="'left:' + (triangle.pos) +'px'">{{triangle.countValue}}</span>
+          <span :style="'left:' + (Math.round(triangle.countValue) < 10? triangle.pos+2:triangle.pos) +'px'">{{Math.round(triangle.countValue)}}</span>
           <img
             src="../../assets/triangle.png"
             class="triangle-img"
@@ -42,35 +42,50 @@
               :y="10 + ((segmentIndex === 0) ? 0 :rectGroupHeight[segmentIndex - 1])">{{countNum[segment[1] - minIterCount].endIndex - countNum[segment[0] - minIterCount].startIndex + 1}}</text>
           </g>
           <g class="rect-group">
-            <rect
-              class="client-rect"
-              :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
-              :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
-              ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + (isOutlier(val.index) === 'none'?0:2)"
-              :width="rectSize - (isOutlier(val.index) === 'none'?0:4)"
-              :height="rectSize - (isOutlier(val.index) === 'none'?0:4)"
-              :data-index="val.index"
-              :data-count="val.count"
-              :data-acc="val.acc"
-              :data-loss="val.loss"
-              :data-iter="val.iter"
-              :style="{'stroke': isOutlier(val.index), 'stroke-width': '4px'}"
-              @mouseover="showTooltip"
-              @mouseout="hideTooltip"
-              @click="handleRectClick"
+            <g
               v-for="(val, i) in dataSort.slice(countNum[segment[0] - minIterCount].startIndex, countNum[segment[1] - minIterCount].endIndex + 1)"
-              :key="'rect-'+i"
-            />
+              :key="'rect-'+i">
+              <rect
+                v-if="isTooltipShow && (val.index.toString() === tooltipData.index.toString())"
+                class="client-rect-outer"
+                :width="rectSize - (isOutlier(val.index) === 'none'?0:4)"
+                :height="rectSize - (isOutlier(val.index) === 'none'?0:4)"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + (isOutlier(val.index) === 'none'?0:2)"
+              ></rect>
+              <rect
+                :fill="computeColor(colorLinear(parseInt(val.num)))"
+                class="client-rect"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + (isOutlier(val.index) === 'none'?0:2)"
+                :width="rectSize - (isOutlier(val.index) === 'none'?0:4)"
+                :height="rectSize - (isOutlier(val.index) === 'none'?0:4)"
+                :data-index="val.index"
+                :data-count="val.count"
+                :data-acc="val.acc"
+                :data-loss="val.loss"
+                :data-iter="val.iter"
+                :data-datanum="val.num"
+                :style="{'stroke': isOutlier(val.index), 'stroke-width': '4px'}"
+                @mouseover="showTooltip"
+                @mouseout="hideTooltip"
+                @click="handleRectClick"
+              />
+            </g>
           </g>
         </g>
       </svg>
     </div>
     <div class="tooltip-container">
-      <Tooltip
-        :clientData="tooltipData"
-        :isMouseHover="isTooltipShow"
-        :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+(tooltipPos[1] - 380)+')'"
-      />
+      <!-- <svg width="85" height="80" id="svg-tooltip"> -->
+        <Tooltip
+          :clientData="tooltipData"
+          :isMouseHover="isTooltipShow"
+          :transform="'translate('+(parseInt(tooltipPos[0]) + rectSize)+','+(tooltipPos[1] - 380)+')'"
+        />
+      <!-- </svg> -->
     </div>
   </div>
 </template>
@@ -78,7 +93,7 @@
 <script>
 import { mapState } from "vuex";
 import * as d3 from "d3";
-import Tooltip from "./Tooltip";
+import Tooltip from "../common/Tooltip";
 
 export default {
   name: "ClientIterPanel",
@@ -86,6 +101,7 @@ export default {
     iterId: Number,
     data: Array,
     panelId: Number,// 为了计算小三角形的偏移
+    colorLinear: Function
   },
   data() {
     return {
@@ -95,6 +111,7 @@ export default {
       minIterCount: 0,
       maxIterCount: 0,
       dataSort: [], // 按count排序
+      // clientDataNumMinMax: [],//数据量的最大最小 编码小矩形的绿色
       clientNumAll: 0,
       clientNumSlider: [], // slider上的分段，初始的分段为[min, maxcount],
       clientNumSegments: [],
@@ -124,6 +141,17 @@ export default {
     }
   },
   methods: {
+    computeColor (num) {
+      let compute = d3.interpolate(d3.rgb(240,249,232), d3.rgb(144,194,151));
+      return compute(num);
+    },
+    // getClientRectColor (datanum) {
+    //   let rectColorLinear = d3.scaleLinear()
+		// 		.domain(this.clientDataNumMinMax)
+    //     .range([0,1]);
+    //   let compute = d3.interpolate(d3.rgb(240,249,232), d3.rgb(144,194,151));
+    //   return compute(rectColorLinear(datanum));
+    // },
     isOutlier (index) {
       // 当iter面板有内容时 重新刷选 显示的iter已不在显示的盒须图中 所以不用高亮outlier
       if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
@@ -185,6 +213,10 @@ export default {
         }
       }
       this.sliderTrianglesPos = [];
+      // 找到数据量的最大最小
+      let clientDataNum = this.data.map(d => d.num);
+      // console.log(clientDataNum);
+      this.clientDataNumMinMax = d3.extent(clientDataNum);
     },
     initialSvgHeight () {
       // 计算每行的rect个数
@@ -220,6 +252,7 @@ export default {
     },
     // 移动三角形
     handleSlide(ev) {
+      // e.preventDefault();
       let e = ev || window.event;
       let triangleDom = e.toElement; // 当前移动的小三角形
       let barDom = document.getElementById("slider-bar");
@@ -291,6 +324,11 @@ export default {
         return false;
       };
       return false;
+    },
+    // 取消右键点击的默认事件
+    preventDefault (e) {
+      e.preventDefault();
+      this.addTriangle(e);
     },
     // 添加分段的小三角形
     addTriangle(e) {
@@ -386,6 +424,9 @@ export default {
   .tooltip-container {
     position: absolute;
     z-index: 999;
+    #svg-tooltip{
+      z-index: 999;
+    }
   }
   img {
     width: 20px;
@@ -417,7 +458,12 @@ export default {
       font-size: 12px;
     }
     .client-rect {
-      fill: #90c297;
+      // fill: #90c297;
+    }
+    .client-rect-outer {
+      fill: none;
+      stroke-width: 1px;
+      stroke:rgba(0,0,0,0.50);
     }
     .num-rect {
       fill: rgba(26, 26, 26, 0.56);
@@ -443,7 +489,7 @@ export default {
         width: 73%;
         height: 2px;
         border-radius: 10px;
-        background: #474747;
+        background: #B1B1B1;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -458,7 +504,7 @@ export default {
         top: 11px;
         width: 2px;
         height: 8px;
-        background: #474747;
+        background: #B1B1B1;
       }
       #shortline-right {
         position: absolute;
@@ -466,7 +512,7 @@ export default {
         top: 11px;
         width: 2px;
         height: 8px;
-        background: #474747;
+        background: #B1B1B1;
       }
     }
   }
@@ -478,7 +524,7 @@ export default {
   .scroll-box::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 10px;
-    background-color:#b5b1b1;
+    background-color:#f6f1f1;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     -ms-border-radius: 10px;
@@ -487,7 +533,7 @@ export default {
   .scroll-box::-webkit-scrollbar-thumb {  
     border-radius: 10px;  
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
-    background-color:#333;
+    background-color:#a6a3a3;
   } 
 }
 </style>

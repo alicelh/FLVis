@@ -33,12 +33,21 @@
         <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top+10)+')'">
           <circle
-            r=3
+            r=4
             fill="#466BB7"
             :cx="xscale(iterArray[i])"
             :cy="yscaleLoss(item)"
+            :data-index="i"
+            data-content="loss"
             v-for="(item, i) in this.loss" :key="i"
+            @mouseover="showTooltip"
+            @mouseout="hideTooltip"
             ></circle>
+            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
+            <Tooltip
+              :clientData="tooltipData"
+              :isMouseHover="isTooltipShow && (hoverSvg === 'loss')"
+              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Loss</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
@@ -59,12 +68,21 @@
         <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="accLine" fill="none" stroke="#D68966" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top)+')'">
           <circle
-            r=3
+            r=4
             fill="#D68966"
             :cx="xscale(iterArray[i])"
             :cy="yscaleAcc(item)"
+            :data-index="i"
+            data-content="acc"
             v-for="(item, i) in this.acc" :key="i"
+            @mouseover="showTooltip"
+            @mouseout="hideTooltip"
             ></circle>
+            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
+            <Tooltip
+              :clientData="tooltipData"
+              :isMouseHover="isTooltipShow && (hoverSvg === 'acc')"
+              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Accuracy</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
@@ -84,12 +102,21 @@
         />
         <g :transform="'translate('+margin.left+','+(margin.top)+')'">
           <circle
-            r=3
+            r=4
             fill="#90c297"
             :cx="xscale(iterArray[i])"
             :cy="yscaleDataSize(item)"
+            :data-index="i"
+            data-content="size"
             v-for="(item, i) in this.dataSize" :key="i"
+            @mouseover="showTooltip"
+            @mouseout="hideTooltip"
             ></circle>
+            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>  
+            <Tooltip
+              :clientData="tooltipData"
+              :isMouseHover="isTooltipShow && (hoverSvg === 'size')"
+              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>          
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Data size</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
@@ -100,6 +127,7 @@
 
 <script>
 import Axis from '../common/Axis';
+import Tooltip from "./Tooltip";
 import * as d3 from 'd3';
 import { mapState } from 'vuex';
 
@@ -122,11 +150,16 @@ export default {
       iterCount: [],
       accLine: '',
       lossLine: '',
-      iterCountLine: ''
+      iterCountLine: '',
+      hoverLineX: 0,
+      hoverSvg: '',
+      isTooltipShow: false,
+      tooltipData: {}
     };
   },
   components: {
-    Axis
+    Axis,
+    Tooltip
   },
   computed:{
     ...mapState({
@@ -212,7 +245,20 @@ export default {
           return this.yscaleIterCount(d);
         });
       this.iterCountLine = itercountpath(this.iterCount);
-    }
+    },
+    showTooltip(e) {
+      this.hoverLineX = e.target.getAttribute('cx');
+      this.hoverSvg = e.target.getAttribute('data-content');
+      this.isTooltipShow = true;
+      let index = e.target.getAttribute('data-index');
+      this.tooltipData.iter = this.iterArray[index];
+      this.tooltipData.loss = this.loss[index].toFixed(2);
+      this.tooltipData.acc = this.acc[index].toFixed(2);
+      this.tooltipData.dataSize = this.dataSize[index];
+    },
+    hideTooltip() {
+      this.isTooltipShow = false;
+    },
   },
   mounted () {
     this.clientViewWidth = this.$refs.clientViewChart.clientWidth;
