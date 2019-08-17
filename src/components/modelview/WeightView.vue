@@ -143,7 +143,6 @@ export default {
     // },
     clientChoosed: function(newvalue, oldvalue) {
       this.getRectHeight();
-      console.log(this.paraClient);
       // 修改选中的client应该用跟server一样的colorscale
       // this.setColorDiffScale([].concat.apply([], newvalue));
     }
@@ -151,7 +150,6 @@ export default {
   methods: {
     setColorScale() {
       let [min, max] = d3.extent(this.paraServer);
-      console.log(min, max, "set color!");
       let colorDomain = [
         min,
         (3 * min) / 4,

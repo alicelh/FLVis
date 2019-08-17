@@ -19,7 +19,7 @@
         </linearGradient>
       </defs>
       <g transform="translate(0,18)">
-        <text transform="translate(15,40) rotate(-90)">Data Num</text>
+        <text transform="translate(15,40) rotate(-90)">Data Size</text>
         <rect transform="translate(25,0)" width="14px" height="80px" fill="url(#rectgreen_linear)"></rect>
         <text class="label" transform="translate(30,-5)">{{clientDataNumMinMax[1]}}</text>
         <text class="label" transform="translate(30,95)">{{clientDataNumMinMax[0]}}</text>

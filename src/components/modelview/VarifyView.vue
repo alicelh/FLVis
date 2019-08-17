@@ -56,29 +56,29 @@
               <stop offset="100%" :stop-color="weightBarColors[i+1]"/>
             </linearGradient>
           </defs>
-          <g id="weightBar-legends" :transform="'translate(80, 30)'">
-            <text x="50" y="-15" style="text-anchor: middle;">Weight Bars Encodings</text>
+          <g id="weightBar-legends" :transform="'translate(90, 40)'">
+            <text x="50" y="-20" style="text-anchor: middle;">Weight Bars Encodings</text>
             <g
               v-for="(color, i) in weightBarColors"
               :key="'rect-'+i"
             >
-              <text class='label' v-if="weightLegendValue.length !== 0" :y="7 + i * 12" x="-5" style="text-anchor: end;">{{(i>0)?weightLegendValue[i-1].toFixed(2):'<'+weightLegendValue[i].toFixed(2)}}</text>
+              <text class='label' v-if="weightLegendValue.length !== 0" :y="9 + i * 13" x="-10" style="text-anchor: end;">{{(i>0)?weightLegendValue[i-1].toFixed(2):'&lt;'+weightLegendValue[i].toFixed(2)}}</text>
               <rect
                 width="100"
-                height="7"
-                :y="i * 12"
+                height="10"
+                :y="i * 13"
                 :fill="'url(#linear_'+ i+')'"
                 >
               </rect>
-              <text class='label' v-if="weightLegendValue.length !== 0" x="105" :y="7 + i * 12" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
+              <text class='label' v-if="weightLegendValue.length !== 0" x="110" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
           </g>
-          <g id="matrix-legends" :transform="'translate(80, 200)'">
+          <g id="matrix-legends" :transform="'translate(90, 220)'">
             <text x="50" y="-10" style="text-anchor: middle;">Confusion Matrix Encodings</text>
-            <text class='label' y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
-            <rect width="100" height="7" fill="url(#green_linear)"></rect>
-            <rect y="10" width="100" height="7" fill="url(#red_linear)"></rect>
-            <text class='label' x="105" y="13" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+            <text class='label' y="15" x="-10" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+            <rect width="100" height="10" fill="url(#green_linear)"></rect>
+            <rect y="13" width="100" height="10" fill="url(#red_linear)"></rect>
+            <text class='label' x="110" y="15" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
           </g>
         </svg>
       </div>
@@ -179,7 +179,6 @@ export default {
     },
     choosedIter: function (newvalue, oldvalue) {
       bus.$on("weightDomain", data => {
-        console.log(data);
         this.weightLegendValue = data;
       });
     },
@@ -199,7 +198,7 @@ export default {
   }
   #matrix-legends, #weightBar-legends {
     text {
-      font-size: 14px;
+      font-size: 15px;
     }
     .label {
       font-size: 13px;
@@ -207,8 +206,8 @@ export default {
   }
   #legends-container {
     // border: 1px solid #b1b1b1;
-    width: 260px;
-    height: 250px;
+    width: 300px;
+    height: 285px;
   }
 }
 </style>
