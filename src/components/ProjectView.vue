@@ -3,7 +3,7 @@
     <div class="moduleTitle">Project View</div>
     <svg width="100%" height="100%" ref="svg">
       <g class="legends">
-        <circle r="6" fill="#90c297" cx="10" cy="15"></circle>
+        <circle r="6" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle>
         <text x="20" y="20">Server</text>
         <circle r="3" fill="#90c297" cx="10" cy="35"></circle>
         <text x="20" y="40">Normal client</text>
@@ -75,6 +75,9 @@ export default {
         .enter()
         .append("circle")
         .attr("class", "point")
+        .attr('id', function(d, i) {
+          return 'point-' + i;
+        })
         .attr("cx", function(d) {
           return xScale(d[0]);
         })
@@ -85,12 +88,17 @@ export default {
           return i===serverIndex?6:3;
         })
         .attr("fill", function(d,i){
-          return i===serverIndex?"#90c297":(isNormal[i]===1?"#90c297":"red");
+          return i===serverIndex?"rgb(70, 107, 183)":(isNormal[i]===1?"#90c297":"red");
         })
-        .attr("stroke", 'red')
-        .attr("stroke-width", 2)
-        .attr("stroke-opacity", 0)
+        .attr("opacity", 0.77)
         .on("click", (d,i)=> {
+          d3.select('.g-points')
+            .selectAll('.point')
+            .attr('stroke', 'none');
+          d3.select('.g-points')
+            .select('#point-' + i)
+            .attr('stroke', '#353535')
+            .attr('stroke-width', "2px")
           let clickedClientIndex = idList[i];
           let clickedIter = this.choosedIterForProjection;
           // 高亮盒须图里的异常值
