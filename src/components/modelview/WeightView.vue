@@ -2,7 +2,10 @@
   <div id="weightView" :style="{'width':width+'px'}">
     <svg width="100%" height="100%" ref="weightView">
       <g :transform="'translate('+margin.left+','+margin.top+')'">
-        <text :transform="'translate(-10,' + rectHeight / 2 +') rotate(-90)'" class="weightBar-title">Server</text>
+        <text
+          :transform="'translate(-10,' + rectHeight / 2 +') rotate(-90)'"
+          class="weightBar-title"
+        >Server</text>
         <WeightBar
           trans="translate(0,0)"
           :colorScale="colorScale"
@@ -15,17 +18,29 @@
           :createZoomflag="true"
         />
         <g>
-          <text :transform="'translate(-20,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'" class="weightBar-title">Client</text>
-          <text :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'" class="weightBar-title">Choosed</text>
-          <text :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'" class="weightBar-title">Client-Server</text>
-          <text :transform="'translate(-5,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'" class="weightBar-title">Difference</text>
+          <text
+            :transform="'translate(-20,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
+            class="weightBar-title"
+          >Client</text>
+          <text
+            :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
+            class="weightBar-title"
+          >Choosed</text>
+          <text
+            :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
+            class="weightBar-title"
+          >Client-Server</text>
+          <text
+            :transform="'translate(-5,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
+            class="weightBar-title"
+          >Difference</text>
         </g>
         <WeightBar
           :trans="'translate(0,'+(rectHeight*(i+1)+chartInterval*i + 20)+')'"
-          :colorScale="colorScale"
+          :colorScale="i===0?colorScale:colorDiffScale"
           :xscale="clientXScale === '' ? xscale : clientXScale"
           :rectHeight="rectHeight"
-          :chartWidth="chartWidth"     
+          :chartWidth="chartWidth"
           :paraCount="paraCount"
           :para="para"
           :axisVisable="false"
@@ -42,22 +57,22 @@
             width="5"
             height="5"
           ></rect>
-        </g> -->
+        </g>-->
       </g>
     </svg>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import * as d3 from "d3";
-import WeightBar from "./WeightBar";
-import bus from "./bus";
-import WeightCanvas from "./WeightCanvas";
+import { mapState, mapGetters } from 'vuex';
+import * as d3 from 'd3';
+import WeightBar from './WeightBar';
+import bus from './bus';
+import WeightCanvas from './WeightCanvas';
 
 export default {
-  name: "WeightView",
-  data: function() {
+  name: 'WeightView',
+  data: function () {
     return {
       margin: {
         left: 40,
@@ -65,48 +80,50 @@ export default {
         top: 20,
         bottom: 40
       },
-      height: 100,// 总高度
+      height: 100, // 总高度
       rectHeight: 0, // 一个色带高度
       chartInterval: 15,
       clientXScale: '',
-      colors: ["#67001f",
-          "#b2182b",
-          "#d6604d",
-          "#f4a582",
-          "#fddbc7",
-          "#d1e5f0",
-          "#92c5de",
-          "#4393c3",
-          "#2166ac",
-          "#053061"],
+      colors: [
+        '#67001f',
+        '#b2182b',
+        '#d6604d',
+        '#f4a582',
+        '#fddbc7',
+        '#d1e5f0',
+        '#92c5de',
+        '#4393c3',
+        '#2166ac',
+        '#053061'
+      ],
       colorScale: d3
         .scaleThreshold()
         .range([
-          "#67001f",
-          "#b2182b",
-          "#d6604d",
-          "#f4a582",
-          "#fddbc7",
-          "#d1e5f0",
-          "#92c5de",
-          "#4393c3",
-          "#2166ac",
-          "#053061"
+          '#67001f',
+          '#b2182b',
+          '#d6604d',
+          '#f4a582',
+          '#fddbc7',
+          '#d1e5f0',
+          '#92c5de',
+          '#4393c3',
+          '#2166ac',
+          '#053061'
         ]),
-      // colorDiffScale: d3
-      //   .scaleThreshold()
-      //   .range([
-      //     "#67001f",
-      //     "#b2182b",
-      //     "#d6604d",
-      //     "#f4a582",
-      //     "#fddbc7",
-      //     "#d1e5f0",
-      //     "#92c5de",
-      //     "#4393c3",
-      //     "#2166ac",
-      //     "#053061"
-      //   ])
+      colorDiffScale: d3
+        .scaleThreshold()
+        .range([
+          '#67001f',
+          '#b2182b',
+          '#d6604d',
+          '#f4a582',
+          '#fddbc7',
+          '#d1e5f0',
+          '#92c5de',
+          '#4393c3',
+          '#2166ac',
+          '#053061'
+        ])
     };
   },
   props: {
@@ -117,16 +134,16 @@ export default {
     WeightCanvas
   },
   computed: {
-    chartWidth() {
+    chartWidth () {
       return this.width - this.margin.left - this.margin.right;
     },
     ...mapState({
       paraCount: state => state.model.paranum,
       paraServer: state => state.server.serverpara,
       paraClient: state => state.client.clientpara,
-      clientChoosed: state => state.client.choosedClientInProjection,
+      clientChoosed: state => state.client.choosedClientInProjection
     }),
-    xscale() {
+    xscale () {
       // let bandDomain = [];
       // for (let i = 0; i < this.paraCount; i++) {
       //   bandDomain.push(i);
@@ -143,31 +160,31 @@ export default {
         .domain([0, this.paraCount])
         .range([0, this.chartWidth]);
     },
-    rectWidth() {
+    rectWidth () {
       // return this.xscale.bandwidth();
       return this.chartWidth / this.paraCount;
     }
   },
   watch: {
-    paraServer: function(newvalue, oldvalue) {
+    paraServer: function (newvalue, oldvalue) {
       this.getRectHeight();
       // 设置新的颜色映射
       this.setColorScale();
     },
-    // paraClient: function(newvalue, oldvalue) {
-    //   console.log(newvalue, oldvalue);
-    //   this.setColorDiffScale([].concat.apply([], newvalue));
-    // },
-    clientChoosed: function(newvalue, oldvalue) {
+    paraClient: function (newvalue, oldvalue) {
+      // console.log(newvalue, oldvalue);
+      this.setColorDiffScale(newvalue[1]);
+    },
+    clientChoosed: function (newvalue, oldvalue) {
       this.getRectHeight();
       // client跟着server一起zoom
-      bus.$on("newxScale", data => {
+      bus.$on('newxScale', data => {
         this.clientXScale = data;
       });
     }
   },
   methods: {
-    setColorScale() {
+    setColorScale () {
       let [min, max] = d3.extent(this.paraServer);
       let colorDomain = [
         min,
@@ -181,9 +198,9 @@ export default {
         max
       ];
       this.colorScale.domain(colorDomain);
-      bus.$emit('weightDomain',colorDomain);
+      bus.$emit('weightDomain', colorDomain);
     },
-    setColorDiffScale(newvalue) {
+    setColorDiffScale (newvalue) {
       let [min, max] = d3.extent(newvalue);
       this.colorDiffScale.domain([
         min,
@@ -198,19 +215,20 @@ export default {
       ]);
     },
     getRectHeight () {
-      this.rectHeight = (this.height -
+      this.rectHeight =
+        (this.height -
           this.margin.top -
           this.margin.bottom -
           this.chartInterval * this.paraClient.length) /
         (this.paraClient.length + 1);
     }
   },
-  mounted() {
+  mounted () {
     let svgnode = this.$refs.weightView;
     this.height = svgnode.clientHeight;
     this.getRectHeight();
     // this.setColorScale();
-  },
+  }
 };
 </script>
 
@@ -219,7 +237,7 @@ export default {
   height: 100%;
   .weightBar-title {
     text-anchor: middle;
-    font-size: 14px
+    font-size: 14px;
   }
 }
 </style>
