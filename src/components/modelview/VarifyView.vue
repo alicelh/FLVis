@@ -1,19 +1,19 @@
 <template>
   <div id="VarifyView">
     <svg width="100%" height="100%" ref="varifyView">
-      <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight+margin.right)+','+(margin.top)+')'">
+      <!-- <g id="matrix-legends" :transform="'translate('+(margin.left+chartHeight+margin.right)+','+(margin.top)+')'">
         <text y="13" x="-5" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
         <rect width="80" height="5" fill="url(#green_linear)"></rect>
         <rect y="10" width="80" height="5" fill="url(#red_linear)"></rect>
         <text x="85" y="13" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
-      </g>
+      </g> -->
       <Axis
         :scale="xscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
         orient="Top"
         :deleteDomainPath="true"
       />
-      <text class="axis-text" :transform="'translate('+(margin.left+chartHeight/2)+','+(margin.top-20)+')'">Predicted</text>      
+      <text class="axis-text" :transform="'translate('+(margin.left+chartWidth/2)+','+(margin.top-20)+')'">Predicted</text>      
       <Axis
         :scale="yscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
@@ -21,18 +21,62 @@
         :deleteDomainPath="true"
       />
       <text class="axis-text" :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'">Actual</text>      
-      <g :transform="'translate('+margin.left+','+(margin.top)+')'">
+      <g :transform="'translate('+margin.left+','+(margin.top)+')'" id="matrix-g">
         <g v-for="(rowvalue, rowi) in temp" :key="'row-' + rowi">
-          <rect
-            :x="xscale(rectvalue)"
-            :y="yscale(rowvalue)"
-            :width="xscale.bandwidth()"
-            :height="xscale.bandwidth()"
-            :fill="clientConfusionMatrix.length === 0? 'none' : getColor(rowi, recti)"
-            stroke="black"
-            v-for="(rectvalue, recti) in temp" :key="'rect-'+recti"
-          ></rect>
+          <g v-for="(rectvalue, recti) in temp" :key="'rect-'+recti">
+            <rect
+              :x="xscale(rectvalue)"
+              :y="yscale(rowvalue)"
+              :width="xscale.bandwidth()"
+              :height="yscale.bandwidth()"
+              :fill="clientConfusionMatrix.length === 0? 'none' : getColor(rowi, recti)"
+              stroke="black"
+            ></rect>
+            <text
+              :x="xscale(rectvalue) + xscale.bandwidth() / 2"
+              :y="yscale(rowvalue) + 13"
+            >{{clientConfusionMatrix.length === 0?'':clientConfusionMatrix[rowi][recti]}}</text>
+          </g>
         </g> 
+      </g>
+      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left)+','+(margin.top + chartHeight)+')'" id='precision-g'>
+        <text transform="translate(-20, 8)rotate(-90)" id="precision-title">Precision</text>
+        <g v-for="(value, i) in precisionArr" :key="'precision-'+i" class="precision-content">
+          <rect
+            :x="xscale(i)"
+            y="5"
+            fill="none"
+            stroke="black"
+            :width="xscale.bandwidth()"
+            :height="yscale.bandwidth()"
+          ></rect>
+          <text :x="xscale(i) + xscale.bandwidth() / 2" y="18">{{Math.round(value * 100)  + '%'}}</text>
+        </g>
+      </g>
+      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top)+')'" id='recall-g'>
+        <text transform="translate(20, -20)" id="recall-title">Recall</text>
+        <g v-for="(value, i) in recallArr" :key="'recall-'+i" class="recall-content">
+          <rect
+            x="5"
+            :y="yscale(i)"
+            fill="none"
+            stroke="black"
+            :width="xscale.bandwidth()"
+            :height="yscale.bandwidth()"
+          ></rect>
+          <text :x="xscale.bandwidth() / 2 + 5" :y="yscale(i) + 13">{{Math.round(value * 100)  + '%'}}</text>
+        </g>
+      </g>
+      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top + chartHeight)+')'" id='acc-g'>
+        <rect
+          x="5"
+          y="5"
+          fill="none"
+          stroke="black"
+          :width="xscale.bandwidth()"
+          :height="yscale.bandwidth()"
+        ></rect>
+        <text :x="xscale.bandwidth() / 2 + 5" :y="18">{{Math.round(accuracy * 100)  + '%'}}</text>
       </g>
     </svg>
     <div>
@@ -99,11 +143,12 @@ export default {
       temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       margin: {
         left: 50,
-        right: 60,
+        right: 40,
         top: 40,
-        bottom: 20
+        bottom: 40
       },
       height: 0,
+      width: 0,
       colorLinear: '',
       domain: [0, 0],
       weightBarColors: ["#67001f",
@@ -116,7 +161,10 @@ export default {
           "#4393c3",
           "#2166ac",
           "#053061"],
-      weightLegendValue: []
+      weightLegendValue: [],
+      precisionArr: [],
+      recallArr: [],
+      accuracy: 0
     }
   },
   components: {
@@ -131,11 +179,14 @@ export default {
     chartHeight () {
       return this.height - this.margin.top - this.margin.bottom;
     },
+    chartWidth () {
+      return this.width - this.margin.left - this.margin.right;
+    },
     xscale () {
       return d3
         .scaleBand()
         .domain(this.temp)
-        .range([0, this.chartHeight])
+        .range([0, this.chartWidth])
         .paddingInner(0);
     },
     yscale () {
@@ -166,16 +217,51 @@ export default {
         compute = d3.interpolate(d3.rgb(255, 255, 255), '#e34a33');
       }
       return compute(this.colorLinear(this.clientConfusionMatrix[i][j]));
+    },
+    // 计算precision recall值
+    getPrecisionRecall () {
+      this.precisionArr = [];
+      this.recallArr = [];
+      let recallAll = 0;
+      let all = 0, accuracyAll = 0;
+      for (let i = 0; i < this.clientConfusionMatrix.length; i++) {
+        for (let j = 0; j < this.clientConfusionMatrix[i].length; j++) {
+          recallAll += this.clientConfusionMatrix[i][j];
+          all += this.clientConfusionMatrix[i][j];
+        }
+        accuracyAll += this.clientConfusionMatrix[i][i];
+        if (recallAll === 0)
+          this.recallArr.push(0);
+        else
+          this.recallArr.push(this.clientConfusionMatrix[i][i] / recallAll);
+        recallAll = 0;
+      }
+      this.accuracy = accuracyAll / all;
+      let precisionAll = 0;
+      for (let i = 0; i < this.clientConfusionMatrix[0].length; i++) {
+        for (let j = 0; j < this.clientConfusionMatrix.length; j++) {
+          precisionAll += this.clientConfusionMatrix[j][i];
+        }
+        if (precisionAll === 0)
+          this.precisionArr.push(0);
+        else
+          this.precisionArr.push(this.clientConfusionMatrix[i][i] / precisionAll);
+        precisionAll = 0;
+      }
+      console.log(this.precisionArr,this.recallArr, this.accuracy);
     }
   },
   mounted() {
     let svgnode = this.$refs.varifyView;
     this.height = svgnode.clientHeight;
+    this.width = svgnode.clientWidth;
+    console.log( this.width);
     this.getColorLinear();
   },
   watch: {
     clientConfusionMatrix: function (newvalue, oldvalue) {
       this.getColorLinear();
+      this.getPrecisionRecall();
     },
     choosedIter: function (newvalue, oldvalue) {
       bus.$on("weightDomain", data => {
@@ -189,7 +275,7 @@ export default {
 <style lang="scss">
 #VarifyView {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   align-items: center;
   justify-items: center;
   .axis-text {
@@ -206,8 +292,36 @@ export default {
   }
   #legends-container {
     // border: 1px solid #b1b1b1;
-    width: 300px;
+    width: 200px;
     height: 285px;
+  }
+  #matrix-g {
+    font-size: 12px;
+    text-anchor: middle;
+  }
+  #precision-g {
+    text-anchor: middle;
+    #precision-title {
+      font-size: 14px;
+    }
+    .precision-content {
+      font-size: 12px;
+    }
+  }
+  #recall-g {
+    text-anchor: middle;
+    #recall-title {
+      font-size: 15px;
+    }
+    .recall-content {
+      font-size: 12px;
+    }
+  }
+  #acc-g {
+    text {
+      font-size: 12px;
+      text-anchor: middle;
+    }
   }
 }
 </style>

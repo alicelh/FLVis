@@ -8,9 +8,11 @@
           :colorScale="colorScale"
           :xscale="xscale"
           :rectHeight="rectHeight"
-          :rectWidth="rectWidth"
+          :paraCount="paraCount"
+          :chartWidth="chartWidth"
           :para="paraServer"
           :axisVisable="true"
+          :createZoomflag="true"
         />
         <g>
           <text :transform="'translate(-20,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'" class="weightBar-title">Client</text>
@@ -21,13 +23,15 @@
         <WeightBar
           :trans="'translate(0,'+(rectHeight*(i+1)+chartInterval*i + 20)+')'"
           :colorScale="colorScale"
-          :xscale="xscale"
+          :xscale="clientXScale === '' ? xscale : clientXScale"
           :rectHeight="rectHeight"
-          :rectWidth="rectWidth"
+          :chartWidth="chartWidth"     
+          :paraCount="paraCount"
           :para="para"
           :axisVisable="false"
           v-for="(para,i) in paraClient"
           :key="'wchart'+i"
+          :createZoomflag="false"
         />
         <!-- <g transform="translate(-10,0)" id="legends">
           <rect
@@ -64,6 +68,7 @@ export default {
       height: 100,// 总高度
       rectHeight: 0, // 一个色带高度
       chartInterval: 15,
+      clientXScale: '',
       colors: ["#67001f",
           "#b2182b",
           "#d6604d",
@@ -122,12 +127,24 @@ export default {
       clientChoosed: state => state.client.choosedClientInProjection,
     }),
     xscale() {
+      // let bandDomain = [];
+      // for (let i = 0; i < this.paraCount; i++) {
+      //   bandDomain.push(i);
+      // }
+      // let scale = d3
+      //   .scaleBand()
+      //   .domain(bandDomain)
+      //   .range([0, this.chartWidth])
+      //   .paddingInner(0);
+      // console.log(scale.bandwidth());
+      // return scale;
       return d3
         .scaleLinear()
         .domain([0, this.paraCount])
         .range([0, this.chartWidth]);
     },
     rectWidth() {
+      // return this.xscale.bandwidth();
       return this.chartWidth / this.paraCount;
     }
   },
@@ -143,8 +160,13 @@ export default {
     // },
     clientChoosed: function(newvalue, oldvalue) {
       this.getRectHeight();
-      // 修改选中的client应该用跟server一样的colorscale
-      // this.setColorDiffScale([].concat.apply([], newvalue));
+      // client跟着server一起zoom
+      bus.$on("newxScale", data => {
+        console.log("new scale client");
+        this.clientXScale = data;
+        console.log(this.clientXScale === '');
+        console.log(this.clientXScale.domain());
+      });
     }
   },
   methods: {

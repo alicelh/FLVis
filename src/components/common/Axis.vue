@@ -15,17 +15,19 @@ export default {
     trans: String,
     orient: String,
     ticks: Number,
-    deleteDomainPath: Boolean
+    deleteDomainPath: Boolean,
+    useTickValues: Boolean,
+    tickValues: Array
   },
-  // data () {
-  //   return {
-  //     textAnchor: 'end'
-  //   };
-  // },
   methods: {
     createAxis () {
       let node = this.$refs.axis;
-      let axis = d3['axis' + this.orient](this.scale).ticks(this.ticks);
+      let axis;
+      if (this.useTickValues) {
+        axis = d3['axis' + this.orient](this.scale).tickValues(this.tickValues);
+      } else {
+        axis = d3['axis' + this.orient](this.scale).ticks(this.ticks);
+      }
       d3.select(node).call(axis);
       if (this.deleteDomainPath) {
         d3.select(node).selectAll('.domain').remove();

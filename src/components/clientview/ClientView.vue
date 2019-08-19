@@ -25,33 +25,32 @@
           orient="Bottom"
         />
         <Axis
-          :scale="yscaleLoss"
+          :scale="yscaleDataSize"
           :trans="'translate('+margin.left+','+(margin.top+10)+')'"
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top+10)+')'">
           <circle
             r=4
-            fill="#466BB7"
+            fill="#90c297"
             :cx="xscale(iterArray[i])"
-            :cy="yscaleLoss(item)"
+            :cy="yscaleDataSize(item)"
             :data-index="i"
-            data-content="loss"
-            v-for="(item, i) in this.loss" :key="i"
+            data-content="size"
+            v-for="(item, i) in this.dataSize" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
             :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
             stroke-width="2px"
             ></circle>
-            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
+            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>  
             <Tooltip
               :clientData="tooltipData"
-              :isMouseHover="isTooltipShow && (hoverSvg === 'loss')"
-              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
+              :isMouseHover="isTooltipShow && (hoverSvg === 'size')"
+              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>          
         </g>
-        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Loss</text>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Data size</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
         <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
       </svg>
@@ -91,7 +90,6 @@
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Accuracy</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
       </svg>
-      <!-- 数据量暂时不用线图展示 -->
       <svg width="100%" height="100%">
         <Axis
           :scale="xscale"
@@ -99,32 +97,33 @@
           orient="Bottom"
         />
         <Axis
-          :scale="yscaleDataSize"
-          :trans="'translate('+margin.left+','+margin.top+')'"
+          :scale="yscaleLoss"
+          :trans="'translate('+margin.left+','+(margin.top)+')'"
           orient="Left"
           :ticks="5"
         />
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top)+')'">
           <circle
             r=4
-            fill="#90c297"
+            fill="#466BB7"
             :cx="xscale(iterArray[i])"
-            :cy="yscaleDataSize(item)"
+            :cy="yscaleLoss(item)"
             :data-index="i"
-            data-content="size"
-            v-for="(item, i) in this.dataSize" :key="i"
+            data-content="loss"
+            v-for="(item, i) in this.loss" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
             :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
             stroke-width="2px"
             ></circle>
-            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>  
+            <line v-show="isTooltipShow" :x1="hoverLineX" y1="0" :x2="hoverLineX" :y2="chartHeight" stroke-dasharray="5 5" stroke="#B1B1B1"></line>
             <Tooltip
               :clientData="tooltipData"
-              :isMouseHover="isTooltipShow && (hoverSvg === 'size')"
-              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>          
+              :isMouseHover="isTooltipShow && (hoverSvg === 'loss')"
+              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
         </g>
-        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Data size</text>
+        <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Loss</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
       </svg>
     </div>
