@@ -72,15 +72,16 @@ export default {
       this.rectWidth =  this.chartWidth / (newDomain[1] - newDomain[0]);
       this.newxScale.domain(newDomain);
       bus.$emit('newxScale', this.newxScale);
-      // this.newTransX = d3.event.transform.x;
-      // console.log(this.newTransX)//:transform="'translate('+(-newTransX)+',0)'"
     }
   },
   created () {
     this.newxScale = this.xscale;
     this.rectWidth = this.chartWidth / this.paraCount;
-    // console.log(this.newxScale);
-    // bus.$emit('newxScale', this.newxScale);
+  },
+  watch: {
+    xscale: function(newv, oldv) {
+      this.newxScale= newv;
+    }
   },
   mounted () {
     if(this.createZoomflag) {

@@ -162,10 +162,7 @@ export default {
       this.getRectHeight();
       // client跟着server一起zoom
       bus.$on("newxScale", data => {
-        console.log("new scale client");
         this.clientXScale = data;
-        console.log(this.clientXScale === '');
-        console.log(this.clientXScale.domain());
       });
     }
   },
