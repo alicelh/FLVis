@@ -112,12 +112,12 @@
               <text class='label' v-if="weightLegendValue.length !== 0" x="90" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
           </g> -->
-          <g id="matrix-legends" :transform="'translate(60, 240)'">
+          <g id="matrix-legends" :transform="'translate(80, 100) rotate(90)'">
             <text x="40" y="-20" style="text-anchor: middle;">Confusion Matrix Encodings</text>
-            <text class='label' y="15" x="-10" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+            <text class='label' y="-10" x="-10" style="text-anchor: middle;" transform='rotate(-90)'>{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
             <rect width="80" height="10" fill="url(#green_linear)"></rect>
             <rect y="13" width="80" height="10" fill="url(#red_linear)"></rect>
-            <text class='label' x="90" y="15" style="text-anchor: start;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+            <text class='label' transform='rotate(-90)' x="-13" y="100" style="text-anchor: middle;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
           </g>
         </svg>
       </div>

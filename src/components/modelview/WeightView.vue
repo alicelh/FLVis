@@ -113,16 +113,26 @@ export default {
       colorDiffScale: d3
         .scaleThreshold()
         .range([
-          '#67001f',
-          '#b2182b',
-          '#d6604d',
-          '#f4a582',
-          '#fddbc7',
-          '#d1e5f0',
-          '#92c5de',
-          '#4393c3',
-          '#2166ac',
-          '#053061'
+          // '#67001f',
+          // '#b2182b',
+          // '#d6604d',
+          // '#f4a582',
+          // '#fddbc7',
+          // '#d1e5f0',
+          // '#92c5de',
+          // '#4393c3',
+          // '#2166ac',
+          // '#053061'
+          '#7f3b08',
+          '#b35806',
+          '#e08214',
+          '#fdb863',
+          '#fee0b6',
+          '#d8daeb',
+          '#b2abd2',
+          '#8073ac',
+          '#542788',
+          '#2d004b',
         ])
     };
   },
@@ -171,12 +181,14 @@ export default {
       // 设置新的颜色映射
       this.setColorScale();
     },
-    paraClient: function (newvalue, oldvalue) {
+    // paraClient: function (newvalue, oldvalue) {
       // console.log(newvalue, oldvalue);
       // this.setColorDiffScale(newvalue[1]);
-    },
+    // },
     clientChoosed: function (newvalue, oldvalue) {
       this.getRectHeight();
+      // 差值的颜色映射
+      this.setColorDiffScale(this.paraClient[1]);
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
         this.clientXScale = data;
