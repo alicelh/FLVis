@@ -94,7 +94,7 @@
               <stop offset="100%" :stop-color="weightBarColors[i+1]"/>
             </linearGradient>
           </defs>
-          <g id="weightBar-legends" :transform="'translate(50, 40)'">
+          <!-- <g id="weightBar-legends" :transform="'translate(50, 40)'">
             <text x="50" y="-20" style="text-anchor: middle;">Weight Bars Encodings</text>
             <g
               v-for="(color, i) in weightBarColors"
@@ -111,7 +111,7 @@
               </rect>
               <text class='label' v-if="weightLegendValue.length !== 0" x="90" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
-          </g>
+          </g> -->
           <g id="matrix-legends" :transform="'translate(60, 240)'">
             <text x="40" y="-20" style="text-anchor: middle;">Confusion Matrix Encodings</text>
             <text class='label' y="15" x="-10" style="text-anchor: end;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>

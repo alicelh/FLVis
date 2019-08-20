@@ -20,7 +20,8 @@ const state = {
   choosedIterForProjection: 0, // 选择迭代面板中的某一次
   clientInfo: {}, // main view中的
   deleteiter: -1,
-  selectedClientInfo: []
+  selectedClientInfo: [],
+  clientHoveredInMain: -1
 }
 
 const getters = {}
@@ -93,6 +94,11 @@ const actions = {
       .then(res => {
         commit(types.GET_CONFUSION_MATRIX_BY_ITER_CLIENT_INDEX, [context, res]);
       })
+  },
+  updateClientHoveredInMain({
+    commit
+  }, context) {
+    commit(types.UPDATE_CLIENT_HOVERED_INMAIN, context);
   }
 }
 
@@ -151,6 +157,9 @@ const mutations = {
     state.choosedClientInProjection = data[0];
     // console.log(data[0], data[1]);
     state.clientConfusionMatrix = data[1];
+  },
+  [types.UPDATE_CLIENT_HOVERED_INMAIN] (state, data) {
+    state.clientHoveredInMain = data;
   }
 }
 

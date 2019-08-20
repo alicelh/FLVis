@@ -18,6 +18,7 @@
 <script>
 import { mapState } from "vuex";
 import * as d3 from "d3";
+
 export default {
   name: "ProjectView",
   computed: {
@@ -32,19 +33,31 @@ export default {
     },
     ...mapState({
       projectData: state => state.client.projectdata,
-      choosedIterForProjection: state => state.client.choosedIterForProjection
+      choosedIterForProjection: state => state.client.choosedIterForProjection,
+      clientHoveredInMain: state => state.client.clientHoveredInMain
     })
   },
   watch: {
     choosedIterForProjection: function(newValue, oldValue) {
       this.$store.dispatch("client/getClientProject", newValue);
     },
-
     projectData: function(newValue, oldValue) {
       this.plot(newValue);
+    },
+    clientHoveredInMain: function(newv, oldv) {
+      this.highlightClient(newv);
     }
   },
   methods: {
+    highlightClient(newV) {
+      d3.select('.g-points')
+        .selectAll('.point')
+        .attr('stroke', 'none');
+      d3.select('.g-points')
+        .select('#point-' + newV)
+        .attr('stroke', '#353535')
+        .attr('stroke-width', "2px")
+    },
     plot(projectData) {
       let me = this;
       let pos = projectData["pos"]
@@ -76,7 +89,7 @@ export default {
         .append("circle")
         .attr("class", "point")
         .attr('id', function(d, i) {
-          return 'point-' + i;
+          return 'point-' + idList[i];
         })
         .attr("cx", function(d) {
           return xScale(d[0]);
@@ -96,7 +109,7 @@ export default {
             .selectAll('.point')
             .attr('stroke', 'none');
           d3.select('.g-points')
-            .select('#point-' + i)
+            .select('#point-' + idList[i])
             .attr('stroke', '#353535')
             .attr('stroke-width', "2px")
           let clickedClientIndex = idList[i];
@@ -118,7 +131,7 @@ export default {
   },
   mounted() {
     // this.plot();
-  }
+  },
 };
 </script>
 

@@ -173,7 +173,7 @@ export default {
     },
     paraClient: function (newvalue, oldvalue) {
       // console.log(newvalue, oldvalue);
-      this.setColorDiffScale(newvalue[1]);
+      // this.setColorDiffScale(newvalue[1]);
     },
     clientChoosed: function (newvalue, oldvalue) {
       this.getRectHeight();

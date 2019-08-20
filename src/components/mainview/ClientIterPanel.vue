@@ -246,9 +246,12 @@ export default {
         // e.target.getAttribute("y")
       ];
       this.isTooltipShow = true;
+      // 高亮投影视图里对应的client
+      this.$store.dispatch('client/updateClientHoveredInMain', this.tooltipData.index);
     },
     hideTooltip() {
       this.isTooltipShow = false;
+      this.$store.dispatch('client/updateClientHoveredInMain', -1);
     },
     // 移动三角形
     handleSlide(ev) {
