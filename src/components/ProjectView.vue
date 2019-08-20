@@ -51,7 +51,7 @@ export default {
   methods: {
     highlightClient(newV) {
       d3.select('.g-points')
-        .selectAll('.point')
+        .selectAll('.point-not-chosen')
         .attr('stroke', 'none');
       d3.select('.g-points')
         .select('#point-' + newV)
@@ -87,7 +87,10 @@ export default {
         .data(pos)
         .enter()
         .append("circle")
-        .attr("class", "point")
+        .classed('point-not-chosen', true)
+        .classed('point', true)
+        // .attr("class", "point")
+        // .attr("class", "point-not-chosen")
         .attr('id', function(d, i) {
           return 'point-' + idList[i];
         })
@@ -107,10 +110,13 @@ export default {
         .on("click", (d,i)=> {
           d3.select('.g-points')
             .selectAll('.point')
-            .attr('stroke', 'none');
+            .attr('stroke', 'none')
+            .classed('point-not-chosen', true);
           d3.select('.g-points')
             .select('#point-' + idList[i])
+            .classed('point-not-chosen', false)
             .attr('stroke', '#353535')
+            .attr('r', 4)
             .attr('stroke-width', "2px")
           let clickedClientIndex = idList[i];
           let clickedIter = this.choosedIterForProjection;
@@ -130,7 +136,7 @@ export default {
     }
   },
   mounted() {
-    // this.plot();
+    // this.plot(this.projectData);
   },
 };
 </script>

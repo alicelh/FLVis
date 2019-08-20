@@ -44,16 +44,9 @@
           <g class="rect-group">
             <g
               v-for="(val, i) in dataSort.slice(countNum[segment[0] - minIterCount].startIndex, countNum[segment[1] - minIterCount].endIndex + 1)"
-              :key="'rect-'+i">
-              <rect
-                v-if="isTooltipShow && (val.index.toString() === tooltipData.index.toString())"
-                class="client-rect-outer"
-                :width="rectSize - (isOutlier(val.index) === 'none'?0:4)"
-                :height="rectSize - (isOutlier(val.index) === 'none'?0:4)"
-                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
-                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
-                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + (isOutlier(val.index) === 'none'?0:2)"
-              ></rect>
+              :key="'rect-'+i"
+              @mouseover="showTooltip"
+              @mouseout="hideTooltip">
               <rect
                 :fill="computeColor(colorLinear(parseInt(val.num)))"
                 class="client-rect"
@@ -69,10 +62,33 @@
                 :data-iter="val.iter"
                 :data-datanum="val.num"
                 :style="{'stroke': isOutlier(val.index), 'stroke-width': '4px'}"
-                @mouseover="showTooltip"
-                @mouseout="hideTooltip"
                 @click="handleRectClick"
               />
+              <rect
+                v-if="isTooltipShow && (val.index.toString() === tooltipData.index.toString())"
+                class="client-rect-outer"
+                :width="rectSize"
+                :height="rectSize"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
+              ></rect>
+              <rect
+                v-if="doubleOutlierArr.indexOf(val.index) > -1"
+                style="stroke:#3983c0; stroke-width:2px; fill: none"
+                :width="8"
+                :height="8"
+                :data-index="val.index"
+                :data-count="val.count"
+                :data-acc="val.acc"
+                :data-loss="val.loss"
+                :data-iter="val.iter"
+                :data-datanum="val.num"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + 3"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1]) + 3"
+                @click="handleRectClick"
+              ></rect>
             </g>
           </g>
         </g>
@@ -122,6 +138,7 @@ export default {
       sliderTrianglesPos: [], // 滑动条上的三角形位置
       svgHeight: 0,
       rectGroupHeight: [],// 存储每个group的y坐标
+      doubleOutlier: []
     };
   },
   components: {
@@ -157,11 +174,13 @@ export default {
       if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
         let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
         let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
-        if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1)
-          return "red";
-        else if (outlierClientLoss.indexOf(index) > -1)
+        this.doubleOutlierArr = [];
+        if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1) {
+          this.doubleOutlierArr.push(index);
+          return "#dd5041";
+        } else if (outlierClientLoss.indexOf(index) > -1) {      
           return '#3983c0';
-        else if (outlierClientAcc.indexOf(index) > -1)
+        } else if (outlierClientAcc.indexOf(index) > -1)
           return '#dd5041';
         return 'none';
       } else {
@@ -186,6 +205,7 @@ export default {
       // 把读入的data按count属性进行排序
       this.clientNumAll = this.data.length;
       this.dataSort = this.data.sort(this.compare("count"));
+      // console.log(this.dataSort);
       if (this.clientNumAll !== 0) {
         this.minIterCount = this.dataSort[0].count;
         this.maxIterCount = this.dataSort[this.clientNumAll - 1].count;
@@ -233,7 +253,7 @@ export default {
     showTooltip(e) {
       this.tooltipData.index = e.target.getAttribute("data-index");
       this.tooltipData.count = e.target.getAttribute("data-count");
-      // this.tooltipData.iter = e.target.getAttribute("data-iter");
+      let iter = e.target.getAttribute("data-iter");
       this.tooltipData.acc = parseFloat(
         e.target.getAttribute("data-acc")
       ).toFixed(2);
@@ -248,6 +268,8 @@ export default {
       this.isTooltipShow = true;
       // 高亮投影视图里对应的client
       this.$store.dispatch('client/updateClientHoveredInMain', this.tooltipData.index);
+      // 高亮盒须图里的异常值
+      // this.$store.dispatch('client/updataClientChoosed', [parseInt(this.tooltipData.index), parseInt(iter)]);
     },
     hideTooltip() {
       this.isTooltipShow = false;
