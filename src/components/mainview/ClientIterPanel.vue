@@ -149,7 +149,9 @@ export default {
   computed: {
     ...mapState({
       // clientInfo: state => state.client.clientInfo[this.iterId],
-      brushedClientStastics: (state) => state.server.brushedClientStastics
+      brushedClientStastics: (state) => state.server.brushedClientStastics,
+      outlierClientAccAll: (state) => state.server.outlierClientAcc,
+      outlierClientLossAll: (state) => state.server.outlierClientLoss,
     })
   },
   watch: {
@@ -157,6 +159,7 @@ export default {
       this.getMinMaxIterCount();
       this.getClientSegments();
       this.updateSvgHeight();
+      this.getOutliers();
     }
   },
   methods: {
@@ -172,9 +175,11 @@ export default {
     //   return compute(rectColorLinear(datanum));
     // },
     getOutliers () {
-      this.outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
-      this.outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+      // this.outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+      // this.outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
       this.doubleOutlierArr = [];
+      this.outlierClientLoss = this.outlierClientLossAll[this.iterId];
+      this.outlierClientAcc = this.outlierClientAccAll[this.iterId];
       for (let i = 0; i < this.outlierClientLoss.length; i++) {
         if(this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
           this.doubleOutlierArr.push(this.outlierClientLoss[i]);
@@ -421,7 +426,6 @@ export default {
           }
         }
       }
-      // console.log(this.clientNumSegments);
     },
     // 计算rectgroup的高度
     getRectGroupHeight (rectNum) {
@@ -453,6 +457,9 @@ export default {
       // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
     }
   },
+  // created () {
+
+  // },
   mounted() { 
     this.getMinMaxIterCount();
     this.initialSvgHeight();

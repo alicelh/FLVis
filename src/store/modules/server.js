@@ -11,7 +11,9 @@ const state = {
   choosediter: 0,
   serverpara: [],
   brushedSelection: [],
-  brushedClientStastics: {}
+  brushedClientStastics: {},
+  outlierClientLoss: {},
+  outlierClientAcc: {}
 }
 
 const getters = {}
@@ -70,6 +72,11 @@ const mutations = {
     let type = data[2];
     let propertyName = 'outlierClient-' + type;
     state.brushedClientStastics[data[0]][propertyName] = data[1];
+    if (type === 'loss') {
+      state.outlierClientLoss[data[0]] = data[1];
+    } else {
+      state.outlierClientAcc[data[0]] = data[1];
+    }
   }
 }
 
