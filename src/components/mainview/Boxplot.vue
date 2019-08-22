@@ -98,14 +98,14 @@ export default {
     updateBoxplotData () {
       // 把client index和对应的值组成一个对象数组
       let clientIndexArray = this.clientIndex;
-      // let dataObject = this.data.map(function(value, index) {
-      //   // console.log(clientIndexArray[index], value);
-      //   return {"clientIndex": clientIndexArray[index], 'value': value}
-      // });
-      let dataObject = [];
-      for (let i = 0; i < this.data.length; i++) {
-        dataObject.push({"clientIndex": clientIndexArray[i], 'value': this.data[i]});
-      }
+      let dataObject = this.data.map(function(value, index) {
+        // console.log(clientIndexArray[index], value);
+        return {"clientIndex": clientIndexArray[index], 'value': value}
+      });
+      // let dataObject = [];
+      // for (let i = 0; i < this.data.length; i++) {
+      //   dataObject.push({"clientIndex": clientIndexArray[i], 'value': this.data[i]});
+      // }
       // console.log(clientIndexArray, this.data, dataObject);
       let dataSortObject = dataObject.sort(this.compare('value'));
       let dataSort = dataSortObject.map(d=>d.value);

@@ -10,8 +10,8 @@
         <circle r="3" fill="red" cx="10" cy="55"></circle>
         <text x="20" y="60">Abnomal client</text>
       </g>
+      <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g>
     </svg>
-    <div id="corner">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</div>
   </div>
 </template>
 
@@ -21,6 +21,11 @@ import * as d3 from "d3";
 
 export default {
   name: "ProjectView",
+  data() {
+    return {
+      clickedClient: -1
+    };
+  },
   computed: {
     svg() {
       return this.$refs.svg;
@@ -89,8 +94,9 @@ export default {
         .append("circle")
         .classed('point-not-chosen', true)
         .classed('point', true)
-        // .attr("class", "point")
-        // .attr("class", "point-not-chosen")
+        .classed('point-client', function(d,i){
+          return i!==serverIndex
+        })
         .attr('id', function(d, i) {
           return 'point-' + idList[i];
         })
@@ -108,26 +114,45 @@ export default {
         })
         .attr("opacity", 0.77)
         .on("click", (d,i)=> {
-          d3.select('.g-points')
-            .selectAll('.point')
-            .attr('stroke', 'none')
-            .classed('point-not-chosen', true);
-          d3.select('.g-points')
-            .select('#point-' + idList[i])
-            .classed('point-not-chosen', false)
-            .attr('stroke', '#353535')
-            .attr('r', 4)
-            .attr('stroke-width', "2px")
-          let clickedClientIndex = idList[i];
-          let clickedIter = this.choosedIterForProjection;
-          // 高亮盒须图里的异常值
-          this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
-          // 更新client view
-          this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
-          // 更新混淆矩阵
-          this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
-          // 更新条带图
-          this.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
+          if (i!==serverIndex) {
+            me.clickedClient = idList[i];
+            d3.select('.g-points')
+              .selectAll('.point-client')
+              .attr('stroke', 'none')
+              .attr('r', 3)
+              .classed('point-not-chosen', true);
+            d3.select('.g-points')
+              .select('#point-' + idList[i])
+              .classed('point-not-chosen', false)
+              .attr('stroke', '#353535')
+              .attr('r', 4)
+              .attr('stroke-width', "2px")
+            let clickedClientIndex = idList[i];
+            let clickedIter = me.choosedIterForProjection;
+            // 高亮盒须图里的异常值
+            me.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
+            // 更新client view
+            me.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
+            // 更新混淆矩阵
+            me.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+            // 更新条带图
+            me.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
+          }
+        })
+        .on('mouseover', function(d, i){
+          if (idList[i] !== me.clickedClient) {
+            d3.select('.g-points')
+              .select('#point-' + idList[i])
+              .attr('stroke', '#353535')
+              .attr('stroke-width', "2px");
+          }
+        })
+        .on('mouseout', function(d, i){
+          if (idList[i] !== me.clickedClient) {
+            d3.select('.g-points')
+              .select('#point-' + idList[i])
+              .attr('stroke', '#none');
+          }
         })
         .append("title")
         .text((d,i) => {
@@ -156,9 +181,7 @@ export default {
   }
 }
 #corner {
-  position: absolute;
-  top: 40px;
-  right: 20px;
+  text-anchor: end;
   font-size: 15px;
   font-weight: bold;
 }

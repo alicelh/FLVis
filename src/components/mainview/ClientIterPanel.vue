@@ -138,7 +138,9 @@ export default {
       sliderTrianglesPos: [], // 滑动条上的三角形位置
       svgHeight: 0,
       rectGroupHeight: [],// 存储每个group的y坐标
-      doubleOutlier: []
+      doubleOutlierArr: [],
+      outlierClientLoss: [],
+      outlierClientAcc: []
     };
   },
   components: {
@@ -169,23 +171,40 @@ export default {
     //   let compute = d3.interpolate(d3.rgb(240,249,232), d3.rgb(144,194,151));
     //   return compute(rectColorLinear(datanum));
     // },
+    getOutliers () {
+      this.outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+      this.outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+      this.doubleOutlierArr = [];
+      for (let i = 0; i < this.outlierClientLoss.length; i++) {
+        if(this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
+          this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+      }
+    },
     isOutlier (index) {
-      // 当iter面板有内容时 重新刷选 显示的iter已不在显示的盒须图中 所以不用高亮outlier
-      if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
-        let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
-        let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
-        this.doubleOutlierArr = [];
-        if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1) {
-          this.doubleOutlierArr.push(index);
+      if (this.outlierClientLoss.indexOf(index) > -1 && this.outlierClientAcc.indexOf(index) > -1) {
+          // this.doubleOutlierArr.push(index);
           return "#dd5041";
-        } else if (outlierClientLoss.indexOf(index) > -1) {      
+        } else if (this.outlierClientLoss.indexOf(index) > -1) {      
           return '#3983c0';
-        } else if (outlierClientAcc.indexOf(index) > -1)
+        } else if (this.outlierClientAcc.indexOf(index) > -1)
           return '#dd5041';
         return 'none';
-      } else {
-        return 'none';
-      }
+      // 当iter面板有内容时 重新刷选 显示的iter已不在显示的盒须图中 所以不用高亮outlier
+      // if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
+      //   let outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
+      //   let outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
+      //   // this.doubleOutlierArr = [];
+      //   if (outlierClientLoss.indexOf(index) > -1 && outlierClientAcc.indexOf(index) > -1) {
+      //     // this.doubleOutlierArr.push(index);
+      //     return "#dd5041";
+      //   } else if (outlierClientLoss.indexOf(index) > -1) {      
+      //     return '#3983c0';
+      //   } else if (outlierClientAcc.indexOf(index) > -1)
+      //     return '#dd5041';
+      //   return 'none';
+      // } else {
+      //   return 'none';
+      // }
     },
     compare(property) {
       return function(obj1, obj2) {
@@ -233,10 +252,10 @@ export default {
         }
       }
       this.sliderTrianglesPos = [];
-      // 找到数据量的最大最小
-      let clientDataNum = this.data.map(d => d.num);
-      // console.log(clientDataNum);
-      this.clientDataNumMinMax = d3.extent(clientDataNum);
+      // // 找到训练数据量的最大最小 做图例 和颜色的映射
+      // let clientDataNum = this.data.map(d => d.num);
+      // // console.log(clientDataNum);
+      // this.clientDataNumMinMax = d3.extent(clientDataNum);
     },
     initialSvgHeight () {
       // 计算每行的rect个数
@@ -263,7 +282,6 @@ export default {
       this.tooltipPos = [
         e.target.getAttribute("x"),
         e.clientY
-        // e.target.getAttribute("y")
       ];
       this.isTooltipShow = true;
       // 高亮投影视图里对应的client
@@ -438,6 +456,7 @@ export default {
   mounted() { 
     this.getMinMaxIterCount();
     this.initialSvgHeight();
+    this.getOutliers();
   }
 };
 </script>
