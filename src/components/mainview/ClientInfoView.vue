@@ -6,7 +6,9 @@
           :iterId="item"
           :data="clientInfoData[item]"
           :panelId="i"
-          :colorLinear="colorLinear"/>
+          :colorLinear="colorLinear"
+          :hasLinkedClient="linkedClientArr[i]"
+          :linkedClient="parseInt(choosedclient)"/>
       </div>
       <div v-for="(item, i) in genePanelArray" :key="'void-'+i" class="singleIterPanel">
       </div>
@@ -43,7 +45,8 @@ export default {
       gridColumns: '',
       choosedIters: [],
       clientDataNumMinMax: [],
-      colorLinear: ''
+      colorLinear: '',
+      linkedClientArr: []
     };
   },
   components: {
@@ -64,7 +67,8 @@ export default {
     ...mapState({
       currentChoosedIter: state => state.client.choosediter,
       clientInfoData: state => state.client.clientInfo,
-      deleteIter: state => state.client.deleteiter
+      deleteIter: state => state.client.deleteiter,
+      choosedclient: state => state.client.choosedclient
     })
   },
   watch: {
@@ -82,7 +86,8 @@ export default {
         this.colorLinear = d3.scaleLinear()
           .domain(this.clientDataNumMinMax)
           .range([0,1]);
-      }     
+        this.updateLinking();
+      }
     },
     deleteIter: function (newvalue, oldvalue) {
       // 从choosedIters删除
@@ -98,6 +103,21 @@ export default {
         this.colorLinear = d3.scaleLinear()
           .domain(clientDataNumMinMax)
           .range([0,1]);
+        this.updateLinking();
+      }
+    },
+    choosedclient: function (newv, oldv) {
+      this.updateLinking();
+    }
+  },
+  methods: {
+    updateLinking() {
+      if (this.choosedclient !== -1) {
+        this.linkedClientArr = [];
+        for (let key in this.clientInfoData) {
+          let clientIndexArr = this.clientInfoData[key].map(d=>d.index);
+          this.linkedClientArr.push(clientIndexArr.indexOf(parseInt(this.choosedclient)) > -1 ? true : false);
+        }
       }
     }
   }

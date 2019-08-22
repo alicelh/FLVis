@@ -7,7 +7,7 @@
         <img src="../../assets/delete.png" @click="deletePanel" />
       </div>
     </div>
-    <div class="client-content scroll-box">
+    <div class="client-content scroll-box" :id="'client-content-' + iterId" ref="clientContentDiv">
       <div class="clientnum-slider">
         <span style="left:0px; top:9px">{{minIterCount}}</span>
         <div id="slider-bar" @contextmenu="preventDefault"></div>
@@ -48,6 +48,7 @@
               @mouseover="showTooltip"
               @mouseout="hideTooltip">
               <rect
+                :id="'client-rect-'+iterId+'-'+val.index"
                 :fill="computeColor(colorLinear(parseInt(val.num)))"
                 class="client-rect"
                 :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine) + (isOutlier(val.index) === 'none'?0:2)"
@@ -65,8 +66,28 @@
                 @click="handleRectClick"
               />
               <rect
-                v-if="isTooltipShow && (val.index.toString() === tooltipData.index.toString())"
+                v-if="(isTooltipShow && (parseInt(val.index) === parseInt(tooltipData.index)))"
                 class="client-rect-outer"
+                :width="rectSize"
+                :height="rectSize"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
+              ></rect>
+              <!-- 点击的边框  和 Linked-->
+              <rect
+                v-if="(clickedClientIndex === parseInt(val.index))"
+                class="client-rect-clicked"
+                :width="rectSize"
+                :height="rectSize"
+                :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
+                :y="Math.floor(i / rectNumLine) * rectSize + 15 + rectGap * Math.floor(i / rectNumLine) + 
+                ((segmentIndex === 0) ? 0 : rectGroupHeight[segmentIndex - 1])"
+              ></rect>
+              <!-- linked -->
+              <rect
+                v-if="hasLinkedClient && linkedClient === parseInt(val.index)"
+                class="client-rect-linked-highlight"
                 :width="rectSize"
                 :height="rectSize"
                 :x="i % rectNumLine * rectSize + rectGap * (i % rectNumLine)"
@@ -117,7 +138,9 @@ export default {
     iterId: Number,
     data: Array,
     panelId: Number,// 为了计算小三角形的偏移
-    colorLinear: Function
+    colorLinear: Function,
+    hasLinkedClient: Boolean, // 是否有linked client
+    linkedClient: Number
   },
   data() {
     return {
@@ -140,7 +163,8 @@ export default {
       rectGroupHeight: [],// 存储每个group的y坐标
       doubleOutlierArr: [],
       outlierClientLoss: [],
-      outlierClientAcc: []
+      outlierClientAcc: [],
+      clickedClientIndex: -1
     };
   },
   components: {
@@ -160,6 +184,13 @@ export default {
       this.getClientSegments();
       this.updateSvgHeight();
       this.getOutliers();
+      // this.highlightLinkedClient();
+    },
+    hasLinkedClient: function(newv, oldv) {
+      this.highlightLinkedClient(newv);
+    },
+    linkedClient: function(newv, oldv) {
+      this.highlightLinkedClient(this.hasLinkedClient);
     }
   },
   methods: {
@@ -289,7 +320,7 @@ export default {
         e.clientY
       ];
       this.isTooltipShow = true;
-      // 高亮投影视图里对应的client
+      // 高亮投影视图里对应的client 以及Linked client
       this.$store.dispatch('client/updateClientHoveredInMain', this.tooltipData.index);
       // 高亮盒须图里的异常值
       // this.$store.dispatch('client/updataClientChoosed', [parseInt(this.tooltipData.index), parseInt(iter)]);
@@ -448,6 +479,7 @@ export default {
     // 点击面板中的小矩形 高亮该次迭代中的异常值circle
     handleRectClick (e) {
       let clickedClientIndex = e.target.getAttribute('data-index');
+      this.clickedClientIndex = parseInt(clickedClientIndex);
       let clickedIter = this.iterId;
       // 高亮盒须图里的异常值
       this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
@@ -455,6 +487,30 @@ export default {
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
       // 暂时不用更新混淆矩阵
       // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+    },
+    highlightLinkedClient (flag) {
+      // 把除当前点击以外的panel内有相同client的高亮
+      if (this.clickedClientIndex !== this.linkedClient) {
+        this.clickedClientIndex = -1
+        if (flag) {
+          // 找到当前迭代面板对应linked client节点
+          let node = document.getElementById('client-rect-' +this.iterId+'-'+ this.linkedClient);
+          // 对应的scroll节点 设置对应的scrolltop
+          let scrollDivNode = document.getElementById('client-content-' +this.iterId);
+          scrollDivNode.scrollTop = node.getAttribute('y') - 260;
+          // this.clickedClientIndex = this.linkedClient;
+        } else {
+          this.clickedClientIndex = -1; // 当前面板没有点击
+        }
+      } 
+      // else {
+      //   let node = document.getElementById('client-rect-' +this.iterId+'-'+ this.linkedClient);
+      //     // 对应的scroll节点 设置对应的scrolltop
+      //     let scrollDivNode = document.getElementById('client-content-' +this.iterId);
+      //     console.log("==="+scrollDivNode)
+      //     scrollDivNode.scrollTop = node.getAttribute('y') - 260;
+      //     // this.clickedClientIndex = -1; // 当前面板没有点击
+      // }
     }
   },
   // created () {
@@ -464,6 +520,7 @@ export default {
     this.getMinMaxIterCount();
     this.initialSvgHeight();
     this.getOutliers();
+    // this.highlightLinkedClient();
   }
 };
 </script>
@@ -515,6 +572,16 @@ export default {
       fill: none;
       stroke-width: 1px;
       stroke:rgba(0,0,0,0.50);
+    }
+    .client-rect-clicked {
+      fill: none;
+      stroke-width: 1.5px;
+      stroke:rgba(0,0,0, 0.9);
+    }
+    .client-rect-linked-highlight {
+      fill: none;
+      stroke-width: 1px;
+      stroke:rgba(0,0,0, 0.9);
     }
     .num-rect {
       fill: rgba(26, 26, 26, 0.56);
