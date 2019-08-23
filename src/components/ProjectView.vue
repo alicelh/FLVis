@@ -3,14 +3,66 @@
     <div class="moduleTitle">Project View</div>
     <svg width="100%" height="100%" ref="svg">
       <g class="legends">
-        <circle r="6" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle>
+        <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle>
         <text x="20" y="20">Server</text>
-        <circle r="3" fill="#90c297" cx="10" cy="35"></circle>
+        <circle r="4" fill="#90c297" cx="10" cy="35"></circle>
         <text x="20" y="40">Normal client</text>
-        <circle r="3" fill="red" cx="10" cy="55"></circle>
+        <circle r="4" fill="#ff7f00" cx="10" cy="55"></circle>
         <text x="20" y="60">Abnomal client</text>
+        <circle r="3.5" fill="none" stroke="rgb(57, 131, 192)" stroke-width="2px" cx="10" cy="75"></circle>
+        <text x="20" y="80">Abnomal loss</text>
+        <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="10" cy="95"></circle>
+        <text x="20" y="100">Abnomal acc</text>
+        <path transform="translate(10,115)" :d="arcData('left')" fill="rgb(57, 131, 192)"></path>
+        <path transform="translate(10,115)" :d="arcData('right')" fill="rgb(221, 80, 65)"></path>
+        <text x="20" y="120">Abnomal acc &amp; loss</text>
       </g>
       <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g>
+      <g class="g-points">
+        <g v-for="(value, i) in pos" :key="'circle' + i" :transform="'translate(' + xScale(value[0])+',' +yScale(value[1])+ ')'">
+          <circle
+            class='point point-not-chosen'
+            :class="i===pos.length-1?'':'point-client'"
+            :fill="i===pos.length-1?'rgb(70, 107, 183)':(isNormal[i]===1?'#90c297':'#ff7f00')"
+            :r="i===pos.length-1?8:4"
+            opacity="0.77"
+            :id="'point-' + idList[i]"
+            @click="handlePointClick"
+            @mouseover="handleMouseOver"
+            @mouseout="handleMouseOut"
+          >
+            <title>{{idList[i]}}</title>
+          </circle>
+          <circle
+            v-if="outlierClientLoss.indexOf(idList[i]) > -1 && doubleOutlierArr.indexOf(idList[i]) === -1"
+            class="outlier-stroke"
+            fill="none"
+            r="3.5"
+            stroke="rgb(57, 131, 192)"
+            stroke-width="2px"
+          ></circle>
+          <circle
+            v-if="outlierClientAcc.indexOf(idList[i]) > -1 && doubleOutlierArr.indexOf(idList[i]) === -1"
+            class="outlier-stroke"
+            fill="none"
+            r="3.5"
+            stroke="rgb(221, 80, 65)"
+            stroke-width="2px"
+          ></circle>
+          <!-- <circle
+            v-if="doubleOutlierArr.indexOf(idList[i]) > -1"
+            class="outlier-stroke"
+            fill="none"
+            :cx="xScale(value[0])"
+            :cy="yScale(value[1])"
+            r="4"
+            stroke="rgb(221, 80, 65)"
+            stroke-width="2px"
+          ></circle> -->
+          <path v-if="doubleOutlierArr.indexOf(idList[i]) > -1" :d="arcData('left')" fill="rgb(57, 131, 192)"></path>
+          <path v-if="doubleOutlierArr.indexOf(idList[i]) > -1" :d="arcData('right')" fill="rgb(221, 80, 65)"></path>
+        </g>
+      </g>
     </svg>
   </div>
 </template>
@@ -23,7 +75,13 @@ export default {
   name: "ProjectView",
   data() {
     return {
-      clickedClient: -1
+      clickedClient: -1,
+      doubleOutlierArr: [],
+      outlierClientLoss: [],
+      outlierClientAcc: [],
+      pos: [],
+      idList: [],
+      isNormal: []
     };
   },
   computed: {
@@ -36,24 +94,124 @@ export default {
     height() {
       return parseInt(d3.select("#projectView-container").style("height")) - parseInt(d3.select(".moduleTitle").style("height"));
     },
+    xScale () {
+      let ofs = 0.99 * 0.5 * Math.min(this.width, this.height);
+      return d3
+        .scaleLinear()
+        .domain([0, 1])
+        .range([this.width * 0.5 - ofs, this.width * 0.5 + ofs]);
+    },
+    yScale () {
+      let ofs = 0.99 * 0.5 * Math.min(this.width, this.height);
+      return d3
+        .scaleLinear()
+        .domain([0, 1])
+        .range([this.height * 0.5 + ofs, this.height * 0.5 - ofs]);
+    },
     ...mapState({
       projectData: state => state.client.projectdata,
       choosedIterForProjection: state => state.client.choosedIterForProjection,
-      clientHoveredInMain: state => state.client.clientHoveredInMain
+      clientHoveredInMain: state => state.client.clientHoveredInMain,
+      outlierClientAccAll: (state) => state.server.outlierClientAcc,
+      outlierClientLossAll: (state) => state.server.outlierClientLoss,
     })
   },
   watch: {
     choosedIterForProjection: function(newValue, oldValue) {
       this.$store.dispatch("client/getClientProject", newValue);
+      this.getOutliers()
     },
     projectData: function(newValue, oldValue) {
-      this.plot(newValue);
+      this.pos = newValue["pos"].reverse();// server最后画
+      this.idList = newValue["idList"].reverse();
+      this.isNormal = newValue["isNormal"]
+      // this.plot(newValue);
     },
     clientHoveredInMain: function(newv, oldv) {
       this.highlightClient(newv);
     }
   },
   methods: {
+    arcData (direction) {
+      let start = 0, end = 0;
+      if (direction === 'left') {
+        start = Math.PI;
+        end = 2 * Math.PI;
+      } else if (direction === 'right') {
+        start = 0;
+        end = Math.PI;
+      }
+      let arc = d3.arc();
+      return arc({
+        innerRadius: 2,
+        outerRadius: 4,
+        startAngle: start,
+        endAngle: end
+      });
+    },
+    // isOutlier (clientId) {
+    //   // outlierClientLoss.indexOf(parseInt(idList[i])) > -1? 'rgb(140, 177, 207)':'none'
+    //   // console.log(this.outlierClientLoss, clientId);
+    //   if (this.outlierClientLoss.indexOf(parseInt(clientId)) > -1) {
+    //     console.log("123")
+    //     return '#8cb1cf';
+    //   } else if (this.outlierClientLoss.indexOf(parseInt(clientId)) > -1){
+    //     return '#f3c0ba';
+    //   }
+    // },
+    handlePointClick (e) {
+      let clickedId = e.target.getAttribute('id');
+      let clickedClientIndex = clickedId.split('-')[1];
+      if (clickedClientIndex !== this.idList[this.pos.length -1]) {
+        d3.select('.g-points')
+          .selectAll('.point-client')
+          .attr('stroke', 'none')
+          .attr('r', 4);
+        d3.select("#" + clickedId)
+          .attr('stroke', '#353535')
+          .attr('r', 6)
+          .attr('stroke-width', "2px")
+          .classed('point-not-chosen', false);
+        this.clickedClient = clickedClientIndex;
+        let clickedIter = this.choosedIterForProjection;
+        // 高亮盒须图里的异常值
+        this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
+        // 更新client view
+        this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
+        // 更新混淆矩阵
+        this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+        // 更新条带图
+        this.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
+      }
+    },
+    handleMouseOver (e) {
+      let hoverId = e.target.getAttribute('id');
+      let hoverClientIndex = hoverId.split('-')[1];
+      if (hoverClientIndex !== this.clickedClient && hoverClientIndex !== this.idList[this.pos.length -1]) {
+        d3.select('.g-points')
+          .select("#" + hoverId)
+          .attr('stroke', '#353535')
+          .attr('stroke-width', "2px");
+      }
+    },
+    handleMouseOut (e) {
+      let hoverId = e.target.getAttribute('id');
+      let hoverClientIndex = hoverId.split('-')[1];
+      if (hoverClientIndex !== this.clickedClient && hoverClientIndex !== this.idList[this.pos.length -1]) {
+        d3.select('.g-points')
+          .select("#" + hoverId)
+          .attr('stroke', '#none');
+      }
+    },
+    getOutliers () {
+      this.doubleOutlierArr = [];
+      this.outlierClientLoss = this.outlierClientLossAll[this.choosedIterForProjection];
+      this.outlierClientAcc = this.outlierClientAccAll[this.choosedIterForProjection];
+      for (let i = 0; i < this.outlierClientLoss.length; i++) {
+        if(this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
+          this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+      }
+    },
     highlightClient(newV) {
       d3.select('.g-points')
         .selectAll('.point-not-chosen')
@@ -63,105 +221,6 @@ export default {
         .attr('stroke', '#353535')
         .attr('stroke-width', "2px")
     },
-    plot(projectData) {
-      let me = this;
-      let pos = projectData["pos"]
-      let idList = projectData["idList"]
-      let isNormal = projectData["isNormal"]
-      let ofs = 0.99 * 0.5 * Math.min(this.width, this.height)
-      //为了让server节点最后画，保证不被遮挡，所以需要逆序
-      pos.reverse()
-      idList.reverse()
-      const serverIndex = pos.length-1
-      let xScale = d3
-        .scaleLinear()
-        .domain([0, 1])
-        .range([this.width * 0.5 - ofs, this.width * 0.5 + ofs]);
-
-      let yScale = d3
-        .scaleLinear()
-        .domain([0, 1])
-        .range([this.height * 0.5 + ofs, this.height * 0.5 - ofs]);
-      d3.select(this.svg)
-        .select(".g-points")
-        .remove();
-      d3.select(this.svg)
-        .append("g")
-        .attr("class", "g-points")
-        .selectAll(".point")
-        .data(pos)
-        .enter()
-        .append("circle")
-        .classed('point-not-chosen', true)
-        .classed('point', true)
-        .classed('point-client', function(d,i){
-          return i!==serverIndex
-        })
-        .attr('id', function(d, i) {
-          return 'point-' + idList[i];
-        })
-        .attr("cx", function(d) {
-          return xScale(d[0]);
-        })
-        .attr("cy", function(d) {
-          return yScale(d[1]);
-        })
-        .attr("r", function(d,i){
-          return i===serverIndex?6:3;
-        })
-        .attr("fill", function(d,i){
-          return i===serverIndex?"rgb(70, 107, 183)":(isNormal[i]===1?"#90c297":"red");
-        })
-        .attr("opacity", 0.77)
-        .on("click", (d,i)=> {
-          if (i!==serverIndex) {
-            me.clickedClient = idList[i];
-            d3.select('.g-points')
-              .selectAll('.point-client')
-              .attr('stroke', 'none')
-              .attr('r', 3)
-              .classed('point-not-chosen', true);
-            d3.select('.g-points')
-              .select('#point-' + idList[i])
-              .classed('point-not-chosen', false)
-              .attr('stroke', '#353535')
-              .attr('r', 4)
-              .attr('stroke-width', "2px")
-            let clickedClientIndex = idList[i];
-            let clickedIter = me.choosedIterForProjection;
-            // 高亮盒须图里的异常值
-            me.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
-            // 更新client view
-            me.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
-            // 更新混淆矩阵
-            me.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
-            // 更新条带图
-            me.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
-          }
-        })
-        .on('mouseover', function(d, i){
-          if (idList[i] !== me.clickedClient) {
-            d3.select('.g-points')
-              .select('#point-' + idList[i])
-              .attr('stroke', '#353535')
-              .attr('stroke-width', "2px");
-          }
-        })
-        .on('mouseout', function(d, i){
-          if (idList[i] !== me.clickedClient) {
-            d3.select('.g-points')
-              .select('#point-' + idList[i])
-              .attr('stroke', '#none');
-          }
-        })
-        .append("title")
-        .text((d,i) => {
-          return idList[i];
-        });
-    }
-  },
-  mounted() {
-    // this.plot(this.projectData);
   },
 };
 </script>
@@ -184,5 +243,8 @@ export default {
   text-anchor: end;
   font-size: 15px;
   font-weight: bold;
+}
+.legends {
+  font-size: 14px;
 }
 </style>
