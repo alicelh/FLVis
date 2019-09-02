@@ -1,6 +1,7 @@
 <template>
   <div id="projectView-container">
-    <div class="moduleTitle">Project View</div>
+    <div class="moduleTitle">Projection View</div>
+    <img src="../assets/server2.svg"/>
     <svg width="100%" height="100%" ref="svg">
       <g class="legends">
         <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle>
@@ -8,14 +9,14 @@
         <circle r="4" fill="#90c297" cx="10" cy="35"></circle>
         <text x="20" y="40">Normal client</text>
         <circle r="4" fill="#ff7f00" cx="10" cy="55"></circle>
-        <text x="20" y="60">Abnomal client</text>
+        <text x="20" y="60">Abnormal client</text>
         <circle r="3.5" fill="none" stroke="rgb(57, 131, 192)" stroke-width="2px" cx="10" cy="75"></circle>
-        <text x="20" y="80">Abnomal loss</text>
+        <text x="20" y="80">Abnormal loss</text>
         <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="10" cy="95"></circle>
-        <text x="20" y="100">Abnomal acc</text>
+        <text x="20" y="100">Abnormal acc</text>
         <path transform="translate(10,115)" :d="arcData('left')" fill="rgb(57, 131, 192)"></path>
         <path transform="translate(10,115)" :d="arcData('right')" fill="rgb(221, 80, 65)"></path>
-        <text x="20" y="120">Abnomal acc &amp; loss</text>
+        <text x="20" y="120">Abnormal acc &amp; loss</text>
       </g>
       <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g>
       <g class="g-points">
@@ -230,6 +231,13 @@ export default {
   border: 1px solid #4a4a4a;
   border-radius: 5px;
   height: 100%;
+  position: relative;
+  img {
+    position: absolute;
+    top: 200px;
+    left: 285px;
+    width:30px;
+  }
   .moduleTitle {
     text-align: left;
     line-height: 30px;
@@ -243,6 +251,9 @@ export default {
   text-anchor: end;
   font-size: 15px;
   font-weight: bold;
+  text {
+    fill: #333;
+  }
 }
 .legends {
   font-size: 14px;

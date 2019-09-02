@@ -42,9 +42,9 @@
         <path :transform="'translate('+xBandwidth * 0.75+',0)'" :d="brushedAccline" fill="none" stroke="#D68966" stroke-width="2" />
       </g>
       <g class="legends" :transform="'translate('+(mainViewWidth - 200)+',5)'">
-        <rect width="10" height="10" fill="#f3c0ba"></rect>
+        <rect width="10" height="10" fill="#f3c0ba" stroke="#dd5041" stroke-width="2"></rect>
         <text x="15" y="10">Accuracy</text>
-        <rect width="10" height="10" x="100" fill="#8cb1cf"></rect>
+        <rect width="10" height="10" x="100" fill="#8cb1cf" stroke="#3983c0" stroke-width="2"></rect>
         <text x="115" y="10">Loss</text>
       </g>
       <Axis

@@ -14,7 +14,7 @@
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="iterCountLine" fill="none" stroke="#F6A457" stroke-width="2" />
+        <path :transform="'translate('+margin.left+','+(margin.top+10)+')'" :d="iterCountLine" fill="none" stroke="rgb(120, 123, 120)" stroke-width="2" />
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Iter count</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
       </svg>
@@ -33,7 +33,7 @@
         <g :transform="'translate('+margin.left+','+(margin.top+10)+')'">
           <circle
             r=4
-            fill="#90c297"
+            fill="rgb(120, 123, 120)"
             :cx="xscale(iterArray[i])"
             :cy="yscaleDataSize(item)"
             :data-index="i"
@@ -66,11 +66,11 @@
           orient="Left"
           :ticks="2"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="accLine" fill="none" stroke="#D68966" stroke-width="2" />
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="accLine" fill="none" stroke="rgb(120, 123, 120)" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top)+')'">
           <circle
             r=4
-            fill="#D68966"
+            fill="rgb(120, 123, 120)"
             :cx="xscale(iterArray[i])"
             :cy="yscaleAcc(item)"
             :data-index="i"
@@ -102,11 +102,11 @@
           orient="Left"
           :ticks="5"
         />
-        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="lossLine" fill="none" stroke="#466BB7" stroke-width="2" />
+        <path :transform="'translate('+margin.left+','+(margin.top)+')'" :d="lossLine" fill="none" stroke="rgb(120, 123, 120)" stroke-width="2" />
         <g :transform="'translate('+margin.left+','+(margin.top)+')'">
           <circle
             r=4
-            fill="#466BB7"
+            fill="rgb(120, 123, 120)"
             :cx="xscale(iterArray[i])"
             :cy="yscaleLoss(item)"
             :data-index="i"
@@ -326,6 +326,7 @@ export default {
         text-anchor: end;
         font-size: 15px;
         font-weight: bold;
+        fill: #595454;
       }
     }
   }

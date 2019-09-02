@@ -25,7 +25,7 @@
           <text
             :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
             class="weightBar-title"
-          >Choosed</text>
+          >Selected</text>
           <text
             :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
             class="weightBar-title"
@@ -84,6 +84,7 @@ export default {
       rectHeight: 0, // 一个色带高度
       chartInterval: 15,
       clientXScale: '',
+      // paraCount: 0,
       colors: [
         '#67001f',
         '#b2182b',

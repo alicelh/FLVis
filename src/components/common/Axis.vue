@@ -1,5 +1,5 @@
 <template>
-  <g :transform="trans">
+  <g :transform="trans" class="axis">
     <g ref="axis"></g>
     <!-- <text class="axis-text" :style="{'text-anchor': textAnchor}">123</text> -->
   </g>
@@ -44,3 +44,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.axis {
+  line, path {
+    stroke: #333;
+  }
+  text {
+    fill: #333;
+  }
+}
+</style>

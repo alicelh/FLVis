@@ -76,12 +76,16 @@ export default {
   },
   created () {
     this.newxScale = this.xscale;
-    this.rectWidth = this.chartWidth / this.paraCount;
+    if (this.paraCount !== 0)
+      this.rectWidth = this.chartWidth / this.paraCount;
   },
   watch: {
     xscale: function(newv, oldv) {
       this.newxScale= newv;
-    }
+    },
+    paraCount: function(newv, oldv) {
+      this.rectWidth = this.chartWidth / newv;
+    },
   },
   mounted () {
     if(this.createZoomflag) {

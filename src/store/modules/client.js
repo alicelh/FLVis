@@ -110,6 +110,7 @@ const mutations = {
     for (let i = 0; i < serverpara.length; i++) {
       state.clientpara[1][i] = data[i] - serverpara[i]; // 与server的差值
     }
+    // 压缩
   },
   [types.GET_CLIENT_PARA_ARR](state, data) {
     let tmp = server.state.serverpara;

@@ -24,7 +24,7 @@
               :width="xscale.bandwidth()"
               :height="yscale.bandwidth()"
               :fill="clientConfusionMatrix.length === 0? 'none' : getColor(rowi, recti)"
-              stroke="black"
+              stroke="#333"
             ></rect>
             <text
               :x="xscale(rectvalue) + xscale.bandwidth() / 2"
@@ -40,7 +40,7 @@
             :x="xscale(i)"
             y="5"
             :fill="getGreenColor(value)"
-            stroke="black"
+            stroke="#333"
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
           ></rect>
@@ -54,7 +54,7 @@
             x="5"
             :y="yscale(i)"
             :fill="getGreenColor(value)"
-            stroke="black"
+            stroke="#333"
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
           ></rect>
@@ -66,7 +66,7 @@
           x="5"
           y="5"
           :fill="getGreenColor(accuracy)"
-          stroke="black"
+          stroke="#333"
           :width="xscale.bandwidth()"
           :height="yscale.bandwidth()"
         ></rect>
@@ -113,7 +113,7 @@
             </g>
           </g> -->
           <g id="matrix-legends" :transform="'translate(80, 100) rotate(90)'">
-            <text x="40" y="-20" style="text-anchor: middle;">Confusion Matrix Encodings</text>
+            <text x="40" y="-20" style="text-anchor: middle; fill: #333;">Confusion Matrix Encodings</text>
             <text class='label' y="-10" x="-10" style="text-anchor: middle;" transform='rotate(-90)'>{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
             <rect width="80" height="10" fill="url(#green_linear)"></rect>
             <rect y="13" width="80" height="10" fill="url(#red_linear)"></rect>
@@ -284,6 +284,7 @@ export default {
   .axis-text {
     text-anchor: middle;
     font-size: 15px;
+    fill: #333;
   }
   #matrix-legends, #weightBar-legends {
     text {

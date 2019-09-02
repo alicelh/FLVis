@@ -13,7 +13,8 @@ const state = {
   brushedSelection: [],
   brushedClientStastics: {},
   outlierClientLoss: {},
-  outlierClientAcc: {}
+  outlierClientAcc: {},
+  paranum: 0
 }
 
 const getters = {}
@@ -67,6 +68,7 @@ const mutations = {
   [types.GET_SERVER_PARA](state, data) {
     state.serverpara = data;
     client.state.clientpara = [];
+    state.paranum = data.length;
   },
   [types.UPDATE_CLIENT_OUTLIER](state, data) {
     let type = data[2];
