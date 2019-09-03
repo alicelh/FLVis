@@ -67,9 +67,36 @@ const mutations = {
   },
   [types.GET_SERVER_PARA](state, data) {
     state.copyserverpara = data;// 存一份
-    state.serverpara = data;
+    // state.serverpara = data;
+    // server聚合一下
+    state.serverpara = [];
+    let i = 0;
+    let len = 10;
+    for (i = 0; i < data.length;) {
+      if (Math.abs(data[i] - 0) < 0.1) {
+        while (Math.abs(data[i] - 0) < 0.1) {
+          i++;
+        }
+        state.serverpara.push(0);
+      // } else if (data[i] > 0) {
+      //   while (data[i] > 0) {
+      //     let tempServerSum = 0;
+      //     let tempLen = 0;
+      //     while (data[i] !== 0 && tempLen < len) {
+      //       tempServerSum += data[i];
+      //       tempLen++;
+      //       i++;
+      //     }
+      //     state.serverpara.push(tempServerSum);
+      //     j++;
+      //   }
+      } else {
+        state.serverpara.push(data[i]);
+        i++;
+      }
+    }
     client.state.clientpara = [];
-    state.paranum = data.length;
+    state.paranum = state.serverpara.length;// data.length;
   },
   [types.UPDATE_CLIENT_OUTLIER](state, data) {
     let type = data[2];

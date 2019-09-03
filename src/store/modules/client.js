@@ -133,7 +133,22 @@ const mutations = {
           let tempServerSum = 0;
           let tempClientSum = 0;
           let tempLen = 0;
-          while (data[i] !== 0 && serverpara[i] !== 0 && tempLen < len) {
+          while (data[i] > 0 && serverpara[i] > 0 && tempLen < len) {
+            tempClientSum += data[i];
+            tempServerSum += serverpara[i];
+            tempLen++;
+            i++;
+          }
+          state.tempServer.push(tempServerSum);
+          state.tempClient.push(tempClientSum);
+          j++;
+        }
+      } else if (data[i] < 0 && serverpara[i] < 0) {
+        while (data[i] < 0 && serverpara[i] < 0) {
+          let tempServerSum = 0;
+          let tempClientSum = 0;
+          let tempLen = 0;
+          while (data[i] < 0 && serverpara[i] < 0 && tempLen < len) {
             tempClientSum += data[i];
             tempServerSum += serverpara[i];
             tempLen++;

@@ -52,7 +52,7 @@
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Data size</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
-        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
+        <!-- <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text> -->
       </svg>
       <svg width="100%" height="100%">
         <Axis

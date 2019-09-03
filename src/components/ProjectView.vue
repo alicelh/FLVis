@@ -19,7 +19,7 @@
         <path transform="translate(10,115)" :d="arcData('right')" fill="rgb(221, 80, 65)"></path>
         <text x="20" y="120">Abnormal acc &amp; loss</text>
       </g>
-      <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g>
+      <!-- <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g> -->
       <g class="g-points">
         <g v-for="(value, i) in pos.slice(0, pos.length-1)" :key="'circle' + i"
         :transform="'translate(' + xScale((value[0]-pos[pos.length-1][0]) * 1.2 + pos[pos.length-1][0])+',' +yScale((value[1]-pos[pos.length-1][1]) * 1.2 + pos[pos.length-1][1])+ ')'">
@@ -239,6 +239,7 @@ export default {
     top: 207px;
     left: 290px;
     width:20px;
+    z-index: -1;
   }
   .moduleTitle {
     text-align: left;
