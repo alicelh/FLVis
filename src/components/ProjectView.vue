@@ -236,8 +236,8 @@ export default {
   position: relative;
   #server-img {
     position: absolute;
-    top: 200px;
-    left: 280px;
+    top: 207px;
+    left: 290px;
     width:20px;
   }
   .moduleTitle {

@@ -160,7 +160,6 @@ const mutations = {
     for (let i = 0; i < state.paranum; i++) {
       state.clientpara[1][i] = state.tempClient[i] - state.tempServer[i]; // 与server的差值 先不取绝对值 因为颜色映射是对称的
     }
-    console.log(state.clientpara);
   },
   // 暂时没有用
   [types.GET_CLIENT_PARA_ARR](state, data) {
