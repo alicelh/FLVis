@@ -8,10 +8,10 @@
             <text class="title">Selected iter: {{choosedIterForProjection === 0?'none':choosedIterForProjection}}</text>
             <g transform="translate(0, 25)" class="details">
               <text>
-                <tspan>loss: </tspan>
-                <tspan x="0" dy="25">accuracy: </tspan>
-                <tspan x="0" dy="25">data amount: </tspan>
-                <tspan x="0" dy="25">client amount: </tspan>
+                <tspan>loss: {{iterDetails.loss===-1?'':iterDetails.loss.toFixed(2)}}</tspan>
+                <tspan x="0" dy="25">accuracy: {{iterDetails.acc===-1?'':iterDetails.acc.toFixed(2)}}</tspan>
+                <tspan x="0" dy="25">data amount: {{iterDetails.dataNum===-1?'':iterDetails.dataNum}}</tspan>
+                <tspan x="0" dy="25">client amount: {{iterDetails.clientNum===-1?'':iterDetails.clientNum}}</tspan>
               </text>
             </g>
           </g>
@@ -20,10 +20,10 @@
             <text class="title">Selected client: {{parseInt(choosedclient) === -1?'none':choosedclient}}</text>
             <g transform="translate(0, 25)" class="details">
               <text>
-                <tspan>iter: </tspan>
-                <tspan x="0" dy="25">loss: </tspan>
-                <tspan x="0" dy="25">accuracy: </tspan>
-                <tspan x="0" dy="25">data amount: </tspan>
+                <tspan>iter: {{clientDetails.iter===-1?'':clientDetails.iter}}</tspan>
+                <tspan x="0" dy="25">loss: {{clientDetails.loss===-1?'':clientDetails.loss.toFixed(2)}}</tspan>
+                <tspan x="0" dy="25">accuracy: {{clientDetails.acc===-1?'':clientDetails.acc.toFixed(2)}}</tspan>
+                <tspan x="0" dy="25">data amount: {{clientDetails.num===-1?'':clientDetails.num}}</tspan>
               </text>
             </g>
           </g>
@@ -80,7 +80,19 @@ export default {
       colorLinear: '',
       linkedClientArr: [],
       rectInfoWidth: 200,
-      rectInfoHeight: 330
+      rectInfoHeight: 330,
+      clientDetails: {
+        iter: -1,
+        num: -1,
+        loss: -1,
+        acc: -1
+      },
+      iterDetails: {
+        acc: -1,
+        loss: -1,
+        dataNum: -1,
+        clientNum: -1
+      }
     };
   },
   components: {
@@ -104,9 +116,26 @@ export default {
       deleteIter: state => state.client.deleteiter,
       choosedclient: state => state.client.choosedclient,
       choosedIterForProjection: state => state.client.choosedIterForProjection,// 选择的某次迭代
+      selectedClientInfo: state=>state.client.selectedClientInfo,
+      choosedclientiter: state=>state.client.choosedclientiter,
+      acc: state=>state.server.acc,
+      loss: state=>state.server.loss,
+      num: state=>state.server.num,
     })
   },
   watch: {
+    choosedIterForProjection: function(newv, oldv) {
+      this.iterDetails.acc = this.acc[newv-1];
+      this.iterDetails.loss = this.loss[newv-1];
+      this.iterDetails.dataNum = this.num[newv-1];
+      this.iterDetails.clientNum = this.clientInfoData[newv].length;
+    },
+    selectedClientInfo: function(newv, oldv) {
+      for(let i = 0; i < newv.length; i++) {
+        if((newv[i].iter) === parseInt(this.choosedclientiter))
+          this.clientDetails = newv[i];
+      }
+    },
     currentChoosedIter: function (newvalue, oldvalue) {
       let v = parseInt(newvalue);
       if(v !== -1 && this.choosedIters.indexOf(v) === -1 && this.choosedIters.length < this.panelNum) {

@@ -78,21 +78,30 @@ const mutations = {
           i++;
         }
         state.serverpara.push(0);
-      // } else if (data[i] > 0) {
-      //   while (data[i] > 0) {
-      //     let tempServerSum = 0;
-      //     let tempLen = 0;
-      //     while (data[i] !== 0 && tempLen < len) {
-      //       tempServerSum += data[i];
-      //       tempLen++;
-      //       i++;
-      //     }
-      //     state.serverpara.push(tempServerSum);
-      //     j++;
-      //   }
+      } else if (data[i] > 0) {
+        while (data[i] > 0) {
+          let tempServerSum = 0;
+          let tempLen = 0;
+          while (data[i] > 0 && tempLen < len) {
+            tempServerSum += data[i];
+            tempLen++;
+            i++;
+          }
+          state.serverpara.push(tempServerSum);
+        }
+      } else if (data[i] < 0) {
+        while (data[i] < 0) {
+          let tempServerSum = 0;
+          let tempLen = 0;
+          while (data[i] < 0 && tempLen < len) {
+            tempServerSum += data[i];
+            tempLen++;
+            i++;
+          }
+          state.serverpara.push(tempServerSum);
+        }
       } else {
         state.serverpara.push(data[i]);
-        i++;
       }
     }
     client.state.clientpara = [];

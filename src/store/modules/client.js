@@ -26,6 +26,10 @@ const state = {
   tempClient: [],
   tempServer: [],
   paranum: 0
+  // 当前选中的迭代信息
+  // currentChoosedIterInfo: {},
+  // 当前选中的client信息
+  // currentChoosedClientInfo: {}
 }
 
 const getters = {}
@@ -115,7 +119,6 @@ const mutations = {
     //   state.clientpara[1][i] = data[i] - serverpara[i]; // 与server的差值
     // }
     // 压缩 先取个绝对值
-    let j = 0;
     state.tempServer = [];
     state.tempClient = [];
     let i = 0;
@@ -127,7 +130,6 @@ const mutations = {
         }
         state.tempServer.push(0);
         state.tempClient.push(0);
-        j++;
       } else if (data[i] > 0 && serverpara[i] > 0) {
         while (data[i] > 0 && serverpara[i] > 0) {
           let tempServerSum = 0;
@@ -141,7 +143,6 @@ const mutations = {
           }
           state.tempServer.push(tempServerSum);
           state.tempClient.push(tempClientSum);
-          j++;
         }
       } else if (data[i] < 0 && serverpara[i] < 0) {
         while (data[i] < 0 && serverpara[i] < 0) {
@@ -156,7 +157,6 @@ const mutations = {
           }
           state.tempServer.push(tempServerSum);
           state.tempClient.push(tempClientSum);
-          j++;
         }
       } else {
         state.tempServer.push(serverpara[i]);
