@@ -85,6 +85,7 @@ export default {
       this.rectWidth = this.chartWidth / (this.newxScale.domain()[1] - this.newxScale.domain()[0]);
     },
     paraCount: function(newv, oldv) {
+      this.newxScale= this.xscale;
       this.rectWidth = this.chartWidth / newv;
     },
   },

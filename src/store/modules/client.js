@@ -109,7 +109,7 @@ const actions = {
 const mutations = {
   [types.GET_CLIENT_PARA](state, data) {
     // state.clientpara[0] = data; // 选中的client
-    let serverpara = server.state.serverpara;
+    let serverpara = server.state.copyserverpara;
     // state.clientpara[1] = [];
     // for (let i = 0; i < serverpara.length; i++) {
     //   state.clientpara[1][i] = data[i] - serverpara[i]; // 与server的差值
@@ -158,8 +158,9 @@ const mutations = {
     // 求差值
     state.clientpara[1] = [];
     for (let i = 0; i < state.paranum; i++) {
-      state.clientpara[1][i] = Math.abs(state.tempClient[i] - state.tempServer[i]); // 与server的差值 取绝对值
+      state.clientpara[1][i] = state.tempClient[i] - state.tempServer[i]; // 与server的差值 先不取绝对值 因为颜色映射是对称的
     }
+    console.log(state.clientpara);
   },
   // 暂时没有用
   [types.GET_CLIENT_PARA_ARR](state, data) {

@@ -199,8 +199,11 @@ export default {
     // },
     clientChoosed: function (newvalue, oldvalue) {
       this.getRectHeight();
+      // 换了client后server的颜色映射也要变
+      this.setColorScale();
       // 差值的颜色映射
       this.setColorDiffScale(this.paraClient[1]);
+      this.clientXScale = '';
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
         this.clientXScale = data;
@@ -208,9 +211,9 @@ export default {
     },
     paraCount: function (newvalue, oldvalue) {
       this.getRectHeight();
+      this.clientXScale = '';
       // 差值的颜色映射
-      // console.log(newvalue, oldvalue)
-      if (oldvalue !== 0)
+      if (oldvalue !== 0 && this.paraClient.length !== 0)
         this.setColorDiffScale(this.paraClient[1]);
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
@@ -236,7 +239,6 @@ export default {
       bus.$emit('weightDomain', colorDomain);
     },
     setColorDiffScale (newvalue) {
-      console.log(newvalue);
       let [min, max] = d3.extent(newvalue);
       this.colorDiffScale.domain([
         min,

@@ -66,6 +66,7 @@ const mutations = {
     }
   },
   [types.GET_SERVER_PARA](state, data) {
+    state.copyserverpara = data;// 存一份
     state.serverpara = data;
     client.state.clientpara = [];
     state.paranum = data.length;

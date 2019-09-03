@@ -1,10 +1,11 @@
 <template>
   <div id="projectView-container">
     <div class="moduleTitle">Projection View</div>
-    <img src="../assets/server2.svg"/>
+    <img id="server-img" src="../assets/server2.svg"/>
+    <img id="legend-img" src="../assets/server2.svg"/>
     <svg width="100%" height="100%" ref="svg">
       <g class="legends">
-        <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle>
+        <!-- <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle> -->
         <text x="20" y="20">Server</text>
         <circle r="4" fill="#90c297" cx="10" cy="35"></circle>
         <text x="20" y="40">Normal client</text>
@@ -20,7 +21,8 @@
       </g>
       <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g>
       <g class="g-points">
-        <g v-for="(value, i) in pos" :key="'circle' + i" :transform="'translate(' + xScale(value[0])+',' +yScale(value[1])+ ')'">
+        <g v-for="(value, i) in pos.slice(0, pos.length-1)" :key="'circle' + i"
+        :transform="'translate(' + xScale((value[0]-pos[pos.length-1][0]) * 1.2 + pos[pos.length-1][0])+',' +yScale((value[1]-pos[pos.length-1][1]) * 1.2 + pos[pos.length-1][1])+ ')'">
           <circle
             class='point point-not-chosen'
             :class="i===pos.length-1?'':'point-client'"
@@ -180,7 +182,7 @@ export default {
         // 更新client view
         this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
         // 更新混淆矩阵
-        this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+        // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
         // 更新条带图
         this.$store.dispatch("client/getClientPara", [clickedIter, clickedClientIndex]);
       }
@@ -232,11 +234,11 @@ export default {
   border-radius: 5px;
   height: 100%;
   position: relative;
-  img {
+  #server-img {
     position: absolute;
     top: 200px;
-    left: 285px;
-    width:30px;
+    left: 280px;
+    width:20px;
   }
   .moduleTitle {
     text-align: left;
@@ -245,6 +247,12 @@ export default {
     font-size: 24px;
     color: #ffffff;
     padding-left: 10px;
+  }
+  #legend-img {
+    position: absolute;
+    left: 1px;
+    width:20px;
+    top: 38px;
   }
 }
 #corner {
