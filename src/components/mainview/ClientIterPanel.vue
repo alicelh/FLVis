@@ -487,7 +487,7 @@ export default {
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
       // 暂时不用更新混淆矩阵
       // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
-      this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);
+      // this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);
 
     },
     highlightLinkedClient (flag) {
