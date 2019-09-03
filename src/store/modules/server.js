@@ -41,6 +41,7 @@ const actions = {
   }, context) {
     commit(types.UPDATE_CLIENT_OUTLIER, context)
   },
+  // 不用了
   getServerPara({
     commit
   }, context) {
@@ -66,46 +67,47 @@ const mutations = {
     }
   },
   [types.GET_SERVER_PARA](state, data) {
+    console.log("get server para")
     state.copyserverpara = data;// 存一份
     // state.serverpara = data;
     // server聚合一下
-    state.serverpara = [];
-    let i = 0;
-    let len = 10;
-    for (i = 0; i < data.length;) {
-      if (Math.abs(data[i] - 0) < 0.1) {
-        while (Math.abs(data[i] - 0) < 0.1) {
-          i++;
-        }
-        state.serverpara.push(0);
-      } else if (data[i] > 0) {
-        while (data[i] > 0) {
-          let tempServerSum = 0;
-          let tempLen = 0;
-          while (data[i] > 0 && tempLen < len) {
-            tempServerSum += data[i];
-            tempLen++;
-            i++;
-          }
-          state.serverpara.push(tempServerSum);
-        }
-      } else if (data[i] < 0) {
-        while (data[i] < 0) {
-          let tempServerSum = 0;
-          let tempLen = 0;
-          while (data[i] < 0 && tempLen < len) {
-            tempServerSum += data[i];
-            tempLen++;
-            i++;
-          }
-          state.serverpara.push(tempServerSum);
-        }
-      } else {
-        state.serverpara.push(data[i]);
-      }
-    }
+    // state.serverpara = [];
+    // let i = 0;
+    // let len = 10;
+    // for (i = 0; i < data.length;) {
+    //   if (Math.abs(data[i] - 0) < 0.1) {
+    //     while (Math.abs(data[i] - 0) < 0.1) {
+    //       i++;
+    //     }
+    //     state.serverpara.push(0);
+    //   } else if (data[i] > 0) {
+    //     while (data[i] > 0) {
+    //       let tempServerSum = 0;
+    //       let tempLen = 0;
+    //       while (data[i] > 0 && tempLen < len) {
+    //         tempServerSum += data[i];
+    //         tempLen++;
+    //         i++;
+    //       }
+    //       state.serverpara.push(tempServerSum);
+    //     }
+    //   } else if (data[i] < 0) {
+    //     while (data[i] < 0) {
+    //       let tempServerSum = 0;
+    //       let tempLen = 0;
+    //       while (data[i] < 0 && tempLen < len) {
+    //         tempServerSum += data[i];
+    //         tempLen++;
+    //         i++;
+    //       }
+    //       state.serverpara.push(tempServerSum);
+    //     }
+    //   } else {
+    //     state.serverpara.push(data[i]);
+    //   }
+    // }
     client.state.clientpara = [];
-    state.paranum = state.serverpara.length;// data.length;
+    // state.paranum = state.serverpara.length;// data.length;
   },
   [types.UPDATE_CLIENT_OUTLIER](state, data) {
     let type = data[2];

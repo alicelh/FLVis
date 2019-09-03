@@ -19,15 +19,17 @@
         <path transform="translate(10,115)" :d="arcData('right')" fill="rgb(221, 80, 65)"></path>
         <text x="20" y="120">Abnormal acc &amp; loss</text>
       </g>
-      <!-- <g id="corner"><text x="595" y="15">Iter: {{this.choosedIterForProjection === 0 ? 'not chosen' : this.choosedIterForProjection}}</text></g> -->
+      <g id="corner"><text x="580" y="15">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text></g>
       <g class="g-points">
         <g v-for="(value, i) in pos.slice(0, pos.length-1)" :key="'circle' + i"
         :transform="'translate(' + xScale((value[0]-pos[pos.length-1][0]) * 1.2 + pos[pos.length-1][0])+',' +yScale((value[1]-pos[pos.length-1][1]) * 1.2 + pos[pos.length-1][1])+ ')'">
           <circle
-            class='point point-not-chosen'
-            :class="i===pos.length-1?'':'point-client'"
+            class='point point-client'
+            :class="parseInt(clickedClient) === parseInt(idList[i])?'':'point-not-chosen'"
             :fill="i===pos.length-1?'rgb(70, 107, 183)':(isNormal[i]===1?'#90c297':'#ff7f00')"
-            :r="i===pos.length-1?8:4"
+            :r="parseInt(clickedClient) === parseInt(idList[i])?6:4"
+            :stroke="parseInt(clickedClient) === parseInt(idList[i])?'#353535':'none'"
+            stroke-width="2px"
             opacity="0.77"
             :id="'point-' + idList[i]"
             @click="handlePointClick"
@@ -117,6 +119,7 @@ export default {
       clientHoveredInMain: state => state.client.clientHoveredInMain,
       outlierClientAccAll: (state) => state.server.outlierClientAcc,
       outlierClientLossAll: (state) => state.server.outlierClientLoss,
+      choosedclientinmain: state=>state.client.choosedclient,
     })
   },
   watch: {
@@ -127,11 +130,26 @@ export default {
     projectData: function(newValue, oldValue) {
       this.pos = newValue["pos"].reverse();// server最后画
       this.idList = newValue["idList"].reverse();
-      this.isNormal = newValue["isNormal"]
+      if ("isNormal" in newValue) {
+        this.isNormal = newValue["isNormal"].reverse();
+      }
       // this.plot(newValue);
     },
     clientHoveredInMain: function(newv, oldv) {
       this.highlightClient(newv);
+    },
+    choosedclientinmain: function(newv, oldv) {
+      let pointId = "#point-" + newv;
+      d3.select('.g-points')
+        .selectAll('.point-client')
+        .attr('stroke', 'none')
+        .attr('r', 4);
+      d3.select(pointId)
+        .attr('stroke', '#353535')
+        .attr('r', 6)
+        .attr('stroke-width', "2px")
+        .classed('point-not-chosen', false);
+      this.clickedClient = newv.toString();
     }
   },
   methods: {
@@ -225,6 +243,19 @@ export default {
         .attr('stroke-width', "2px")
     },
   },
+  mounted() {
+    // let pointId = "#point-" + this.choosedclientinmain;
+    // console.log(pointId, this.choosedclientinmain);
+    // d3.select('.g-points')
+    //   .selectAll('.point-client')
+    //   .attr('stroke', 'none')
+    //   .attr('r', 4);
+    // d3.select(pointId)
+    //   .attr('stroke', '#353535')
+    //   .attr('r', 6)
+    //   .attr('stroke-width', "2px")
+    //   .classed('point-not-chosen', false);
+  }
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="client-panel">
     <div class="title">
-      <div class="title-iter" @click="updateIterForProj">iter {{iterId}}</div>
+      <div class="title-iter">iter {{iterId}}</div>
       <div>{{clientNumAll}}</div>
       <div>
         <img src="../../assets/delete.png" @click="deletePanel" />
@@ -253,10 +253,10 @@ export default {
     deletePanel() {
       this.$store.dispatch("client/deleteClientInfoByIter", this.iterId);
     },
-    updateIterForProj() {
-      this.$store.dispatch("client/updataIterChoosedForProjection", this.iterId);
-      this.$store.dispatch("server/getServerPara", this.iterId); // 更新server色带图
-    },
+    // updateIterForProj() {
+    //   this.$store.dispatch("client/updataIterChoosedForProjection", this.iterId);
+    //   this.$store.dispatch("server/getServerPara", this.iterId); // 更新server色带图
+    // },
     getMinMaxIterCount() {
       // 把读入的data按count属性进行排序
       this.clientNumAll = this.data.length;
@@ -418,7 +418,8 @@ export default {
       let mouseX = e.clientX;
       let rest = barDom.offsetWidth - 10 + barDom.offsetLeft; // 10是三角形的clientwidth
       let left =
-        mouseX - barDom.offsetLeft - 50 - this.panelId * (sliderWidth + 12 + 5); // 10是panel间的gap间距 2是panel的border  5是滚动条的宽度
+        mouseX - barDom.offsetLeft - 278 - this.panelId * (sliderWidth + 12 + 5); // 10是panel间的gap间距 2是panel的border  5是滚动条的宽度
+      console.log(left)
       if (left < barDom.offsetLeft) {
         left = barDom.offsetLeft;
       }
@@ -486,10 +487,12 @@ export default {
       this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
       // 更新client view
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
-      // 暂时不用更新混淆矩阵
+      // 更新投影视图
+      this.$store.dispatch("client/updataIterChoosedForProjection", parseInt(clickedIter));
+      // this.$store.dispatch("server/getServerPara", parseInt(clickedIter)); // 更新server色带图
+      this.$store.dispatch("client/getServerParaTemp", parseInt(clickedIter)); // 更新server色带图
       // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
-      // this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);
-      // bus.$emit("clientDetails")
+      this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);// 更新client色带图
     },
     highlightLinkedClient (flag) {
       // 把除当前点击以外的panel内有相同client的高亮

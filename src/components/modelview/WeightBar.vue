@@ -20,7 +20,7 @@
         :width="rectWidth"
         :height="rectHeight"
         v-for="(w,i) in para"
-        :fill="colorScale(w)"
+        :fill="computeColor(colorScale(w))"
         :key="'rect-'+i"
       />
     </g>
@@ -47,7 +47,8 @@ export default {
     xscale: Function,
     para: Array,
     axisVisable: Boolean,
-    createZoomflag: Boolean
+    createZoomflag: Boolean,
+    colors: Array
   },
   data () {
     return {
@@ -72,7 +73,11 @@ export default {
       this.rectWidth =  this.chartWidth / (newDomain[1] - newDomain[0]);
       this.newxScale.domain(newDomain);
       bus.$emit('newxScale', this.newxScale);
-    }
+    },
+    computeColor (num) {
+      let compute = d3.interpolate(this.colors[0], this.colors[1]);
+      return compute(num);
+    },
   },
   created () {
     this.newxScale = this.xscale;

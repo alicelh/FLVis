@@ -1,6 +1,7 @@
 <template>
   <div id="weightView" :style="{'width':width+'px'}">
     <svg width="100%" height="100%" ref="weightView">
+      <text id="corner" transform="translate(580, 15)">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text>
       <g :transform="'translate('+margin.left+','+margin.top+')'">
         <text
           :transform="'translate(-10,' + rectHeight / 2 +') rotate(-90)'"
@@ -8,7 +9,7 @@
         >Server</text>
         <WeightBar
           trans="translate(0,0)"
-          :colorScale="colorScale"
+          :colorScale="colorLinear"
           :xscale="xscale"
           :rectHeight="rectHeight"
           :paraCount="paraCount"
@@ -16,6 +17,7 @@
           :para="paraServer"
           :axisVisable="true"
           :createZoomflag="true"
+          :colors="colors"
         />
         <g>
           <text
@@ -25,7 +27,7 @@
           <text
             :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
             class="weightBar-title"
-          >Selected</text>
+          >{{choosedclientinmain}}</text>
           <text
             :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
             class="weightBar-title"
@@ -37,7 +39,8 @@
         </g>
         <WeightBar
           :trans="'translate(0,'+(rectHeight*(i+1)+chartInterval*i + 20)+')'"
-          :colorScale="i===0?colorScale:colorDiffScale"
+          :colorScale="i===0?colorLinear:colorDiffLinear"
+          :colors="i===0?colors:diffColors"
           :xscale="clientXScale === '' ? xscale : clientXScale"
           :rectHeight="rectHeight"
           :chartWidth="chartWidth"
@@ -84,19 +87,6 @@ export default {
       rectHeight: 0, // 一个色带高度
       chartInterval: 15,
       clientXScale: '',
-      // paraCount: 0,
-      colors: [
-        '#67001f',
-        '#b2182b',
-        '#d6604d',
-        '#f4a582',
-        '#fddbc7',
-        '#d1e5f0',
-        '#92c5de',
-        '#4393c3',
-        '#2166ac',
-        '#053061'
-      ],
       colorScale: d3
         .scaleThreshold()
         .range([
@@ -145,7 +135,15 @@ export default {
           '#6F6F6F',
           '#333333',
           '#000000',
-        ])
+        ]),
+      colorLinear: d3.scaleLinear()
+          // .domain(this.clientDataNumMinMax)
+          .range([0,1]),
+      colors: [d3.rgb(190,174,212), d3.rgb(253,192,134)],
+      colorDiffLinear: d3.scaleLinear()
+          // .domain(this.clientDataNumMinMax)
+          .range([0,1]),
+      diffColors: [d3.rgb(255,255,255), d3.rgb(0,0,0)]
     };
   },
   props: {
@@ -160,10 +158,12 @@ export default {
       return this.width - this.margin.left - this.margin.right;
     },
     ...mapState({
-      paraCount: state => state.server.paranum,
-      paraServer: state => state.server.serverpara,
+      paraCount: state => state.client.paranum,
+      paraServer: state => state.client.serverpara,
       paraClient: state => state.client.clientpara,
-      clientChoosed: state => state.client.choosedClientInProjection
+      clientChoosed: state => state.client.choosedClientInProjection,
+      choosedclientinmain: state=>state.client.choosedclient,
+      choosedIterForProjection: state=>state.client.choosedIterForProjection
     }),
     xscale () {
       // let bandDomain = [];
@@ -213,7 +213,7 @@ export default {
       this.getRectHeight();
       this.clientXScale = '';
       // 差值的颜色映射
-      if (oldvalue !== 0 && this.paraClient.length !== 0)
+      // if (oldvalue !== 0 && this.paraClient.length !== 0)
         this.setColorDiffScale(this.paraClient[1]);
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
@@ -236,6 +236,7 @@ export default {
         max
       ];
       this.colorScale.domain(colorDomain);
+      this.colorLinear.domain([min, max]);
       bus.$emit('weightDomain', colorDomain);
     },
     setColorDiffScale (newvalue) {
@@ -251,6 +252,7 @@ export default {
         (max * 3) / 4,
         max
       ]);
+      this.colorDiffLinear.domain([min, max]);
     },
     getRectHeight () {
       this.rectHeight =
@@ -273,6 +275,12 @@ export default {
 <style lang="scss">
 #weightView {
   height: 100%;
+  #corner {
+    text-anchor: end;
+    font-size: 15px;
+    font-weight: bold;
+    fill: #333;
+  }
   .weightBar-title {
     text-anchor: middle;
     font-size: 14px;
