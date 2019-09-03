@@ -48,7 +48,7 @@
             <Tooltip
               :clientData="tooltipData"
               :isMouseHover="isTooltipShow && (hoverSvg === 'size')"
-              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>          
+              :transform="'translate(' + (parseFloat(hoverLineX) > chartWidth/2? (parseFloat(hoverLineX)-110):(parseFloat(hoverLineX) + 10)) + ',-5)'"/>          
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Data size</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
@@ -85,7 +85,7 @@
             <Tooltip
               :clientData="tooltipData"
               :isMouseHover="isTooltipShow && (hoverSvg === 'acc')"
-              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
+              :transform="'translate(' + (parseFloat(hoverLineX) > chartWidth/2? (parseFloat(hoverLineX)-110):(parseFloat(hoverLineX) + 10)) + ',-5)'"/>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top - 5)+')'">Accuracy</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>
@@ -121,7 +121,7 @@
             <Tooltip
               :clientData="tooltipData"
               :isMouseHover="isTooltipShow && (hoverSvg === 'loss')"
-              :transform="'translate(' + (parseFloat(hoverLineX) + 10) + ',-5)'"/>
+              :transform="'translate(' + (parseFloat(hoverLineX) > chartWidth/2? (parseFloat(hoverLineX)-110):(parseFloat(hoverLineX) + 10)) + ',-5)'"/>
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5)+')'">Loss</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+margin.bottom-5)+')'">Iter count(server)</text>

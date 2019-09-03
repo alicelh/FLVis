@@ -160,7 +160,7 @@ export default {
       return this.width - this.margin.left - this.margin.right;
     },
     ...mapState({
-      paraCount: state => state.model.paranum,
+      paraCount: state => state.server.paranum,
       paraServer: state => state.server.serverpara,
       paraClient: state => state.client.clientpara,
       clientChoosed: state => state.client.choosedClientInProjection
@@ -205,6 +205,17 @@ export default {
       bus.$on('newxScale', data => {
         this.clientXScale = data;
       });
+    },
+    paraCount: function (newvalue, oldvalue) {
+      this.getRectHeight();
+      // 差值的颜色映射
+      // console.log(newvalue, oldvalue)
+      if (oldvalue !== 0)
+        this.setColorDiffScale(this.paraClient[1]);
+      // client跟着server一起zoom
+      bus.$on('newxScale', data => {
+        this.clientXScale = data;
+      });
     }
   },
   methods: {
@@ -225,6 +236,7 @@ export default {
       bus.$emit('weightDomain', colorDomain);
     },
     setColorDiffScale (newvalue) {
+      console.log(newvalue);
       let [min, max] = d3.extent(newvalue);
       this.colorDiffScale.domain([
         min,

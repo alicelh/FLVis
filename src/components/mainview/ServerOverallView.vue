@@ -147,7 +147,7 @@ export default {
 .axis-text {
   font-family: STHeitiSC-Medium;
   font-size: 14px;
-  color: #000000;
+  color: #333;
   text-anchor: middle
 }
 </style>

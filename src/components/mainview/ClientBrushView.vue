@@ -139,7 +139,7 @@ export default {
   },
   methods: {
     updateBarColor () {
-      this.brushedDataSize = this.dataSize.slice(this.currentBrush[0], this.currentBrush[1] + 1);
+      this.brushedDataSize = this.dataSize.slice(this.currentBrush[0] - 1, this.currentBrush[1]);
     },
     updateYLossMax () {
       // 算最大值要把刷选的迭代的所有值拿出来
@@ -152,7 +152,7 @@ export default {
       // console.log(this.currentBrush, this.yLossMax);
     },
     getLossPathLine () {
-      this.brushedLoss = this.lossMean.slice(this.currentBrush[0], this.currentBrush[1] + 1);
+      this.brushedLoss = this.lossMean.slice(this.currentBrush[0] - 1, this.currentBrush[1]);
       let me = this;
       let losspath = d3
         .line()
@@ -165,7 +165,7 @@ export default {
       this.brushedLossline = losspath(this.brushedLoss);
     },
     getAccPathLine () {
-      this.brushedAcc = this.accMean.slice(this.currentBrush[0], this.currentBrush[1] + 1);
+      this.brushedAcc = this.accMean.slice(this.currentBrush[0] - 1, this.currentBrush[1]);
       let me = this;
       let accpath = d3
         .line()

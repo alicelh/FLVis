@@ -487,6 +487,8 @@ export default {
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
       // 暂时不用更新混淆矩阵
       // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+      this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);
+
     },
     highlightLinkedClient (flag) {
       // 把除当前点击以外的panel内有相同client的高亮
