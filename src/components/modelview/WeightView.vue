@@ -246,8 +246,6 @@ export default {
       let initMin = 0, initMax = 0.1;
       if(min < initMin) initMin = min;
       if(max > initMax) initMax = max;
-      console.log("", min, max);
-      console.log(initMin, initMax);
       // this.colorDiffScale.domain([
       //   min,
       //   (3 * min) / 4,

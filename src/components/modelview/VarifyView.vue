@@ -28,7 +28,7 @@
             ></rect>
             <text
               :x="xscale(rectvalue) + xscale.bandwidth() / 2"
-              :y="yscale(rowvalue) + 13"
+              :y="yscale(rowvalue) + 15"
             >{{clientConfusionMatrix.length === 0?'':clientConfusionMatrix[rowi][recti]}}</text>
           </g>
         </g> 
@@ -44,7 +44,7 @@
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
           ></rect>
-          <text :x="xscale(i) + xscale.bandwidth() / 2" y="18">{{Math.round(value * 100)  + '%'}}</text>
+          <text :x="xscale(i) + xscale.bandwidth() / 2" y="20">{{Math.round(value * 100)  + '%'}}</text>
         </g>
       </g>
       <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top)+')'" id='recall-g'>
@@ -58,7 +58,7 @@
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
           ></rect>
-          <text :x="xscale.bandwidth() / 2 + 5" :y="yscale(i) + 13">{{Math.round(value * 100)  + '%'}}</text>
+          <text :x="xscale.bandwidth() / 2 + 5" :y="yscale(i) + 15">{{Math.round(value * 100)  + '%'}}</text>
         </g>
       </g>
       <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top + chartHeight)+')'" id='acc-g'>
@@ -70,7 +70,7 @@
           :width="xscale.bandwidth()"
           :height="yscale.bandwidth()"
         ></rect>
-        <text :x="xscale.bandwidth() / 2 + 5" :y="18">{{Math.round(accuracy * 100)  + '%'}}</text>
+        <text :x="xscale.bandwidth() / 2 + 5" :y="20">{{Math.round(accuracy * 100)  + '%'}}</text>
       </g>
     </svg>
     <div>
