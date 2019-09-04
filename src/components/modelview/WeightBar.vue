@@ -61,7 +61,7 @@ export default {
     createZoom () {
       let node = this.$refs.zoom;
       d3.select(node)
-        .call(d3.zoom().scaleExtent([1, 8]).translateExtent([[0,0], [this.chartWidth, this.rectHeight]]).on("zoom", this.zoomed))
+        .call(d3.zoom().scaleExtent([1, 10]).translateExtent([[0,0], [this.chartWidth, this.rectHeight]]).on("zoom", this.zoomed))
     },
     zoomed () {
       this.newxScale = d3.event.transform.rescaleX(this.xscale);

@@ -15,8 +15,8 @@
         <text x="20" y="80">Abnormal loss</text>
         <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="10" cy="95" />
         <text x="20" y="100">Abnormal acc</text>
-        <path transform="translate(10,115)" :d="arcData('left')" fill="rgb(57, 131, 192)" />
-        <path transform="translate(10,115)" :d="arcData('right')" fill="rgb(221, 80, 65)" />
+        <path transform="translate(10,115)" :d="arcData('left', 2, 4)" fill="rgb(57, 131, 192)" />
+        <path transform="translate(10,115)" :d="arcData('right', 2, 4)" fill="rgb(221, 80, 65)" />
         <text x="20" y="120">Abnormal acc &amp; loss</text>
       </g>
       <g id="corner"><text x="580" y="15">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text></g>
@@ -45,7 +45,7 @@
             v-if="outlierClientLoss.indexOf(idList[i]) > -1 && doubleOutlierArr.indexOf(idList[i]) === -1"
             class="outlier-stroke"
             fill="none"
-            r="3.5"
+            :r="parseInt(clickedClient) === parseInt(idList[i])?4:3.5"
             stroke="rgb(57, 131, 192)"
             stroke-width="2px"
           />
@@ -53,7 +53,7 @@
             v-if="outlierClientAcc.indexOf(idList[i]) > -1 && doubleOutlierArr.indexOf(idList[i]) === -1"
             class="outlier-stroke"
             fill="none"
-            r="3.5"
+            :r="parseInt(clickedClient) === parseInt(idList[i])?4:3.5"
             stroke="rgb(221, 80, 65)"
             stroke-width="2px"
           />
@@ -69,12 +69,12 @@
           ></circle>-->
           <path
             v-if="doubleOutlierArr.indexOf(idList[i]) > -1"
-            :d="arcData('left')"
+            :d="parseInt(clickedClient) === parseInt(idList[i])?arcData('left', 4, 6): arcData('left', 2, 4)"
             fill="rgb(57, 131, 192)"
           />
           <path
             v-if="doubleOutlierArr.indexOf(idList[i]) > -1"
-            :d="arcData('right')"
+            :d="parseInt(clickedClient) === parseInt(idList[i])?arcData('right', 4, 6): arcData('right', 2, 4)"
             fill="rgb(221, 80, 65)"
           />
         </g>
@@ -97,7 +97,7 @@ export default {
       outlierClientAcc: [],
       pos: [],
       idList: [],
-      isNormal: []
+      isNormal: [],
     };
   },
   computed: {
@@ -167,7 +167,7 @@ export default {
     }
   },
   methods: {
-    arcData(direction) {
+    arcData(direction, inner, outer) {
       let start = 0,
         end = 0;
       if (direction === "left") {
@@ -179,8 +179,8 @@ export default {
       }
       let arc = d3.arc();
       return arc({
-        innerRadius: 2,
-        outerRadius: 4,
+        innerRadius: inner,
+        outerRadius: outer,
         startAngle: start,
         endAngle: end
       });
