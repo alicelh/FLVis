@@ -85,6 +85,14 @@
               <stop offset="0%" stop-color="#ffffff"/>
               <stop offset="100%" stop-color="#2ca25f"/>
             </linearGradient>
+            <linearGradient id="gray_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#000"/>
+            </linearGradient>
+            <linearGradient id="weight_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgb(190,174,212)"/>
+              <stop offset="100%" stop-color="rgb(253,192,134)"/>
+            </linearGradient>
             <linearGradient
               :id="'linear_' + i" x1="0%" y1="0%" x2="100%" y2="0%"
               v-for="(color, i) in weightBarColors"
@@ -112,12 +120,24 @@
               <text class='label' v-if="weightLegendValue.length !== 0" x="90" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
           </g> -->
-          <g id="matrix-legends" :transform="'translate(80, 100) rotate(90)'">
-            <text x="40" y="-20" style="text-anchor: middle; fill: #333;">Confusion Matrix Encodings</text>
-            <text class='label' y="-10" x="-10" style="text-anchor: middle;" transform='rotate(-90)'>{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
-            <rect width="80" height="10" fill="url(#green_linear)"></rect>
-            <rect y="13" width="80" height="10" fill="url(#red_linear)"></rect>
-            <text class='label' transform='rotate(-90)' x="-13" y="100" style="text-anchor: middle;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+          <rect x="4" y="40" width="195" height="205" fill="none" stroke="#333" stroke-dasharray="10 10" stroke-width="1px"></rect>
+          <g id="weightBar-legends" :transform="'translate(50, 85)'">
+            <text x="50" y="-20" style="text-anchor: middle;">Weight Bars Encodings</text>
+            <text x="50" y="3" style="text-anchor: middle;font-size: 12px">Server &amp; Client Selected</text>
+            <text x="-20" y="20" style="text-anchor: end;font-size: 12px">Low</text>
+            <text x="120" y="20" style="text-anchor: start;font-size: 12px">High</text>
+            <rect width="130" height="10" x="-15" y="10" fill="url(#weight_linear)"></rect>
+            <text x="50" y="35" style="text-anchor: middle;font-size: 12px">Difference</text>
+            <text x="-20" y="50" style="text-anchor: end;font-size: 12px">Low</text>
+            <text x="120" y="50" style="text-anchor: start;font-size: 12px">High</text>
+            <rect width="130" height="10" x="-15" y="40" fill="url(#gray_linear)"></rect>
+          </g>
+          <g id="matrix-legends" :transform="'translate(50, 200)'">
+            <text x="50" y="-20" style="text-anchor: middle; fill: #333;">Confusion Matrix Encodings</text>
+            <text class='label' x="-25" y="15" style="text-anchor: middle;">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+            <rect x="-15" width="130" height="10" fill="url(#green_linear)"></rect>
+            <rect x="-15" y="13" width="130" height="10" fill="url(#red_linear)"></rect>
+            <text class='label' x="125" y="15" style="text-anchor: middle;">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
           </g>
         </svg>
       </div>
@@ -137,8 +157,8 @@ export default {
     return {
       temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       margin: {
-        left: 50,
-        right: 40,
+        left: 40,
+        right: 45,
         top: 40,
         bottom: 40
       },
@@ -278,7 +298,7 @@ export default {
 <style lang="scss">
 #VarifyView {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2fr 1.1fr;
   align-items: center;
   justify-items: center;
   .axis-text {
@@ -291,7 +311,7 @@ export default {
       font-size: 15px;
     }
     .label {
-      font-size: 13px;
+      font-size: 12px;
     }
   }
   #legends-container {

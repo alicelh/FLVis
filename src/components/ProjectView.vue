@@ -218,7 +218,7 @@ export default {
         // 更新client view
         this.$store.dispatch("client/getClientInfoByIndex", clickedClientIndex);
         // 更新混淆矩阵
-        // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+        this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
         // 更新条带图
         this.$store.dispatch("client/getClientPara", [
           clickedIter,

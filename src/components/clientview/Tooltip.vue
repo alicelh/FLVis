@@ -4,7 +4,7 @@
     <rect width="100" height="80"></rect>
     <g v-for="(value, property, i) in clientData" :key="'tooltip-line-'+i">
       <circle fill="#676666" r="3" cx="10" :cy="8 + i * 20"></circle>
-      <text x="20" :y="12 + i * 20">{{property}}: {{value}}</text>
+      <text x="18" :y="12 + i * 20">{{property}}: {{value}}</text>
     </g>
   </g>
 </template>

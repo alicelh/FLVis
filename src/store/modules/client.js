@@ -109,9 +109,13 @@ const actions = {
   getServerParaTemp({
     commit
   }, context) {
-    api.ServerPara(context).then(res => {
+    api.ServerPara(context[0]).then(res => {
       commit(types.GET_SERVER_PARA_TEMP, res)
-    })
+    });
+    api.ClientParaByIterIndex(context[0], context[1])
+      .then(res => {
+        commit(types.GET_CLIENT_PARA, res)
+      })
   }
 }
 

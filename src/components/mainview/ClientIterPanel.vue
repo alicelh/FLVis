@@ -176,7 +176,7 @@ export default {
       // clientInfo: state => state.client.clientInfo[this.iterId],
       brushedClientStastics: (state) => state.server.brushedClientStastics,
       outlierClientAccAll: (state) => state.server.outlierClientAcc,
-      outlierClientLossAll: (state) => state.server.outlierClientLoss,
+      outlierClientLossAll: (state) => state.server.outlierClientLoss
     })
   },
   watch: {
@@ -490,9 +490,9 @@ export default {
       // 更新投影视图
       this.$store.dispatch("client/updataIterChoosedForProjection", parseInt(clickedIter));
       // this.$store.dispatch("server/getServerPara", parseInt(clickedIter)); // 更新server色带图
-      this.$store.dispatch("client/getServerParaTemp", parseInt(clickedIter)); // 更新server色带图
-      // this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
-      this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);// 更新client色带图
+      this.$store.dispatch("client/getServerParaTemp", [parseInt(clickedIter), parseInt(clickedClientIndex)]); // 更新server和client色带图
+      this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+      // this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);// 更新client色带图
     },
     highlightLinkedClient (flag) {
       // 把除当前点击以外的panel内有相同client的高亮
@@ -559,7 +559,7 @@ export default {
     .title-iter {
       border-right: 1px solid #979797;
       height: inherit;
-      cursor: pointer;
+      // cursor: pointer;
     }
   }
   .client-content {
