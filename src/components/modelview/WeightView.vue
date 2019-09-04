@@ -3,7 +3,7 @@
     <svg width="100%" height="100%" ref="weightView">
       <text id="corner" transform="translate(580, 15)">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text>
       <g :transform="'translate('+margin.left+','+margin.top+')'">
-        <text
+        <!-- <text
           :transform="'translate(-10,' + rectHeight / 2 +') rotate(-90)'"
           class="weightBar-title"
         >Server</text>
@@ -18,26 +18,26 @@
           :axisVisable="true"
           :createZoomflag="true"
           :colors="colors"
-        />
+        /> -->
         <g>
-          <text
+          <!-- <text
             :transform="'translate(-20,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
             class="weightBar-title"
           >Client</text>
           <text
             :transform="'translate(-5,' + (rectHeight * 3/ 2 + 20) +') rotate(-90)'"
             class="weightBar-title"
-          >{{choosedclientinmain}}</text>
+          >{{choosedclientinmain}}</text> -->
           <text
-            :transform="'translate(-20,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
+            :transform="'translate(-20,' + (rectHeight / 2 + 20) +') rotate(-90)'"
             class="weightBar-title"
-          >Client-Server</text>
+          >Client ({{choosedclientinmain}}) - Server</text>
           <text
-            :transform="'translate(-5,' + (rectHeight * 5/ 2 + 20 + chartInterval) +') rotate(-90)'"
+            :transform="'translate(-5,' + (rectHeight / 2 +20) +') rotate(-90)'"
             class="weightBar-title"
           >Difference</text>
         </g>
-        <WeightBar
+        <!-- <WeightBar
           :trans="'translate(0,'+(rectHeight*(i+1)+chartInterval*i + 20)+')'"
           :colorScale="i===0?colorLinear:colorDiffLinear"
           :colors="i===0?colors:diffColors"
@@ -50,17 +50,19 @@
           v-for="(para,i) in paraClient"
           :key="'wchart'+i"
           :createZoomflag="false"
+        /> -->
+        <WeightBar
+          :trans="'translate(0,'+(20)+')'"
+          :colorScale="colorDiffLinear"
+          :colors="diffColors"
+          :xscale="clientXScale === '' ? xscale : clientXScale"
+          :rectHeight="rectHeight"
+          :chartWidth="chartWidth"
+          :paraCount="paraCount"
+          :para="paraClient"
+          :axisVisable="false"
+          :createZoomflag="false"
         />
-        <!-- <g transform="translate(-10,0)" id="legends">
-          <rect
-            v-for="(color, i) in colors"
-            :key="'legend'+i"
-            :fill="color"
-            :y="i * 5"
-            width="5"
-            height="5"
-          ></rect>
-        </g>-->
       </g>
     </svg>
   </div>
@@ -202,7 +204,7 @@ export default {
       // 换了client后server的颜色映射也要变
       this.setColorScale();
       // 差值的颜色映射
-      this.setColorDiffScale(this.paraClient[1]);
+      this.setColorDiffScale(this.paraClient);
       this.clientXScale = '';
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
@@ -214,7 +216,7 @@ export default {
       this.clientXScale = '';
       // 差值的颜色映射
       // if (oldvalue !== 0 && this.paraClient.length !== 0)
-        this.setColorDiffScale(this.paraClient[1]);
+        this.setColorDiffScale(this.paraClient);
       // client跟着server一起zoom
       bus.$on('newxScale', data => {
         this.clientXScale = data;
@@ -241,26 +243,31 @@ export default {
     },
     setColorDiffScale (newvalue) {
       let [min, max] = d3.extent(newvalue);
-      this.colorDiffScale.domain([
-        min,
-        (3 * min) / 4,
-        min / 2,
-        min / 4,
-        0,
-        max / 4,
-        max / 2,
-        (max * 3) / 4,
-        max
-      ]);
-      this.colorDiffLinear.domain([min, max]);
+      let initMin = 0, initMax = 0.1;
+      if(min < initMin) initMin = min;
+      if(max > initMax) initMax = max;
+      console.log("", min, max);
+      console.log(initMin, initMax);
+      // this.colorDiffScale.domain([
+      //   min,
+      //   (3 * min) / 4,
+      //   min / 2,
+      //   min / 4,
+      //   0,
+      //   max / 4,
+      //   max / 2,
+      //   (max * 3) / 4,
+      //   max
+      // ]);
+      this.colorDiffLinear.domain([initMin, initMax]);
     },
     getRectHeight () {
-      this.rectHeight =
-        (this.height -
-          this.margin.top -
-          this.margin.bottom -
-          this.chartInterval * this.paraClient.length) /
-        (this.paraClient.length + 1);
+      this.rectHeight = 100;
+        // (this.height -
+        //   this.margin.top -
+        //   this.margin.bottom -
+        //   this.chartInterval * this.paraClient.length) /
+        // (this.paraClient.length + 1);
     }
   },
   mounted () {

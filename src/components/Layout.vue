@@ -60,10 +60,10 @@ export default {
     display: grid;
     grid-gap: 10px;
     #projectView {
-      height: 400px;
+      height: 470px;
     }
     #modelView {
-      height: 600px;
+      height: 530px;
     }
   }
 }

@@ -4,7 +4,7 @@ import model from './model'
 import server from './server'
 
 const state = {
-  clientpara: [], // 存选中的client 以及它和server的差值
+  clientpara: [], // 存选中的client和server的差值
   clientparalist: [],
   w1: [],
   b1: [],
@@ -127,70 +127,88 @@ const mutations = {
   },
   [types.GET_CLIENT_PARA](state, data) {
     // state.clientpara[0] = data; // 选中的client
-    let serverpara = state.serverparaTemp;//server.state.copyserverpara;
+    let serverpara = state.serverparaTemp;
+
+    // 先做差值取绝对值算diff 再压缩diff
+    let clientDiffWithoutCluster = [];
+    for (let i = 0; i < serverpara.length; i++) {
+      // state.clientpara[i] = Math.abs(state.tempClient[i] - state.tempServer[i]); // 与server的差值 取绝对值
+      clientDiffWithoutCluster.push(Math.abs(data[i] - serverpara[i]));
+    }
+    // 压缩diff
+    state.clientpara = [];
+    for (let i = 0; i < clientDiffWithoutCluster.length;) {
+      if (Math.abs(clientDiffWithoutCluster[i] - 0) < 0.01) {
+        while (Math.abs(clientDiffWithoutCluster[i] - 0) < 0.01) {
+          i++;
+        }
+        state.clientpara.push(0);
+      } else {
+        state.clientpara.push(clientDiffWithoutCluster[i]);
+        i++;
+      }
+    }
+    state.paranum = state.clientpara.length;
     // state.clientpara[1] = [];
     // for (let i = 0; i < serverpara.length; i++) {
     //   state.clientpara[1][i] = data[i] - serverpara[i]; // 与server的差值
     // }
     // 压缩 先取个绝对值
-    state.tempServer = [];
-    state.tempClient = [];
-    let i = 0;
-    let len = 10; // 聚合的最大长度
-    for (i = 0; i < serverpara.length;) {
-      if (Math.abs(data[i] - 0) < 0.1 && Math.abs(serverpara[i] - 0) < 0.1) {
-        while (Math.abs(data[i] - 0) < 0.1 && Math.abs(serverpara[i] - 0) < 0.1) {
-          i++;
-        }
-        state.tempServer.push(0);
-        state.tempClient.push(0);
-      } else if (data[i] > 0 && serverpara[i] > 0) {
-        while (data[i] > 0 && serverpara[i] > 0) {
-          let tempServerSum = 0;
-          let tempClientSum = 0;
-          let tempLen = 0;
-          while (data[i] > 0 && serverpara[i] > 0 && tempLen < len) {
-            tempClientSum += data[i];
-            tempServerSum += serverpara[i];
-            tempLen++;
-            i++;
-          }
-          state.tempServer.push(tempServerSum);
-          state.tempClient.push(tempClientSum);
-        }
-      } else if (data[i] < 0 && serverpara[i] < 0) {
-        while (data[i] < 0 && serverpara[i] < 0) {
-          let tempServerSum = 0;
-          let tempClientSum = 0;
-          let tempLen = 0;
-          while (data[i] < 0 && serverpara[i] < 0 && tempLen < len) {
-            tempClientSum += data[i];
-            tempServerSum += serverpara[i];
-            tempLen++;
-            i++;
-          }
-          state.tempServer.push(tempServerSum);
-          state.tempClient.push(tempClientSum);
-        }
-      } else {
-        state.tempServer.push(serverpara[i]);
-        state.tempClient.push(data[i]);
-        i++;
-      }
-    }
-    state.paranum = state.tempServer.length;
-    // console.log(j, state.tempServer, state.tempClient, state.paranum);
-    state.clientpara[0] = state.tempClient;
-    // 选了client之后 改一下server的信息
-    state.serverpara = state.tempServer;
-
-    // server.state.serverpara = state.tempServer;
-    // server.state.paranum = state.paranum;
-    // 求差值
-    state.clientpara[1] = [];
-    for (let i = 0; i < state.paranum; i++) {
-      state.clientpara[1][i] = Math.abs(state.tempClient[i] - state.tempServer[i]); // 与server的差值 取绝对值
-    }
+    // state.tempServer = [];
+    // state.tempClient = [];
+    // let i = 0;
+    // let len = 10; // 聚合的最大长度
+    // for (i = 0; i < serverpara.length;) {
+    //   if (Math.abs(data[i] - 0) < 0.1 && Math.abs(serverpara[i] - 0) < 0.1) {
+    //     while (Math.abs(data[i] - 0) < 0.1 && Math.abs(serverpara[i] - 0) < 0.1) {
+    //       i++;
+    //     }
+    //     state.tempServer.push(0);
+    //     state.tempClient.push(0);
+    //   } else if (data[i] > 0 && serverpara[i] > 0) {
+    //     while (data[i] > 0 && serverpara[i] > 0) {
+    //       let tempServerSum = 0;
+    //       let tempClientSum = 0;
+    //       let tempLen = 0;
+    //       while (data[i] > 0 && serverpara[i] > 0 && tempLen < len) {
+    //         tempClientSum += data[i];
+    //         tempServerSum += serverpara[i];
+    //         tempLen++;
+    //         i++;
+    //       }
+    //       state.tempServer.push(tempServerSum);
+    //       state.tempClient.push(tempClientSum);
+    //     }
+    //   } else if (data[i] < 0 && serverpara[i] < 0) {
+    //     while (data[i] < 0 && serverpara[i] < 0) {
+    //       let tempServerSum = 0;
+    //       let tempClientSum = 0;
+    //       let tempLen = 0;
+    //       while (data[i] < 0 && serverpara[i] < 0 && tempLen < len) {
+    //         tempClientSum += data[i];
+    //         tempServerSum += serverpara[i];
+    //         tempLen++;
+    //         i++;
+    //       }
+    //       state.tempServer.push(tempServerSum);
+    //       state.tempClient.push(tempClientSum);
+    //     }
+    //   } else {
+    //     state.tempServer.push(serverpara[i]);
+    //     state.tempClient.push(data[i]);
+    //     i++;
+    //   }
+    // }
+    // state.paranum = state.tempServer.length;
+    // // console.log(j, state.tempServer, state.tempClient, state.paranum);
+    // // state.clientpara[0] = state.tempClient;
+    // // 选了client之后 改一下server的信息
+    // state.serverpara = state.tempServer;
+    // // 求差值
+    // state.clientpara = [];
+    // for (let i = 0; i < state.paranum; i++) {
+    //   state.clientpara[i] = Math.abs(state.tempClient[i] - state.tempServer[i]); // 与server的差值 取绝对值
+    // }
   },
   // 暂时没有用
   [types.GET_CLIENT_PARA_ARR](state, data) {

@@ -45,9 +45,9 @@ export default {
   }
   .modelContent {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 2fr;
     width: 100%;
-    height: 570px;
+    height: 500px;
   }
 }
 </style>

@@ -4,20 +4,21 @@
     <img id="server-img" src="../assets/server2.svg" />
     <img id="legend-img" src="../assets/server2.svg" />
     <svg width="100%" height="100%" ref="svg">
-      <g class="legends">
+      <g class="legends" transform="translate(10, 380)">
         <!-- <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle> -->
-        <text x="20" y="20">Server</text>
-        <circle r="4" fill="#90c297" cx="10" cy="35" />
-        <text x="20" y="40">Normal client</text>
-        <circle r="4" fill="#ff7f00" cx="10" cy="55" />
-        <text x="20" y="60">Abnormal client</text>
-        <circle r="3.5" fill="none" stroke="rgb(57, 131, 192)" stroke-width="2px" cx="10" cy="75" />
-        <text x="20" y="80">Abnormal loss</text>
-        <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="10" cy="95" />
-        <text x="20" y="100">Abnormal acc</text>
-        <path transform="translate(10,115)" :d="arcData('left', 2, 4)" fill="rgb(57, 131, 192)" />
-        <path transform="translate(10,115)" :d="arcData('right', 2, 4)" fill="rgb(221, 80, 65)" />
-        <text x="20" y="120">Abnormal acc &amp; loss</text>
+        <rect width="580" height="50" fill="none" stroke="#333" stroke-width="1px" stroke-dasharray="10 10"></rect>
+        <text x="30" y="20">Server</text>
+        <circle r="4" fill="#90c297" cx="205" cy="15" />
+        <text x="215" y="20">Normal client</text>
+        <circle r="4" fill="#ff7f00" cx="390" cy="15" />
+        <text x="400" y="20">Abnormal client</text>
+        <circle r="3.5" fill="none" stroke="rgb(57, 131, 192)" stroke-width="2px" cx="20" cy="35" />
+        <text x="30" y="40">Abnormal loss</text>
+        <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="205" cy="35" />
+        <text x="215" y="40">Abnormal acc</text>
+        <path transform="translate(390,35)" :d="arcData('left', 2, 4)" fill="rgb(57, 131, 192)" />
+        <path transform="translate(390,35)" :d="arcData('right', 2, 4)" fill="rgb(221, 80, 65)" />
+        <text x="400" y="40">Abnormal acc &amp; loss</text>
       </g>
       <g id="corner"><text x="580" y="15">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text></g>
       <g class="g-points">
@@ -97,7 +98,8 @@ export default {
       outlierClientAcc: [],
       pos: [],
       idList: [],
-      isNormal: []
+      isNormal: [],
+      height: 380
     };
   },
   computed: {
@@ -107,12 +109,12 @@ export default {
     width() {
       return parseInt(d3.select("#projectView-container").style("width"));
     },
-    height() {
-      return (
-        parseInt(d3.select("#projectView-container").style("height")) -
-        parseInt(d3.select(".moduleTitle").style("height"))
-      );
-    },
+    // height() {
+    //   return (
+    //     parseInt(d3.select("#projectView-container").style("height")) -
+    //     parseInt(d3.select(".moduleTitle").style("height"))
+    //   );
+    // },
     xScale() {
       let ofs = 0.99 * 0.5 * Math.min(this.width, this.height);
       return d3
@@ -320,9 +322,9 @@ export default {
   }
   #legend-img {
     position: absolute;
-    left: 1px;
+    left: 19px;
     width: 20px;
-    top: 38px;
+    bottom: 38px;
   }
 }
 #corner {
