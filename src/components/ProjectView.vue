@@ -97,7 +97,7 @@ export default {
       outlierClientAcc: [],
       pos: [],
       idList: [],
-      isNormal: [],
+      isNormal: []
     };
   },
   computed: {
@@ -134,6 +134,7 @@ export default {
       outlierClientAccAll: (state) => state.server.outlierClientAcc,
       outlierClientLossAll: (state) => state.server.outlierClientLoss,
       choosedclientinmain: state=>state.client.choosedclient,
+      outlierClientInfoLength: (state) => state.server.outlierClientInfoLength,
     })
   },
   watch: {
@@ -164,6 +165,10 @@ export default {
         .attr('stroke-width', "2px")
         .classed('point-not-chosen', false);
       this.clickedClient = newv.toString();
+    },
+    outlierClientInfoLength: function(newValue, oldValue) {
+      if (newValue[0] === newValue[1] && this.choosedIterForProjection in this.outlierClientLossAll)
+        this.getOutliers();
     }
   },
   methods: {
@@ -253,15 +258,17 @@ export default {
     },
     getOutliers() {
       this.doubleOutlierArr = [];
-      this.outlierClientLoss = this.outlierClientLossAll[
-        this.choosedIterForProjection
-      ];
-      this.outlierClientAcc = this.outlierClientAccAll[
-        this.choosedIterForProjection
-      ];
-      for (let i = 0; i < this.outlierClientLoss.length; i++) {
-        if (this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
-          this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+      if (this.choosedIterForProjection in this.outlierClientLossAll && this.choosedIterForProjection in this.outlierClientAccAll) {
+        this.outlierClientLoss = this.outlierClientLossAll[
+          this.choosedIterForProjection
+        ];
+        this.outlierClientAcc = this.outlierClientAccAll[
+          this.choosedIterForProjection
+        ];
+        for (let i = 0; i < this.outlierClientLoss.length; i++) {
+          if (this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
+            this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+        }
       }
     },
     highlightClient(newV) {

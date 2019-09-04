@@ -316,7 +316,7 @@ export default {
   }
   #legends-container {
     // border: 1px solid #b1b1b1;
-    width: 200px;
+    width: 210px;
     height: 285px;
   }
   #matrix-g {

@@ -41,6 +41,7 @@
             v-for="(item, i) in this.dataSize" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            @click="handleClick"
             :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
             stroke-width="2px"
             ></circle>
@@ -52,7 +53,7 @@
         </g>
         <text class="axis-text" :transform="'translate('+margin.left+','+(margin.top-5+10)+')'">Data size</text>
         <text class="axis-text-x" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top+chartHeight+40)+')'">Iter count(server)</text>
-        <text class="client-index" :transform="'translate('+(clientViewWidth - 5)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
+        <text class="client-index" :transform="'translate('+(clientViewWidth - 30)+',15)'">Client index: {{(choosedClient === -1) ? 'not chosen' : choosedClient}}</text>
       </svg>
       <svg width="100%" height="100%">
         <Axis
@@ -78,6 +79,7 @@
             v-for="(item, i) in this.acc" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            @click="handleClick"
             :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
             stroke-width="2px"
             ></circle>
@@ -114,6 +116,7 @@
             v-for="(item, i) in this.loss" :key="i"
             @mouseover="showTooltip"
             @mouseout="hideTooltip"
+            @click="handleClick"
             :stroke="(isTooltipShow&&(parseInt(hoverIndex) === parseInt(i))) ? '#B1B1B1': 'none'"
             stroke-width="2px"
             ></circle>
@@ -266,6 +269,16 @@ export default {
     hideTooltip() {
       this.isTooltipShow = false;
     },
+    handleClick (e) {
+      let index = e.target.getAttribute('data-index');
+      let iter = this.iterArray[index];
+      this.$store.dispatch("server/getClientStasticsRange", [iter-4, iter+4]);
+      this.$store.dispatch('client/getClientInfoByIter', iter);// main面板里添加对应迭代
+      this.$store.dispatch('client/updataClientChoosed', [parseInt(this.choosedClient), parseInt(iter)]);
+      this.$store.dispatch("client/updataIterChoosedForProjection", parseInt(iter)); // 更新投影视图
+      this.$store.dispatch("client/getServerParaTemp", [parseInt(iter), parseInt(this.choosedClient)]); // 更新server和client色带图
+      this.$store.dispatch('client/getConfusionMatrix', this.choosedClient);
+    }
   },
   mounted () {
     this.clientViewWidth = this.$refs.clientViewChart.clientWidth;

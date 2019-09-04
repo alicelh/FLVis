@@ -13,6 +13,7 @@ const state = {
   brushedSelection: [],
   brushedClientStastics: {},
   outlierClientLoss: {},
+  outlierClientInfoLength: [],
   outlierClientAcc: {},
   paranum: 0
 }
@@ -118,6 +119,9 @@ const mutations = {
     } else {
       state.outlierClientAcc[data[0]] = data[1];
     }
+    let outlierClientLossLength = Object.keys(state.outlierClientLoss).length;
+    let outlierClientAccLength = Object.keys(state.outlierClientAcc).length;
+    state.outlierClientInfoLength = [outlierClientLossLength, outlierClientAccLength];
   }
 }
 

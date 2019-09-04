@@ -175,6 +175,7 @@ export default {
     ...mapState({
       // clientInfo: state => state.client.clientInfo[this.iterId],
       brushedClientStastics: (state) => state.server.brushedClientStastics,
+      brushedSelection: (state) => state.server.brushedSelection,
       outlierClientAccAll: (state) => state.server.outlierClientAcc,
       outlierClientLossAll: (state) => state.server.outlierClientLoss
     })
@@ -186,6 +187,9 @@ export default {
       this.updateSvgHeight();
       this.getOutliers();
       // this.highlightLinkedClient();
+    },
+    brushedSelection: function () {
+      this.getOutliers();
     },
     hasLinkedClient: function(newv, oldv) {
       this.highlightLinkedClient(newv);
@@ -210,11 +214,13 @@ export default {
       // this.outlierClientLoss = this.brushedClientStastics[this.iterId]['outlierClient-loss'];
       // this.outlierClientAcc = this.brushedClientStastics[this.iterId]['outlierClient-acc'];
       this.doubleOutlierArr = [];
-      this.outlierClientLoss = this.outlierClientLossAll[this.iterId];
-      this.outlierClientAcc = this.outlierClientAccAll[this.iterId];
-      for (let i = 0; i < this.outlierClientLoss.length; i++) {
-        if(this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
-          this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+      if (this.iterId in this.outlierClientLossAll) {
+        this.outlierClientLoss = this.outlierClientLossAll[this.iterId];
+        this.outlierClientAcc = this.outlierClientAccAll[this.iterId];
+        for (let i = 0; i < this.outlierClientLoss.length; i++) {
+          if(this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
+            this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+        }
       }
     },
     isOutlier (index) {

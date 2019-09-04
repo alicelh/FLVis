@@ -128,8 +128,16 @@ export default {
       this.iterDetails.acc = this.acc[newv-1];
       this.iterDetails.loss = this.loss[newv-1];
       this.iterDetails.dataNum = this.num[newv-1];
-      this.iterDetails.clientNum = this.clientInfoData[newv].length;
+      if (newv in this.clientInfoData)
+        this.iterDetails.clientNum = this.clientInfoData[newv].length;
+      // 在client view切换iter后
+      for(let i = 0; i < this.selectedClientInfo.length; i++) {
+        if((this.selectedClientInfo[i].iter) === parseInt(newv))
+          this.clientDetails = this.selectedClientInfo[i];
+      }
     },
+    // clientInfoData: function(newv, oldv) {
+    // },
     selectedClientInfo: function(newv, oldv) {
       for(let i = 0; i < newv.length; i++) {
         if((newv[i].iter) === parseInt(this.choosedclientiter))
