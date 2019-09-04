@@ -121,7 +121,7 @@
             </g>
           </g> -->
           <rect x="4" y="40" width="195" height="205" fill="none" stroke="#333" stroke-dasharray="10 10" stroke-width="1px"></rect>
-          <g id="weightBar-legends" :transform="'translate(50, 85)'">
+          <g id="weightBar-legends" :transform="'translate(50, 90)'">
             <text x="50" y="-20" style="text-anchor: middle;">Weight Bars Encodings</text>
             <text x="50" y="3" style="text-anchor: middle;font-size: 12px">Server &amp; Client Selected</text>
             <text x="-20" y="20" style="text-anchor: end;font-size: 12px">Low</text>
