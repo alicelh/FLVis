@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 axios.defaults.timeout = 50000;
-axios.defaults.baseURL = 'http://10.76.0.160:8000';
+axios.defaults.baseURL = 'http://10.76.0.159:8000';
 
 // axios请求拦截器，统一处理request
 axios.interceptors.request.use((config) => {

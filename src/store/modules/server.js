@@ -54,10 +54,17 @@ const actions = {
 
 const mutations = {
   [types.GET_SERVER_INFO](state, data) {
-    state.loss = data.loss;
-    state.num = data.num;
-    state.acc = data.acc;
-    state.iternum = data.iternum
+    if (data.iternum > 300) {
+      state.loss = data.loss.slice(0, 300);
+      state.num = data.num.slice(0, 300);
+      state.acc = data.acc.slice(0, 300);
+      state.iternum = 300;//data.iternum
+    } else {
+      state.loss = data.loss;
+      state.num = data.num;
+      state.acc = data.acc;
+      state.iternum = data.iternum
+    }
   },
   [types.GET_CLIENT_STASTICS_RANGE](state, data) {
     state.brushedSelection = data[0];

@@ -35,7 +35,7 @@ export default {
       let colorLinear = d3.scaleLinear()
 				.domain(d3.extent(this.dataSize))
         .range([0,1]);
-      let compute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(249, 233, 205));
+      let compute = d3.interpolate(d3.rgb(253, 246, 235), d3.rgb(249, 233, 205));
       return compute(colorLinear(size));
     },
     getIterClientInfo (e) {
