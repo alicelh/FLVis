@@ -41,14 +41,15 @@
             :hasLinkedClient="linkedClientArr[i]"
             :linkedClient="parseInt(choosedclient)"/>
         </div>
-        <div v-for="(item, i) in genePanelArray" :key="'void-'+i" class="singleIterPanel">
+        <div v-for="(item, i) in genePanelArray" :key="'void-'+i">
         </div>
       </div>
       <svg id="client-rect-legend">
         <defs>
           <linearGradient id="rectgreen_linear" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#90c297"/>
-            <stop offset="100%" stop-color="#F0F9E8"/>
+            <!-- to modify -->
+            <stop offset="0%" stop-color="#fdae61"/>
+            <stop offset="100%" stop-color="#fff"/>
           </linearGradient>
         </defs>
         <g transform="translate(-15,18)">

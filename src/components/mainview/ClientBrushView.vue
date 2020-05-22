@@ -1,6 +1,10 @@
 <template>
   <!-- <div :width="mainViewWidth"> -->
     <svg height="100%" width="100%">
+      <linearGradient id="bar_linear" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="rgb(253, 246, 235)"/>
+        <stop offset="100%" stop-color="rgb(249, 233, 205)"/>
+      </linearGradient>
       <Axis
         :scale="xscale"
         :trans="'translate('+margin.left+','+(margin.top+chartHeight)+')'"
@@ -41,11 +45,17 @@
         <path :transform="'translate('+xBandwidth * 0.25+',0)'" :d="brushedLossline" fill="none" stroke="#466BB7" stroke-width="2" />
         <path :transform="'translate('+xBandwidth * 0.75+',0)'" :d="brushedAccline" fill="none" stroke="#D68966" stroke-width="2" />
       </g>
-      <g class="legends" :transform="'translate('+(mainViewWidth - 200)+',5)'">
-        <rect width="10" height="10" x="10" fill="#8cb1cf" stroke="#3983c0" stroke-width="2"></rect>
-        <text x="25" y="10">Loss</text>
-        <rect width="10" height="10" x="75" fill="#f3c0ba" stroke="#dd5041" stroke-width="2"></rect>
-        <text x="90" y="10">Accuracy</text>
+      <g class="legends" :transform="'translate('+(mainViewWidth - 400)+',0)'">
+        <text x="0" y="10">{{brushedDataSizeDomain[0]}}</text>
+        <rect width="100" height="15" x="45" y="0" fill="url(#bar_linear)"></rect>
+        <text x="95" y="10" style="text-anchor: middle">Data Amount</text>
+        <text x="150" y="10">{{brushedDataSizeDomain[1]}}</text>
+        <g transform="translate(220,0)">
+          <rect width="10" height="10" fill="#8cb1cf" stroke="#3983c0" stroke-width="2"></rect>
+          <text x="15" y="10">Loss</text>
+          <rect width="10" height="10" x="65" fill="#f3c0ba" stroke="#dd5041" stroke-width="2"></rect>
+          <text x="80" y="10">Accuracy</text>
+        </g>
       </g>
       <Axis
         :scale="yscaleleft"
@@ -91,7 +101,8 @@ export default {
       brushedAccline: '',
       brushedLossline: '',
       xBandwidth: 0,
-      yLossMax: 0
+      yLossMax: 0,
+      brushedDataSizeDomain: []
     }
   },
   components: {
@@ -140,6 +151,7 @@ export default {
   methods: {
     updateBarColor () {
       this.brushedDataSize = this.dataSize.slice(this.currentBrush[0] - 1, this.currentBrush[1]);
+      this.brushedDataSizeDomain = d3.extent(this.brushedDataSize);
     },
     updateYLossMax () {
       // 算最大值要把刷选的迭代的所有值拿出来
@@ -198,5 +210,10 @@ export default {
 </script>
 
 <style lang="scss">
-
+.legends {
+  text {
+    font-size: 12px;
+    fill: #333;
+  }
+}
 </style>

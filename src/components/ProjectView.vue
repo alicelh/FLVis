@@ -12,12 +12,12 @@
         <text x="215" y="20">Normal client</text>
         <circle r="4" fill="#ff7f00" cx="390" cy="15" />
         <text x="400" y="20">Abnormal client</text>
-        <circle r="3.5" fill="none" stroke="rgb(57, 131, 192)" stroke-width="2px" cx="20" cy="35" />
+        <circle r="3.5" fill="none" stroke="#2c7bb6" stroke-width="2px" cx="20" cy="35" />
         <text x="30" y="40">Abnormal loss</text>
-        <circle r="3.5" fill="none" stroke="rgb(221, 80, 65)" stroke-width="2px" cx="205" cy="35" />
+        <circle r="3.5" fill="none" stroke="#d7191c" stroke-width="2px" cx="205" cy="35" />
         <text x="215" y="40">Abnormal acc</text>
-        <path transform="translate(390,35)" :d="arcData('left', 2, 4)" fill="rgb(57, 131, 192)" />
-        <path transform="translate(390,35)" :d="arcData('right', 2, 4)" fill="rgb(221, 80, 65)" />
+        <path transform="translate(390,35)" :d="arcData('left', 2, 4)" fill="#2c7bb6" />
+        <path transform="translate(390,35)" :d="arcData('right', 2, 4)" fill="#d7191c" />
         <text x="400" y="40">Abnormal acc &amp; loss</text>
       </g>
       <g id="corner"><text x="580" y="15">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text></g>
@@ -71,12 +71,12 @@
           <path
             v-if="doubleOutlierArr.indexOf(idList[i]) > -1"
             :d="parseInt(clickedClient) === parseInt(idList[i])?arcData('left', 4, 6): arcData('left', 2, 4)"
-            fill="rgb(57, 131, 192)"
+            fill="#2c7bb6"
           />
           <path
             v-if="doubleOutlierArr.indexOf(idList[i]) > -1"
             :d="parseInt(clickedClient) === parseInt(idList[i])?arcData('right', 4, 6): arcData('right', 2, 4)"
-            fill="rgb(221, 80, 65)"
+            fill="#d7191c"
           />
         </g>
       </g>

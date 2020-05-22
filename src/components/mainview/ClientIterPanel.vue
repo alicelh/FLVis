@@ -96,7 +96,7 @@
               ></rect>
               <rect
                 v-if="doubleOutlierArr.indexOf(val.index) > -1"
-                style="stroke:#3983c0; stroke-width:2px; fill: none"
+                style="stroke:#2c7bb6; stroke-width:2px; fill: none"
                 :width="8"
                 :height="8"
                 :data-index="val.index"
@@ -200,7 +200,10 @@ export default {
   },
   methods: {
     computeColor (num) {
-      let compute = d3.interpolate(d3.rgb(240,249,232), d3.rgb(144,194,151));
+      // let compute = d3.interpolate(d3.rgb(240,249,232), d3.rgb(144,194,151));
+      let compute = d3.interpolate(d3.rgb(255,255,255), d3.rgb(253,174,97));
+
+      //#ffffbf,#f3f356
       return compute(num);
     },
     // getClientRectColor (datanum) {
@@ -226,11 +229,11 @@ export default {
     isOutlier (index) {
       if (this.outlierClientLoss.indexOf(index) > -1 && this.outlierClientAcc.indexOf(index) > -1) {
           // this.doubleOutlierArr.push(index);
-          return "#dd5041";
+          return "#d7191c";
         } else if (this.outlierClientLoss.indexOf(index) > -1) {      
-          return '#3983c0';
+          return '#2c7bb6';
         } else if (this.outlierClientAcc.indexOf(index) > -1)
-          return '#dd5041';
+          return '#d7191c';
         return 'none';
       // 当iter面板有内容时 重新刷选 显示的iter已不在显示的盒须图中 所以不用高亮outlier
       // if (Object.keys(this.brushedClientStastics).indexOf(this.iterId.toString()) !== -1) {
