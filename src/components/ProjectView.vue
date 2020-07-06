@@ -282,8 +282,13 @@ export default {
         .attr('stroke', '#353535')
         .attr('stroke-width', "2px")
     },
+    zoomed() {
+      d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
+    }
   },
   mounted() {
+    d3.select(this.svg).call(d3.zoom().extent([[0.1*this.width, 0.1*this.height], [0.9*this.width, 0.9*this.height]])
+      .scaleExtent([1, 8]).on("zoom", this.zoomed));
     // let pointId = "#point-" + this.choosedclientinmain;
     // console.log(pointId, this.choosedclientinmain);
     // d3.select('.g-points')
