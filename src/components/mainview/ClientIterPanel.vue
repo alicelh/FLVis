@@ -493,13 +493,13 @@ export default {
       this.clickedClientIndex = parseInt(clickedClientIndex);
       let clickedIter = this.iterId;
       // 高亮盒须图里的异常值
-      this.$store.dispatch('client/updataClientChoosed', [parseInt(clickedClientIndex), parseInt(clickedIter)]);
+      this.$store.dispatch('client/updataClientChoosed', [clickedClientIndex, parseInt(clickedIter)]);
       // 更新client view
       this.$store.dispatch('client/getClientInfoByIndex', clickedClientIndex);
       // 更新投影视图
       this.$store.dispatch("client/updataIterChoosedForProjection", parseInt(clickedIter));
       // this.$store.dispatch("server/getServerPara", parseInt(clickedIter)); // 更新server色带图
-      this.$store.dispatch("client/getServerParaTemp", [parseInt(clickedIter), parseInt(clickedClientIndex)]); // 更新server和client色带图
+      this.$store.dispatch("client/getServerParaTemp", [parseInt(clickedIter), (clickedClientIndex)]); // 更新server和client色带图
       this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
       // this.$store.dispatch("client/getClientPara", [parseInt(clickedIter), parseInt(clickedClientIndex)]);// 更新client色带图
     },

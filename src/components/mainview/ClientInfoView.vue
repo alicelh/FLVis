@@ -4,7 +4,7 @@
       <svg id="info-container">
         <g transform="translate(45, 15)">
           <rect :width="rectInfoWidth" :height="rectInfoHeight" stroke-dasharray="10 10" stroke="#333" fill="#eee"></rect>
-          <g transform="translate(20, 30)">
+          <g transform="translate(5, 30)">
             <text class="title">Selected iter: {{choosedIterForProjection === 0?'none':choosedIterForProjection}}</text>
             <g transform="translate(0, 25)" class="details">
               <text>
@@ -16,8 +16,8 @@
             </g>
           </g>
           <line x1="0" :x2="rectInfoWidth" :y1="rectInfoHeight/2" :y2="rectInfoHeight/2" stroke-dasharray="10 10" stroke="#fff"></line>
-          <g :transform="'translate(20,' +(rectInfoHeight/2+30) +')'">
-            <text class="title">Selected client: {{parseInt(choosedclient) === -1?'none':choosedclient}}</text>
+          <g :transform="'translate(5,' +(rectInfoHeight/2+30) +')'">
+            <text class="title">Selected client: {{choosedclient===-1?"none":choosedclient}}</text>
             <g transform="translate(0, 25)" class="details">
               <text>
                 <tspan>iter: {{clientDetails.iter===-1?'':clientDetails.iter}}</tspan>
@@ -39,7 +39,7 @@
             :panelId="i"
             :colorLinear="colorLinear"
             :hasLinkedClient="linkedClientArr[i]"
-            :linkedClient="parseInt(choosedclient)"/>
+            :linkedClient="choosedclient"/>
         </div>
         <div v-for="(item, i) in genePanelArray" :key="'void-'+i">
         </div>
@@ -141,7 +141,7 @@ export default {
     // },
     selectedClientInfo: function(newv, oldv) {
       for(let i = 0; i < newv.length; i++) {
-        if((newv[i].iter) === parseInt(this.choosedclientiter))
+        if((newv[i].iter) === this.choosedclientiter)
           this.clientDetails = newv[i];
       }
     },
@@ -189,7 +189,7 @@ export default {
         this.linkedClientArr = [];
         for (let key in this.clientInfoData) {
           let clientIndexArr = this.clientInfoData[key].map(d=>d.index);
-          this.linkedClientArr.push(clientIndexArr.indexOf(parseInt(this.choosedclient)) > -1 ? true : false);
+          this.linkedClientArr.push(clientIndexArr.indexOf(this.choosedclient) > -1 ? true : false);
         }
       }
     }

@@ -274,9 +274,9 @@ export default {
       let iter = this.iterArray[index];
       this.$store.dispatch("server/getClientStasticsRange", [iter-4, iter+4]);
       this.$store.dispatch('client/getClientInfoByIter', iter);// main面板里添加对应迭代
-      this.$store.dispatch('client/updataClientChoosed', [parseInt(this.choosedClient), parseInt(iter)]);
+      this.$store.dispatch('client/updataClientChoosed', [this.choosedClient, parseInt(iter)]);
       this.$store.dispatch("client/updataIterChoosedForProjection", parseInt(iter)); // 更新投影视图
-      this.$store.dispatch("client/getServerParaTemp", [parseInt(iter), parseInt(this.choosedClient)]); // 更新server和client色带图
+      this.$store.dispatch("client/getServerParaTemp", [parseInt(iter), this.choosedClient]); // 更新server和client色带图
       this.$store.dispatch('client/getConfusionMatrix', this.choosedClient);
     }
   },

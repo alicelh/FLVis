@@ -3,7 +3,7 @@
     <div class="moduleTitle">Projection View</div>
     <img id="server-img" src="../assets/server2.svg" />
     <img id="legend-img" src="../assets/server2.svg" />
-    <svg width="100%" height="100%" ref="svg">
+    <svg width="100%" height="80%" ref="svg">
       <g class="legends" transform="translate(10, 380)">
         <!-- <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle> -->
         <rect width="580" height="50" fill="none" stroke="#333" stroke-width="1px" stroke-dasharray="10 10"></rect>
@@ -79,6 +79,23 @@
             fill="#d7191c"
           />
         </g>
+      </g>
+    </svg>
+    <svg width="100%" height="20%" ref="svgLegend">
+      <g class="legends" transform="translate(10,0)">
+        <rect width="580" height="50" fill="none" stroke="#333" stroke-width="1px" stroke-dasharray="10 10"></rect>
+        <text x="30" y="20">Server</text>
+        <circle r="4" fill="#90c297" cx="205" cy="15" />
+        <text x="215" y="20">Normal client</text>
+        <circle r="4" fill="#ff7f00" cx="390" cy="15" />
+        <text x="400" y="20">Abnormal client</text>
+        <circle r="3.5" fill="none" stroke="#2c7bb6" stroke-width="2px" cx="20" cy="35" />
+        <text x="30" y="40">Abnormal loss</text>
+        <circle r="3.5" fill="none" stroke="#d7191c" stroke-width="2px" cx="205" cy="35" />
+        <text x="215" y="40">Abnormal acc</text>
+        <path transform="translate(390,35)" :d="arcData('left', 2, 4)" fill="#2c7bb6" />
+        <path transform="translate(390,35)" :d="arcData('right', 2, 4)" fill="#d7191c" />
+        <text x="400" y="40">Abnormal acc &amp; loss</text>
       </g>
     </svg>
   </div>
@@ -219,7 +236,7 @@ export default {
         let clickedIter = this.choosedIterForProjection;
         // 高亮盒须图里的异常值
         this.$store.dispatch("client/updataClientChoosed", [
-          parseInt(clickedClientIndex),
+          clickedClientIndex,
           parseInt(clickedIter)
         ]);
         // 更新client view
@@ -289,17 +306,6 @@ export default {
   mounted() {
     d3.select(this.svg).call(d3.zoom().extent([[0.1*this.width, 0.1*this.height], [0.9*this.width, 0.9*this.height]])
       .scaleExtent([1, 8]).on("zoom", this.zoomed));
-    // let pointId = "#point-" + this.choosedclientinmain;
-    // console.log(pointId, this.choosedclientinmain);
-    // d3.select('.g-points')
-    //   .selectAll('.point-client')
-    //   .attr('stroke', 'none')
-    //   .attr('r', 4);
-    // d3.select(pointId)
-    //   .attr('stroke', '#353535')
-    //   .attr('r', 6)
-    //   .attr('stroke-width', "2px")
-    //   .classed('point-not-chosen', false);
   }
 };
 </script>
