@@ -168,6 +168,8 @@ export default {
       if ("isNormal" in newValue) {
         this.isNormal = newValue["isNormal"].reverse();
       }
+      this.currentK = 1;
+      d3.select(this.svg).select(".g-points").attr("transform", {x:0,y:0,k:1});
       // this.plot(newValue);
     },
     clientHoveredInMain: function(newv, oldv) {
