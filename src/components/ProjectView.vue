@@ -178,10 +178,10 @@ export default {
       d3.select('.g-points')
         .selectAll('.point-client')
         .attr('stroke', 'none')
-        .attr('r', 4);
+        .attr('r', 4/this.currentK);
       d3.select(pointId)
         .attr('stroke', '#353535')
-        .attr('r', 6)
+        .attr('r', 6/this.currentK)
         .attr('stroke-width', "2px")
         .classed('point-not-chosen', false);
       this.clickedClient = newv.toString();
@@ -227,10 +227,10 @@ export default {
         d3.select(".g-points")
           .selectAll(".point-client")
           .attr("stroke", "none")
-          .attr("r", 4);
+          .attr("r", 4/this.currentK);
         d3.select("#" + clickedId)
           .attr("stroke", "#353535")
-          .attr("r", 6)
+          .attr("r", 6/this.currentK)
           .attr("stroke-width", "2px")
           .classed("point-not-chosen", false);
         this.clickedClient = clickedClientIndex;
