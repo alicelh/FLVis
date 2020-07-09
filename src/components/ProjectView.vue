@@ -168,8 +168,9 @@ export default {
       if ("isNormal" in newValue) {
         this.isNormal = newValue["isNormal"].reverse();
       }
-      this.currentK = 1;
-      d3.select(this.svg).select(".g-points").attr("transform", {x:0,y:0,k:1});
+      d3.event.transform = {x:0, y:0, k:1}
+      this.currentK = d3.event.transform.k;
+      d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
       // this.plot(newValue);
     },
     clientHoveredInMain: function(newv, oldv) {
@@ -184,7 +185,7 @@ export default {
       d3.select(pointId)
         .attr('stroke', '#353535')
         .attr('r', 6/this.currentK)
-        .attr('stroke-width', "2px")
+        .attr('stroke-width', 2/this.currentK)
         .classed('point-not-chosen', false);
       this.clickedClient = newv.toString();
     },
@@ -233,7 +234,7 @@ export default {
         d3.select("#" + clickedId)
           .attr("stroke", "#353535")
           .attr("r", 6/this.currentK)
-          .attr("stroke-width", "2px")
+          .attr("stroke-width", 2/this.currentK)
           .classed("point-not-chosen", false);
         this.clickedClient = clickedClientIndex;
         let clickedIter = this.choosedIterForProjection;
