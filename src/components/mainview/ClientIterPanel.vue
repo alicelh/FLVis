@@ -66,7 +66,7 @@
                 @click="handleRectClick"
               />
               <rect
-                v-if="(isTooltipShow && (parseInt(val.index) === parseInt(tooltipData.index)))"
+                v-if="(isTooltipShow && (val.index === tooltipData.index))"
                 class="client-rect-outer"
                 :width="rectSize"
                 :height="rectSize"
@@ -76,7 +76,7 @@
               ></rect>
               <!-- 点击的边框  和 Linked-->
               <rect
-                v-if="(clickedClientIndex === parseInt(val.index))"
+                v-if="(clickedClientIndex === val.index)"
                 class="client-rect-clicked"
                 :width="rectSize"
                 :height="rectSize"
@@ -86,7 +86,7 @@
               ></rect>
               <!-- linked -->
               <rect
-                v-if="hasLinkedClient && linkedClient === parseInt(val.index)"
+                v-if="hasLinkedClient && linkedClient === val.index"
                 class="client-rect-linked-highlight"
                 :width="rectSize"
                 :height="rectSize"
@@ -97,8 +97,8 @@
               <rect
                 v-if="doubleOutlierArr.indexOf(val.index) > -1"
                 style="stroke:#2c7bb6; stroke-width:2px; fill: none"
-                :width="8"
-                :height="8"
+                :width="rectSize-6"
+                :height="rectSize-6"
                 :data-index="val.index"
                 :data-count="val.count"
                 :data-acc="val.acc"
@@ -145,7 +145,7 @@ export default {
   },
   data() {
     return {
-      rectSize: 14,
+      rectSize: 20,
       rectNumLine: 0, // 一行显示多少个
       rectGap: 0,// rect间距
       minIterCount: 0,

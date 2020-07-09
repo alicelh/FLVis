@@ -29,7 +29,7 @@
             <text
               :x="xscale(rectvalue) + xscale.bandwidth() / 2"
               :y="yscale(rowvalue) + 15"
-            >{{clientConfusionMatrix.length === 0?'':clientConfusionMatrix[rowi][recti]}}</text>
+            >{{clientConfusionMatrix.length === 0?'':clientConfusionMatrix[rowi][recti]/10}}</text>
           </g>
         </g> 
       </g>
