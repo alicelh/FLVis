@@ -109,6 +109,7 @@ export default {
   name: "ProjectView",
   data() {
     return {
+      currentK:1,
       clickedClient: -1,
       doubleOutlierArr: [],
       outlierClientLoss: [],
@@ -260,7 +261,7 @@ export default {
         d3.select(".g-points")
           .select("#" + hoverId)
           .attr("stroke", "#353535")
-          .attr("stroke-width", "2px");
+          .attr("stroke-width", 2/this.currentK);
       }
     },
     handleMouseOut(e) {
@@ -300,7 +301,11 @@ export default {
         .attr('stroke-width', "2px")
     },
     zoomed() {
+      this.currentK = d3.event.transform.k
       d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
+      d3.select(this.svg).select(".g-points").selectAll('circle').attr('r', 6 / this.currentK).attr('stroke-width', 2/ this.currentK);
+      // d3.select(this.svg).select(".g-points").selectAll('.point-client').attr('r', 4 / d3.event.transform.k);
+      d3.select(this.svg).select(".g-points").selectAll('.point-not-chosen').attr('r', 4 / this.currentK);
     }
   },
   mounted() {
