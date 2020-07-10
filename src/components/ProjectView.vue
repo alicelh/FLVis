@@ -6,11 +6,18 @@
     <svg width="100%" height="80%" ref="svg">
       <g class="legends" transform="translate(10, 380)">
         <!-- <circle r="8" fill="rgb(70, 107, 183)" cx="10" cy="15"></circle> -->
-        <rect width="580" height="50" fill="none" stroke="#333" stroke-width="1px" stroke-dasharray="10 10"></rect>
+        <rect
+          width="580"
+          height="50"
+          fill="none"
+          stroke="#333"
+          stroke-width="1px"
+          stroke-dasharray="10 10"
+        />
         <text x="30" y="20">Server</text>
-        <circle r="4" fill="#90c297" cx="205" cy="15" />
+        <circle r="4" fill="#92c5de" cx="205" cy="15" />
         <text x="215" y="20">Normal client</text>
-        <circle r="4" fill="#ff7f00" cx="390" cy="15" />
+        <circle r="4" fill="#92c5de" cx="390" cy="15" />
         <text x="400" y="20">Abnormal client</text>
         <circle r="3.5" fill="none" stroke="#2c7bb6" stroke-width="2px" cx="20" cy="35" />
         <text x="30" y="40">Abnormal loss</text>
@@ -20,7 +27,12 @@
         <path transform="translate(390,35)" :d="arcData('right', 2, 4)" fill="#d7191c" />
         <text x="400" y="40">Abnormal acc &amp; loss</text>
       </g>
-      <g id="corner"><text x="580" y="15">Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text></g>
+      <g id="corner">
+        <text
+          x="580"
+          y="15"
+        >Iter: {{choosedIterForProjection === 0 ? 'not chosen' : choosedIterForProjection}}</text>
+      </g>
       <g class="g-points">
         <g
           v-for="(value, i) in pos.slice(0, pos.length-1)"
@@ -28,9 +40,9 @@
           :transform="'translate(' + xScale((value[0]-pos[pos.length-1][0]) * 1.2 + pos[pos.length-1][0])+',' +yScale((value[1]-pos[pos.length-1][1]) * 1.2 + pos[pos.length-1][1])+ ')'"
         >
           <circle
-            class='point point-client'
+            class="point point-client"
             :class="parseInt(clickedClient) === parseInt(idList[i])?'':'point-not-chosen'"
-            :fill="i===pos.length-1?'rgb(70, 107, 183)':(isNormal[i]===1?'#90c297':'#ff7f00')"
+            :fill="i===pos.length-1?'rgb(70, 107, 183)':(isNormal[i]===1?'#969696':'#ff7f00')"
             :r="parseInt(clickedClient) === parseInt(idList[i])?6:4"
             :stroke="parseInt(clickedClient) === parseInt(idList[i])?'#353535':'none'"
             stroke-width="2px"
@@ -83,9 +95,16 @@
     </svg>
     <svg width="100%" height="20%" ref="svgLegend">
       <g class="legends" transform="translate(10,0)">
-        <rect width="580" height="50" fill="none" stroke="#333" stroke-width="1px" stroke-dasharray="10 10"></rect>
+        <rect
+          width="580"
+          height="50"
+          fill="none"
+          stroke="#333"
+          stroke-width="1px"
+          stroke-dasharray="10 10"
+        />
         <text x="30" y="20">Server</text>
-        <circle r="4" fill="#90c297" cx="205" cy="15" />
+        <circle r="4" fill="#969696" cx="205" cy="15" />
         <text x="215" y="20">Normal client</text>
         <circle r="4" fill="#ff7f00" cx="390" cy="15" />
         <text x="400" y="20">Abnormal client</text>
@@ -109,7 +128,7 @@ export default {
   name: "ProjectView",
   data() {
     return {
-      currentK:1,
+      currentK: 1,
       clickedClient: -1,
       doubleOutlierArr: [],
       outlierClientLoss: [],
@@ -151,10 +170,10 @@ export default {
       projectData: state => state.client.projectdata,
       choosedIterForProjection: state => state.client.choosedIterForProjection,
       clientHoveredInMain: state => state.client.clientHoveredInMain,
-      outlierClientAccAll: (state) => state.server.outlierClientAcc,
-      outlierClientLossAll: (state) => state.server.outlierClientLoss,
-      choosedclientinmain: state=>state.client.choosedclient,
-      outlierClientInfoLength: (state) => state.server.outlierClientInfoLength,
+      outlierClientAccAll: state => state.server.outlierClientAcc,
+      outlierClientLossAll: state => state.server.outlierClientLoss,
+      choosedclientinmain: state => state.client.choosedclient,
+      outlierClientInfoLength: state => state.server.outlierClientInfoLength
     })
   },
   watch: {
@@ -168,9 +187,11 @@ export default {
       if ("isNormal" in newValue) {
         this.isNormal = newValue["isNormal"].reverse();
       }
-      d3.event.transform = {x:0, y:0, k:1}
+      d3.event.transform = { x: 0, y: 0, k: 1 };
       this.currentK = d3.event.transform.k;
-      d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
+      d3.select(this.svg)
+        .select(".g-points")
+        .attr("transform", d3.event.transform);
       // this.plot(newValue);
     },
     clientHoveredInMain: function(newv, oldv) {
@@ -178,20 +199,24 @@ export default {
     },
     choosedclientinmain: function(newv, oldv) {
       let pointId = "#point-" + newv;
-      d3.select('.g-points')
-        .selectAll('.point-client')
-        .attr('stroke', 'none')
-        .attr('r', 4/this.currentK);
+      d3.select(".g-points")
+        .selectAll(".point-client")
+        .attr("stroke", "none")
+        .attr("r", 4 / this.currentK);
       d3.select(pointId)
-        .attr('stroke', '#353535')
-        .attr('r', 6/this.currentK)
-        .attr('stroke-width', 2/this.currentK)
-        .classed('point-not-chosen', false);
+        .attr("stroke", "#353535")
+        .attr("r", 6 / this.currentK)
+        .attr("stroke-width", 2 / this.currentK)
+        .classed("point-not-chosen", false);
       this.clickedClient = newv.toString();
     },
     outlierClientInfoLength: function(newValue, oldValue) {
-      if (newValue[0] === newValue[1] && this.choosedIterForProjection in this.outlierClientLossAll)
+      if (
+        newValue[0] === newValue[1] &&
+        this.choosedIterForProjection in this.outlierClientLossAll
+      ) {
         this.getOutliers();
+      }
     }
   },
   methods: {
@@ -207,8 +232,8 @@ export default {
       }
       let arc = d3.arc();
       return arc({
-        innerRadius: inner/this.currentK,
-        outerRadius: outer/this.currentK,
+        innerRadius: inner / this.currentK,
+        outerRadius: outer / this.currentK,
         startAngle: start,
         endAngle: end
       });
@@ -230,12 +255,12 @@ export default {
         d3.select(".g-points")
           .selectAll(".point-client")
           .attr("stroke", "none")
-          .attr("r", 4/this.currentK)
+          .attr("r", 4 / this.currentK)
           .classed("point-clicked", false);
         d3.select("#" + clickedId)
           .attr("stroke", "#353535")
-          .attr("r", 6/this.currentK)
-          .attr("stroke-width", 2/this.currentK)
+          .attr("r", 6 / this.currentK)
+          .attr("stroke-width", 2 / this.currentK)
           .classed("point-clicked", true);
         this.clickedClient = clickedClientIndex;
         let clickedIter = this.choosedIterForProjection;
@@ -247,7 +272,7 @@ export default {
         // 更新client view
         this.$store.dispatch("client/getClientInfoByIndex", clickedClientIndex);
         // 更新混淆矩阵
-        this.$store.dispatch('client/getConfusionMatrix', clickedClientIndex);
+        this.$store.dispatch("client/getConfusionMatrix", clickedClientIndex);
         // 更新条带图
         this.$store.dispatch("client/getClientPara", [
           clickedIter,
@@ -265,7 +290,7 @@ export default {
         d3.select(".g-points")
           .select("#" + hoverId)
           .attr("stroke", "#353535")
-          .attr("stroke-width", 2/this.currentK);
+          .attr("stroke-width", 2 / this.currentK);
       }
     },
     handleMouseOut(e) {
@@ -282,7 +307,10 @@ export default {
     },
     getOutliers() {
       this.doubleOutlierArr = [];
-      if (this.choosedIterForProjection in this.outlierClientLossAll && this.choosedIterForProjection in this.outlierClientAccAll) {
+      if (
+        this.choosedIterForProjection in this.outlierClientLossAll &&
+        this.choosedIterForProjection in this.outlierClientAccAll
+      ) {
         this.outlierClientLoss = this.outlierClientLossAll[
           this.choosedIterForProjection
         ];
@@ -290,31 +318,48 @@ export default {
           this.choosedIterForProjection
         ];
         for (let i = 0; i < this.outlierClientLoss.length; i++) {
-          if (this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1)
+          if (this.outlierClientAcc.indexOf(this.outlierClientLoss[i]) > -1) {
             this.doubleOutlierArr.push(this.outlierClientLoss[i]);
+          }
         }
       }
     },
     highlightClient(newV) {
-      d3.select('.g-points')
-        .selectAll('.point-not-chosen')
-        .attr('stroke', 'none');
-      d3.select('.g-points')
-        .select('#point-' + newV)
-        .attr('stroke', '#353535')
-        .attr('stroke-width', "2px")
+      d3.select(".g-points")
+        .selectAll(".point-not-chosen")
+        .attr("stroke", "none");
+      d3.select(".g-points")
+        .select("#point-" + newV)
+        .attr("stroke", "#353535")
+        .attr("stroke-width", "2px");
     },
     zoomed() {
-      this.currentK = d3.event.transform.k
-      d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
-      d3.select(this.svg).select(".g-points").selectAll(".point-client").attr('r', 4 / this.currentK);
-      d3.select(this.svg).select(".g-points").selectAll('.point-clicked').attr('r', 6 / this.currentK).attr('stroke-width', 2/ this.currentK);
-
+      this.currentK = d3.event.transform.k;
+      d3.select(this.svg)
+        .select(".g-points")
+        .attr("transform", d3.event.transform);
+      d3.select(this.svg)
+        .select(".g-points")
+        .selectAll(".point-client")
+        .attr("r", 4 / this.currentK);
+      d3.select(this.svg)
+        .select(".g-points")
+        .selectAll(".point-clicked")
+        .attr("r", 6 / this.currentK)
+        .attr("stroke-width", 2 / this.currentK);
     }
   },
   mounted() {
-    d3.select(this.svg).call(d3.zoom().extent([[0.1*this.width, 0.1*this.height], [0.9*this.width, 0.9*this.height]])
-      .scaleExtent([1, 8]).on("zoom", this.zoomed));
+    d3.select(this.svg).call(
+      d3
+        .zoom()
+        .extent([
+          [0.1 * this.width, 0.1 * this.height],
+          [0.9 * this.width, 0.9 * this.height]
+        ])
+        .scaleExtent([1, 8])
+        .on("zoom", this.zoomed)
+    );
   }
 };
 </script>

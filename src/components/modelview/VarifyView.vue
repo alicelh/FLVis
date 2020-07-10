@@ -7,14 +7,20 @@
         orient="Top"
         :deleteDomainPath="true"
       />
-      <text class="axis-text" :transform="'translate('+(margin.left+chartWidth/2)+','+(margin.top-25)+')'">Predicted</text>      
+      <text
+        class="axis-text"
+        :transform="'translate('+(margin.left+chartWidth/2)+','+(margin.top-25)+')'"
+      >Predicted</text>
       <Axis
         :scale="yscale"
         :trans="'translate('+margin.left+','+(margin.top)+')'"
         orient="Left"
         :deleteDomainPath="true"
       />
-      <text class="axis-text" :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'">Actual</text>      
+      <text
+        class="axis-text"
+        :transform="'translate('+(margin.left-20)+','+(margin.top+chartHeight/2)+') rotate(-90)'"
+      >Actual</text>
       <g :transform="'translate('+margin.left+','+(margin.top)+')'" id="matrix-g">
         <g v-for="(rowvalue, rowi) in temp" :key="'row-' + rowi">
           <g v-for="(rectvalue, recti) in temp" :key="'rect-'+recti">
@@ -25,15 +31,19 @@
               :height="yscale.bandwidth()"
               :fill="clientConfusionMatrix.length === 0? 'none' : getColor(rowi, recti)"
               stroke="#333"
-            ></rect>
+            />
             <text
               :x="xscale(rectvalue) + xscale.bandwidth() / 2"
               :y="yscale(rowvalue) + 15"
             >{{clientConfusionMatrix.length === 0?'':clientConfusionMatrix[rowi][recti]/10}}</text>
           </g>
-        </g> 
+        </g>
       </g>
-      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left)+','+(margin.top + chartHeight)+')'" id='precision-g'>
+      <g
+        v-if="recallArr.length !== 0"
+        :transform="'translate('+(margin.left)+','+(margin.top + chartHeight)+')'"
+        id="precision-g"
+      >
         <text transform="translate(-20, 8)rotate(-90)" id="precision-title">Precision</text>
         <g v-for="(value, i) in precisionArr" :key="'precision-'+i" class="precision-content">
           <rect
@@ -43,11 +53,15 @@
             stroke="#333"
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
-          ></rect>
-          <text :x="xscale(i) + xscale.bandwidth() / 2" y="20">{{Math.round(value * 100)  + '%'}}</text>
+          />
+          <text :x="xscale(i) + xscale.bandwidth() / 2" y="20">{{Math.round(value * 100) + '%'}}</text>
         </g>
       </g>
-      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top)+')'" id='recall-g'>
+      <g
+        v-if="recallArr.length !== 0"
+        :transform="'translate('+(margin.left+chartWidth)+','+(margin.top)+')'"
+        id="recall-g"
+      >
         <text transform="translate(20, -20)" id="recall-title">Recall</text>
         <g v-for="(value, i) in recallArr" :key="'recall-'+i" class="recall-content">
           <rect
@@ -57,11 +71,18 @@
             stroke="#333"
             :width="xscale.bandwidth()"
             :height="yscale.bandwidth()"
-          ></rect>
-          <text :x="xscale.bandwidth() / 2 + 5" :y="yscale(i) + 15">{{Math.round(value * 100)  + '%'}}</text>
+          />
+          <text
+            :x="xscale.bandwidth() / 2 + 5"
+            :y="yscale(i) + 15"
+          >{{Math.round(value * 100) + '%'}}</text>
         </g>
       </g>
-      <g v-if="recallArr.length !== 0" :transform="'translate('+(margin.left+chartWidth)+','+(margin.top + chartHeight)+')'" id='acc-g'>
+      <g
+        v-if="recallArr.length !== 0"
+        :transform="'translate('+(margin.left+chartWidth)+','+(margin.top + chartHeight)+')'"
+        id="acc-g"
+      >
         <rect
           x="5"
           y="5"
@@ -69,37 +90,41 @@
           stroke="#333"
           :width="xscale.bandwidth()"
           :height="yscale.bandwidth()"
-        ></rect>
-        <text :x="xscale.bandwidth() / 2 + 5" :y="20">{{Math.round(accuracy * 100)  + '%'}}</text>
+        />
+        <text :x="xscale.bandwidth() / 2 + 5" :y="20">{{Math.round(accuracy * 100) + '%'}}</text>
       </g>
     </svg>
     <div>
-      <div id ="legends-container">
+      <div id="legends-container">
         <svg width="100%" height="100%">
           <defs>
             <linearGradient id="red_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="100%" stop-color="#e34a33"/>
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#e34a33" />
             </linearGradient>
             <linearGradient id="green_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="100%" stop-color="#2ca25f"/>
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#3182bd" />
             </linearGradient>
             <linearGradient id="gray_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="100%" stop-color="#000"/>
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#000" />
             </linearGradient>
             <linearGradient id="weight_linear" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="rgb(190,174,212)"/>
-              <stop offset="100%" stop-color="rgb(253,192,134)"/>
+              <stop offset="0%" stop-color="rgb(190,174,212)" />
+              <stop offset="100%" stop-color="rgb(253,192,134)" />
             </linearGradient>
             <linearGradient
-              :id="'linear_' + i" x1="0%" y1="0%" x2="100%" y2="0%"
+              :id="'linear_' + i"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
               v-for="(color, i) in weightBarColors"
               :key="'color-'+i"
             >
-              <stop offset="0%" :stop-color="color"/>
-              <stop offset="100%" :stop-color="weightBarColors[i+1]"/>
+              <stop offset="0%" :stop-color="color" />
+              <stop offset="100%" :stop-color="weightBarColors[i+1]" />
             </linearGradient>
           </defs>
           <!-- <g id="weightBar-legends" :transform="'translate(50, 40)'">
@@ -119,25 +144,60 @@
               </rect>
               <text class='label' v-if="weightLegendValue.length !== 0" x="90" :y="9 + i * 13" style="text-anchor: start;">{{(i===weightBarColors.length-1)?'>'+weightLegendValue[i-1].toFixed(2):weightLegendValue[i].toFixed(2)}}</text>
             </g>
-          </g> -->
-          <rect x="4" y="18" width="195" height="250" fill="none" stroke="#333" stroke-dasharray="10 10" stroke-width="1px"></rect>
+          </g>-->
+          <rect
+            x="4"
+            y="18"
+            width="195"
+            height="250"
+            fill="none"
+            stroke="#333"
+            stroke-dasharray="10 10"
+            stroke-width="1px"
+          />
           <g id="weightBar-legends" :transform="'translate(145, 95) rotate(90)'">
             <text x="50" y="-20" style="text-anchor: middle;">Weight Bars Encodings</text>
             <!-- <text x="50" y="3" style="text-anchor: middle;font-size: 12px">Server &amp; Client Selected</text>
             <text x="-20" y="20" style="text-anchor: end;font-size: 12px">Low</text>
             <text x="120" y="20" style="text-anchor: start;font-size: 12px">High</text>
-            <rect width="130" height="15" x="-15" y="10" fill="url(#weight_linear)"></rect> -->
+            <rect width="130" height="15" x="-15" y="10" fill="url(#weight_linear)"></rect>-->
             <!-- <text x="50" y="35" style="text-anchor: middle;font-size: 12px">Difference</text> -->
-            <text x="-7" y="-40" style="text-anchor: middle;font-size: 12px" transform="rotate(-90)">Low</text>
-            <text x="-7" y="145" style="text-anchor: middle;font-size: 12px" transform="rotate(-90)">High</text>
-            <rect width="157" height="15" x="-30" y="0" fill="url(#gray_linear)"></rect>
+            <text
+              x="-7"
+              y="-40"
+              style="text-anchor: middle;font-size: 12px"
+              transform="rotate(-90)"
+            >Low</text>
+            <text
+              x="-7"
+              y="145"
+              style="text-anchor: middle;font-size: 12px"
+              transform="rotate(-90)"
+            >High</text>
+            <rect width="157" height="15" x="-30" y="0" fill="url(#gray_linear)" />
           </g>
           <g id="matrix-legends" :transform="'translate(65, 95) rotate(90)'">
-            <text x="50" y="-20" style="text-anchor: middle; fill: #333;">Confusion Matrix Encodings</text>
-            <text class='label' x="-15" y="-40" style="text-anchor: middle;" transform="rotate(-90)">{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
-            <rect x="-30" width="157" height="15" fill="url(#green_linear)"></rect>
-            <rect x="-30" y="18" width="157" height="15" fill="url(#red_linear)"></rect>
-            <text class='label' x="-15" y="145" style="text-anchor: middle;" transform="rotate(-90)">{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
+            <text
+              x="50"
+              y="-20"
+              style="text-anchor: middle; fill: #333;"
+            >Confusion Matrix Encodings</text>
+            <text
+              class="label"
+              x="-15"
+              y="-40"
+              style="text-anchor: middle;"
+              transform="rotate(-90)"
+            >{{clientConfusionMatrix.length === 0?0:domain[0]}}</text>
+            <rect x="-30" width="157" height="15" fill="url(#green_linear)" />
+            <rect x="-30" y="18" width="157" height="15" fill="url(#red_linear)" />
+            <text
+              class="label"
+              x="-15"
+              y="145"
+              style="text-anchor: middle;"
+              transform="rotate(-90)"
+            >{{clientConfusionMatrix.length === 0?0:domain[1]}}</text>
           </g>
         </svg>
       </div>
@@ -149,13 +209,13 @@
 import * as d3 from "d3";
 import Axis from "../common/Axis";
 import bus from "./bus";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "VarifyView",
-  data () {
+  data() {
     return {
-      temp: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+      temp: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
       margin: {
         left: 40,
         right: 45,
@@ -164,24 +224,26 @@ export default {
       },
       height: 0,
       width: 0,
-      colorLinear: '',
+      colorLinear: "",
       domain: [0, 0],
-      weightBarColors: ["#67001f",
-          "#b2182b",
-          "#d6604d",
-          "#f4a582",
-          "#fddbc7",
-          "#d1e5f0",
-          "#92c5de",
-          "#4393c3",
-          "#2166ac",
-          "#053061"],
+      weightBarColors: [
+        "#67001f",
+        "#b2182b",
+        "#d6604d",
+        "#f4a582",
+        "#fddbc7",
+        "#d1e5f0",
+        "#92c5de",
+        "#4393c3",
+        "#2166ac",
+        "#053061"
+      ],
       weightLegendValue: [],
       precisionArr: [],
       recallArr: [],
       accuracy: 0,
       greenColor: ["#99d8c9", "#005824"]
-    }
+    };
   },
   components: {
     Axis
@@ -189,76 +251,80 @@ export default {
   computed: {
     ...mapState({
       clientConfusionMatrix: state => state.client.clientConfusionMatrix,
-      choosedIter: state => state.client.choosedIterForProjection,
+      choosedIter: state => state.client.choosedIterForProjection
     }),
     // chartwidth和height相等
-    chartHeight () {
+    chartHeight() {
       return this.height - this.margin.top - this.margin.bottom;
     },
-    chartWidth () {
+    chartWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
-    xscale () {
+    xscale() {
       return d3
         .scaleBand()
         .domain(this.temp)
         .range([0, this.chartWidth])
         .paddingInner(0);
     },
-    yscale () {
+    yscale() {
       return d3
         .scaleBand()
         .domain(this.temp)
         .range([0, this.chartHeight])
-        .paddingInner(0);;
-    },
+        .paddingInner(0);
+    }
   },
   methods: {
-    getColorLinear () {
+    getColorLinear() {
       this.domain = [999999, -999999];
       for (let i = 0; i < this.clientConfusionMatrix.length; i++) {
         let temp = d3.extent(this.clientConfusionMatrix[i]);
         if (temp[0] < this.domain[0]) this.domain[0] = temp[0];
         if (temp[1] > this.domain[1]) this.domain[1] = temp[1];
       }
-      this.colorLinear = d3.scaleLinear()
-				.domain(this.domain)
-        .range([0,1]);
+      this.colorLinear = d3
+        .scaleLinear()
+        .domain(this.domain)
+        .range([0, 1]);
     },
-    getColor (i, j) {
-      let compute = '';
-      if(i === j) {
-        compute = d3.interpolate(d3.rgb(255, 255, 255), '#2ca25f');
+    getColor(i, j) {
+      let compute = "";
+      if (i === j) {
+        compute = d3.interpolate(d3.rgb(255, 255, 255), "#3182bd");
       } else {
-        compute = d3.interpolate(d3.rgb(255, 255, 255), '#e34a33');
+        compute = d3.interpolate(d3.rgb(255, 255, 255), "#e34a33");
       }
       return compute(this.colorLinear(this.clientConfusionMatrix[i][j]));
     },
     getGreenColor(val) {
       let arrAll = this.precisionArr.concat(this.recallArr);
       let domain = d3.extent(arrAll);
-      let colorLinear = d3.scaleLinear()
-				.domain(domain)
-        .range([0,1]);
-      let compute = d3.interpolate(d3.rgb(216, 238, 226), d3.rgb(44, 162, 95));
+      let colorLinear = d3
+        .scaleLinear()
+        .domain(domain)
+        .range([0, 1]);
+      let compute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(49, 130, 189));
       return compute(colorLinear(val));
     },
     // 计算precision recall值
-    getPrecisionRecall () {
+    getPrecisionRecall() {
       this.precisionArr = [];
       this.recallArr = [];
       let recallAll = 0;
-      let all = 0, accuracyAll = 0;
+      let all = 0,
+        accuracyAll = 0;
       for (let i = 0; i < this.clientConfusionMatrix.length; i++) {
         for (let j = 0; j < this.clientConfusionMatrix[i].length; j++) {
           recallAll += this.clientConfusionMatrix[i][j];
           all += this.clientConfusionMatrix[i][j];
         }
         accuracyAll += this.clientConfusionMatrix[i][i];
-        if (recallAll === 0)
+        if (recallAll === 0) {
           this.recallArr.push(0);
-        else
+        } else {
           this.recallArr.push(this.clientConfusionMatrix[i][i] / recallAll);
+        }
         recallAll = 0;
       }
       this.accuracy = accuracyAll / all;
@@ -267,10 +333,13 @@ export default {
         for (let j = 0; j < this.clientConfusionMatrix.length; j++) {
           precisionAll += this.clientConfusionMatrix[j][i];
         }
-        if (precisionAll === 0)
+        if (precisionAll === 0) {
           this.precisionArr.push(0);
-        else
-          this.precisionArr.push(this.clientConfusionMatrix[i][i] / precisionAll);
+        } else {
+          this.precisionArr.push(
+            this.clientConfusionMatrix[i][i] / precisionAll
+          );
+        }
         precisionAll = 0;
       }
     }
@@ -282,17 +351,17 @@ export default {
     this.getColorLinear();
   },
   watch: {
-    clientConfusionMatrix: function (newvalue, oldvalue) {
+    clientConfusionMatrix: function(newvalue, oldvalue) {
       this.getColorLinear();
       this.getPrecisionRecall();
     },
-    choosedIter: function (newvalue, oldvalue) {
+    choosedIter: function(newvalue, oldvalue) {
       bus.$on("weightDomain", data => {
         this.weightLegendValue = data;
       });
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -306,7 +375,8 @@ export default {
     font-size: 15px;
     fill: #333;
   }
-  #matrix-legends, #weightBar-legends {
+  #matrix-legends,
+  #weightBar-legends {
     text {
       font-size: 15px;
     }
