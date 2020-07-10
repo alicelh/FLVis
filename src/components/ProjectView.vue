@@ -207,8 +207,8 @@ export default {
       }
       let arc = d3.arc();
       return arc({
-        innerRadius: inner,
-        outerRadius: outer,
+        innerRadius: inner/this.currentK,
+        outerRadius: outer/this.currentK,
         startAngle: start,
         endAngle: end
       });
@@ -230,12 +230,13 @@ export default {
         d3.select(".g-points")
           .selectAll(".point-client")
           .attr("stroke", "none")
-          .attr("r", 4/this.currentK);
+          .attr("r", 4/this.currentK)
+          .classed("point-clicked", false);
         d3.select("#" + clickedId)
           .attr("stroke", "#353535")
           .attr("r", 6/this.currentK)
           .attr("stroke-width", 2/this.currentK)
-          .classed("point-not-chosen", false);
+          .classed("point-clicked", true);
         this.clickedClient = clickedClientIndex;
         let clickedIter = this.choosedIterForProjection;
         // 高亮盒须图里的异常值
@@ -306,9 +307,9 @@ export default {
     zoomed() {
       this.currentK = d3.event.transform.k
       d3.select(this.svg).select(".g-points").attr("transform", d3.event.transform);
-      d3.select(this.svg).select(".g-points").selectAll('circle').attr('r', 6 / this.currentK).attr('stroke-width', 2/ this.currentK);
-      // d3.select(this.svg).select(".g-points").selectAll('.point-client').attr('r', 4 / d3.event.transform.k);
-      d3.select(this.svg).select(".g-points").selectAll('.point-not-chosen').attr('r', 4 / this.currentK);
+      d3.select(this.svg).select(".g-points").selectAll(".point-client").attr('r', 4 / this.currentK);
+      d3.select(this.svg).select(".g-points").selectAll('.point-clicked').attr('r', 6 / this.currentK).attr('stroke-width', 2/ this.currentK);
+
     }
   },
   mounted() {
